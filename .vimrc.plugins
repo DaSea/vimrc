@@ -1,0 +1,423 @@
+" Pathogen or Vundle (deafult is Vundle) {{{
+
+" Comment-out if you want to use pahogen
+" execute pathogen#infect()
+" com! -nargs=+ Bundle
+
+" man.vim: invoked by :Man {name}
+source $VIMRUNTIME/ftplugin/man.vim
+
+" let Vundle manage Vundle, required
+" ---------------------------------------------------
+Plugin 'gmarik/Vundle.vim'
+"}}}
+
+
+"========================================================================================
+"
+" 使用到的插件的配置(The setting of the used plugin)
+"
+"========================================================================================
+" ex系列插件 {{{
+
+Plugin 'exvim/ex-config'
+" ---------------------------------------------------
+nnoremap <unique> <leader>ve :call exconfig#edit_cur_vimentry ()<CR>
+
+Plugin 'exvim/ex-utility'
+" ---------------------------------------------------
+nnoremap <unique> <silent> <Leader>bd :EXbd<CR>
+nnoremap <unique> <silent> <C-l> :EXbn<CR>
+nnoremap <unique> <silent> <C-h> :EXbp<CR>
+nnoremap <unique> <silent> <C-Tab> :EXbalt<CR>
+nnoremap <unique> <silent> <Leader><Tab> :EXsw<CR>
+nmap <unique> <silent> <Leader><Esc> :EXgp<CR><ESC>
+
+Plugin 'exvim/ex-aftercolors'
+" ---------------------------------------------------
+
+Plugin 'exvim/ex-vimentry'
+" ---------------------------------------------------
+
+Plugin 'exvim/ex-project'
+" ---------------------------------------------------
+let g:ex_project_winpos='left'
+let g:ex_project_winsize=28
+let g:ex_project_winsize_zoom=40
+nnoremap <unique> <silent> <F3> :EXProjectToggle<cr>
+
+
+Plugin 'exvim/ex-gsearch'
+" ---------------------------------------------------
+call exgsearch#register_hotkey( 100, 0, '<leader>gs', ":EXGSearchToggle<CR>", 'Toggle global search window.' )
+call exgsearch#register_hotkey( 101, 0, '<leader>gg', ":EXGSearchCWord<CR>", 'Search current word.' )
+call exgsearch#register_hotkey( 102, 0, '<leader><S-f>', ":GS ", 'Shortcut for :GS' )
+
+Plugin 'exvim/ex-tags'
+" ---------------------------------------------------
+call extags#register_hotkey( 100, 0, '<leader>ts', ":EXTagsToggle<CR>", 'Toggle tag select window.' )
+call extags#register_hotkey( 101, 0, '<leader>]', ":EXTagsCWord<CR>", 'Tag select current word.' )
+" DISABLE: nnoremap <unique> <leader>] :exec 'ts ' . expand('<cword>')<CR>
+
+Plugin 'exvim/ex-symbol'
+" ---------------------------------------------------
+call exsymbol#register_hotkey( 100, 0, '<leader>ss', ":EXSymbolList<CR>", 'List all symbols.' )
+call exsymbol#register_hotkey( 101, 0, '<leader>sq', ":EXSymbolOpen<CR>", 'Open symbols window.' )
+call exsymbol#register_hotkey( 102, 0, '<leader>sg', ":EXSymbolCWord<CR>", 'List symbols contains current word.' )
+
+if has('gui_running')
+    if has ('mac')
+        call exsymbol#register_hotkey( 102, 0, 'Ò', ":EXSymbolList<CR>:redraw<CR>/", 'List all symbols and stay in search mode.' )
+    else
+        call exsymbol#register_hotkey( 102, 0, '<M-L>', ":EXSymbolList<CR>:redraw<CR>/", 'List all symbols and stay in search mode.' )
+    endif
+endif
+let g:ex_symbol_select_cmd = 'TS'
+
+Plugin 'exvim/ex-cscope'
+" ---------------------------------------------------
+call excscope#register_hotkey( 100, 0, '<leader>cd', ":EXCSToggle<CR>", 'Toggle cscope window.' )
+
+Plugin 'exvim/ex-qfix'
+" ---------------------------------------------------
+
+call exqfix#register_hotkey( 100, 0, '<leader>qf', ":EXQFixToggle<CR>", 'Toggle quickfix window.' )
+call exqfix#register_hotkey( 101, 0, '<leader>qq', ":EXQFixPaste<CR>", 'Open quickfix window and paste error list from register *.' )
+
+" Plugin 'exvim/ex-hierarchy'
+" ---------------------------------------------------
+nnoremap <unique> <leader>hv :EXHierarchyCWord<CR>
+
+Plugin 'exvim/ex-autocomplpop'
+" invoke when you input text
+" ---------------------------------------------------
+
+Plugin 'exvim/ex-showmarks'
+" ex-showmarks: invoke by m... or <leader>mm, <leader>ma
+" ---------------------------------------------------
+" TODO: bootleq/ShowMarks on github is well organized in code, but have lots
+" bugs, consider merge his code and fixes the bugs
+let g:showmarks_enable = 1
+let g:showmarks_include = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+let g:showmarks_ignore_type = 'hqm' " Ignore help, quickfix, non-modifiable buffers
+" Hilight lower & upper marks
+let g:showmarks_hlline_lower = 1
+let g:showmarks_hlline_upper = 0
+
+Plugin 'exvim/ex-visincr'
+" ex-visincr: invoke when select text and type ':II'
+" ---------------------------------------------------
+
+Plugin 'exvim/ex-matchit'
+" ex-matchit: invoke by %
+" ---------------------------------------------------
+
+Plugin 'exvim/ex-easyhl'
+" ---------------------------------------------------
+
+Plugin 'exvim/ex-searchcompl'
+" invoke by /
+" ---------------------------------------------------
+
+Plugin 'exvim/ex-colorschemes'
+" ---------------------------------------------------
+
+Plugin 'exvim/ex-cref'
+" Invoke by <leader>cr
+" ---------------------------------------------------
+" this is modified for default c syntax highlight settings
+" make it don't highlight error pattern
+let c_gnu = 1
+let c_no_curly_error = 1
+let c_no_bracket_error = 1
+
+" ex-taglist: invoke by <leader>tl
+" ---------------------------------------------------
+Plugin 'exvim/ex-taglist'
+
+" F4:  Switch on/off TagList
+nnoremap <unique> <F4> :TlistToggle<CR>
+
+"let Tlist_Ctags_Cmd = $VIM.'/vimfiles/ctags.exe' " location of ctags tool
+let Tlist_Show_One_File = 1 " Displaying tags for only one file~
+let Tlist_Exist_OnlyWindow = 1 " if you are the last, kill yourself
+let Tlist_Use_Right_Window = 1 " split to the right side of the screen
+let Tlist_Sort_Type = "order" " sort by order or name
+let Tlist_Display_Prototype = 0 " do not show prototypes and not tags in the taglist window.
+let Tlist_Compart_Format = 1 " Remove extra information and blank lines from the taglist window.
+let Tlist_GainFocus_On_ToggleOpen = 1 " Jump to taglist window on open.
+let Tlist_Display_Tag_Scope = 1 " Show tag scope next to the tag name.
+let Tlist_Close_On_Select = 0 " Close the taglist window when a file or tag is selected.
+let Tlist_BackToEditBuffer = 0 " If no close on select, let the user choose back to edit buffer or not
+let Tlist_Enable_Fold_Column = 0 " Don't Show the fold indicator column in the taglist window.
+let Tlist_WinWidth = 40
+let Tlist_Compact_Format = 1 " do not show help
+" let Tlist_Ctags_Cmd = 'ctags --c++-kinds=+p --fields=+iaS --extra=+q --languages=c++'
+" very slow, so I disable this
+" let Tlist_Process_File_Always = 1 " To use the :TlistShowTag and the :TlistShowPrototype commands without the taglist window and the taglist menu, you should set this variable to 1.
+":TlistShowPrototype [filename] [linenumber]
+
+" add javascript language
+let tlist_javascript_settings = 'javascript;v:global variable:0:0;c:class;p:property;m:method;f:function;r:object'
+" add hlsl shader language
+let tlist_hlsl_settings = 'c;d:macro;g:enum;s:struct;u:union;t:typedef;v:variable;f:function'
+" add actionscript language
+let tlist_actionscript_settings = 'actionscript;c:class;f:method;p:property;v:variable'
+
+" }}}
+
+" 文件导航 {{{
+
+Plugin 'scrooloose/nerdtree'
+" Invoke by :NERDTreeToggle
+" ---------------------------------------------------
+let g:NERDChristmasTree=1
+let g:NERDTreeAutoCenter=1
+let g:NERDTreeShowFiles=1
+let g:NERDTreeShowHidden=1
+let g:NERDTreeWinSize = 30
+let g:NERDTreeMouseMode = 2
+let g:NERDTreeMapToggleZoom = '<Space>'
+" 常规模式下输入 F2 调用插件
+nmap <F2> :NERDTreeToggle<CR>
+
+" ---------------------------------------------------
+" Plugin 'jistr/vim-nerdtree-tabs'
+" advanced nerdtree
+" ---------------------------------------------------
+" let g:nerdtree_tabs_open_on_console_startup=0
+" let g:nerdtree_tabs_open_on_gui_startup=0
+
+" ctrlp: invoke by <ctrl-p>
+Plugin 'kien/ctrlp.vim'
+"---------------------------------------------------------------------
+let g:ctrlp_working_path_mode = ''
+let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:10,results:10'
+let g:ctrlp_follow_symlinks = 2
+let g:ctrlp_max_files = 0 " Unset cap of 10,000 files so we find everything
+nnoremap <unique> <leader>bs :CtrlPBuffer<CR>
+
+" -----------------------------------------------------------------------------
+Plugin 'vim-scripts/a.vim'
+" -----------------------------------------------------------------------------
+" 用于切换C/C++头文件
+" :A     ---切换头文件并独占整个窗口
+" :AV    ---切换头文件并垂直分割窗口
+" :AS    ---切换头文件并水平分割窗口
+nnoremap <silent> <F12> :A<CR>
+
+" -----------------------------------------------------------------------------
+Plugin 'vim-scripts/mru.vim'
+" -----------------------------------------------------------------------------
+if g:isGUI
+    nmap <CR> :MRU<CR>
+else
+    nmap <leader>fl :MRU<CR>
+endif
+
+" ---------------------------------------------------
+Plugin 'vim-scripts/LargeFile'
+" ---------------------------------------------------
+let g:LargeFile= 5 " files >= 5MB will use LargeFile rules
+
+" }}}
+
+"  文件内跳转{{{
+
+Plugin 'tacahiroy/ctrlp-funky'
+"---------------------------------------------------------------------
+nnoremap <m-m> :CtrlPFunky<CR>
+" nnoremap <F4> :CtrlPFunky<CR>
+nnoremap <m-w> :execute 'CtrlPFunky '. expand('<cword>')<CR>
+
+" ---------------------------------------------------
+Plugin 'Lokaltog/vim-easymotion'
+" Invoke by <leader><leader> w,b,e,ge,f,F,h,i,j,k,/
+" ---------------------------------------------------
+map <leader><leader>/ <Plug>(easymotion-sn)
+omap <leader><leader>/ <Plug>(easymotion-tn)
+map <leader><leader>j <Plug>(easymotion-j)ap <leader><leader>k <Plug>(easymotion-k)
+map <leader><leader>l <Plug>(easymotion-lineforward)
+map <leader><leader>h <Plug>(easymotion-linebackward)
+let g:EasyMotion_startofline = 0 " keep cursor colum when JK motion
+
+"}}}
+
+"  内容注释{{{
+
+Plugin 'tpope/vim-surround'
+" invoke when you select words and press 's'
+" ---------------------------------------------------
+xmap s <Plug>VSurround
+
+Plugin 'scrooloose/nerdcommenter'
+" Invoke by <leader>c<space>, <leader>cl, <leader>cu, <F11> or <C-F11>
+" ---------------------------------------------------
+" 我主要用于C/C++代码注释(其它的也行)
+" 以下为插件默认快捷键，其中的说明是以C/C++为例的，其它语言类似
+" <Leader>ci 以每行一个 /* */ 注释选中行(选中区域所在行)，再输入则取消注释
+" <Leader>cm 以一个 /* */ 注释选中行(选中区域所在行)，再输入则称重复注释
+" <Leader>cc 以每行一个 /* */ 注释选中行或区域，再输入则称重复注释
+" <Leader>cu 取消选中区域(行)的注释，选中区域(行)内至少有一个 /* */
+" <Leader>ca 在/*...*/与//这两种注释方式中切换（其它语言可能不一样了）
+" <Leader>cA 行尾注释
+let g:NERDSpaceDelims = 1
+let g:NERDRemoveExtraSpaces = 1
+let g:NERDCustomDelimiters = {
+            \ 'vimentry': { 'left': '--' },
+            \ }
+map <unique> <F11> <Plug>NERDCommenterAlignBoth
+map <unique> <C-F11> <Plug>NERDCommenterUncomment
+
+" -----------------------------------------------------------------------------
+Plugin 'vim-scripts/DoxygenToolkit.vim'
+" -----------------------------------------------------------------------------
+map <F6>a :D oxAuthor<CR>
+map <F6>f :D ox<CR>
+map <F6>b :D oxBlock<CR>
+map <F6>l :D oxLic<CR>
+map <F6>c odocClass<C-B>
+map <F6>m odocMember<C-B>
+
+let s:licenseTag = "Copyright(C)\<enter>"
+let s:licenseTag = s:licenseTag . "For free\<enter>"
+let s:licenseTag = s:licenseTag . "All right reserved\<enter>"
+let g:DoxygenToolkit_licenseTag = 'GPL 2.0'
+let g:DoxygenToolkit_briefTag_funcName="yes"
+let g:Doxygen_enhanced_color=1
+let g:DoxygenToolkit_briefTag_pre="@Synopsis "
+let g:DoxygenToolkit_paramTag_pre="@Param "
+let g:DoxygenToolkit_returnTag="@Returns "
+" let g:DoxygenToolkit_blockHeader="-----------------------------------------------------------------------------"
+" let g:DoxygenToolkit_blockFooter="-----------------------------------------------------------------------------"
+let g:DoxygenToolkit_authorName="Dasea"
+
+"}}}
+
+"  代码静态分析{{{
+
+" Plugin 'scrooloose/syntastic'
+" Invoke when you save file and have syntac-checker
+" ---------------------------------------------------
+" this will make html file by Angular.js ignore errors
+" let g:syntastic_html_tidy_ignore_errors=[" proprietary attribute \"ng-"]
+
+" }}}
+
+" 历史编辑 {{{
+
+Plugin 'mbbill/undotree'
+" invoke by <Leader>u
+" 一个用于编辑历史的插件
+" ---------------------------------------------------
+nnoremap <leader>u :UndotreeToggle<CR>
+let g:undotree_SetFocusWhenToggle=1
+let g:undotree_WindowLayout = 4
+" NOTE: this will prevent undotree closed then jump to minibufexpl
+function! g:CloseUndotree()
+    call UndotreeHide()
+    call ex#window#goto_edit_window()
+endfunction
+
+function g:Undotree_CustomMap()
+    nnoremap <silent> <script> <buffer> <ESC> :call g:CloseUndotree()<CR>
+endfunction
+
+" }}}
+
+" c++友好提升 {{{
+
+" -----------------------------------------------------------------------------
+Plugin 'octol/vim-cpp-enhanced-highlight'
+" -----------------------------------------------------------------------------
+let g:cpp_class_scope_highlight=1
+let g:cpp_experimental_template_highlight = 1
+
+"}}}
+
+" python相关 {{{
+
+" -----------------------------------------------------------------------------
+Plugin 'rkulla/pydiction'
+" -----------------------------------------------------------------------------
+filetype plugin on
+let g:pydiction_location = $VIM.'/vimfiles/bundle/pydiction/complete-dict'
+let g:pydiction_menu_height = 3
+
+"}}}
+
+" 界面相关{{{
+
+" ---------------------------------------------------
+Plugin 'Yggdroot/indentLine'
+" : 对齐插件
+" ---------------------------------------------------
+
+let g:indentLine_color_gui = '#A4E57E'
+let g:indentLine_char = '|'
+
+" ---------------------------------------------------
+Plugin 'altercation/vim-colors-solarized'
+" 配色设置
+" ---------------------------------------------------
+
+"}}}
+
+" Markdown{{{
+
+Plugin 'plasticboy/vim-markdown'
+" ---------------------------------------------------
+let g:vim_markdown_initial_foldlevel=9999
+
+"}}}
+
+" vim文档及WIKI{{{
+
+" -----------------------------------------------------------------------------
+Plugin 'asins/vimcdoc'
+" < VIM中文帮助文档:>
+" -----------------------------------------------------------------------------
+" 设定doc文档目录
+let helptags=$VIM."/vimfiles/doc"
+set helplang=cn
+
+" -----------------------------------------------------------------------------
+"  Plugin 'vimwiki/vimwiki'
+" -----------------------------------------------------------------------------
+"let g:vimwiki_list = [{'path':'G:/Code/github/DaseaWiki/',
+            " \'template_path' : 'G:/Code/github/DaseaWiki/template/',
+            " \'template_default' : 'default_template',
+            " \'template_ext' : '.html',
+            " \'path_html': 'G:/Code/github/DaseaWiki/html/'}]
+" 对中文用户来说，我们并不怎么需要驼峰英文成为维基词条
+" let g:vimwiki_camel_case = 0
+" 标记为完成的 checklist 项目会有特别的颜色
+" let g:vimwiki_hl_cb_checked = 1
+" vim 是没有菜单的，加一个 vimwiki 菜单项也没有意义
+" let g:vimwiki_menu = ''
+" 是否开启按语法折叠  会让文件比较慢
+" let g:vimwiki_folding = 0
+" 是否在计算字串长度时用特别考虑中文字符
+" let g:vimwiki_CJK_length = 1
+" 详见下文...
+" let g:vimwiki_valid_html_tags='b,i,s,u,sub,sup,kbd,del,br,hr,div,code,h1'
+" map <S-F5> :VimwikiAll2HTML<cr>
+" map <F5> :Vimwiki2HTML<cr>
+
+"}}}
+
+" 内容完成 {{{
+" -----------------------------------------------------------------------------
+Plugin 'jiangmiao/auto-pairs'
+" -----------------------------------------------------------------------------
+" 用于括号与引号自动补全
+
+"}}}
+
+" TEST {{{
+" " test-loading
+" echomsg "test-loading: .vimrc"
+" Plugin 'exvim/test-loading'
+"}}}
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:
