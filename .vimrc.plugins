@@ -192,9 +192,14 @@ nmap <F2> :NERDTreeToggle<CR>
 Plugin 'kien/ctrlp.vim'
 "---------------------------------------------------------------------
 let g:ctrlp_working_path_mode = ''
-let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:10,results:10'
+let g:ctrlp_match_window = 'top,order:ttb,min:1,max:10,results:10'
 let g:ctrlp_follow_symlinks = 2
 let g:ctrlp_max_files = 0 " Unset cap of 10,000 files so we find everything
+  let g:ctrlp_custom_ignore = {
+    \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+    \ 'file': '\v\.(exe|so|dll|png|bmp|sln|ini|obj|lib|ref|sln|psd)$',
+    \ 'link': 'SOME_BAD_SYMBOLIC_LINKS',
+    \}
 nnoremap <unique> <leader>bs :CtrlPBuffer<CR>
 
 " -----------------------------------------------------------------------------

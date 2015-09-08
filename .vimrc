@@ -285,13 +285,20 @@ set guioptions-=b "present the bottom scrollbar when the longest visible line ex
 
 " 状态栏设置
 set laststatus=2 " always have status-line
-set statusline=[%{CurModeStr()}]\ [Modify=%m]\ [Read=%r]\ [Format=%{&ff}]\ [Type=%y]\ [Pos=%04l,%04v][%p%%]\ [Len=%L]
+set statusline=[%{CurModeStr()}]\ [Modify=%m,Read=%r]\ [Format=%{&ff}]\ [Type=%y]\ [Pos=%04l,%04v][%p%%]\ [Len=%L]
 func! CurModeStr()
     let modeStr = ""
-    if mode() == "n"
+    let curMode = mode()
+    if curMode == "n"
        let  modeStr = "normal"
-    elseif mode() == "i"
+    elseif curMode == "i"
        let modeStr = "insert"
+    elseif curMode == "v"
+        let curMode = "visual"
+    elseif curMode == "c"
+        let curMode = "command"
+    else
+        let curMode = "Other"
     endif
 
     return modeStr
@@ -555,7 +562,7 @@ endif
 
 "===================================================
 " VIM 打开的时候加载那个路径
-silent! cd G:\
+" silent! cd G:\
 
 "===================================================
 " 保存文件设置 \s 一键保存
