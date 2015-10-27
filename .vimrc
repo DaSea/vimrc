@@ -81,6 +81,7 @@ if WINDOWS()
         set termencoding=cp850
         " Let Vim use utf-8 internally, because many scripts require this
         set encoding=utf-8
+        scriptencoding utf-8
         setglobal fileencoding=utf-8
         " Windows has traditionally used cp1252, so it's probably wise to
         " fallback into cp1252 instead of eg. iso-8859-15.
@@ -103,7 +104,7 @@ scriptencoding utf-8
 "/////////////////////////////////////////////////////////////////////////////
 " vundle#begin
 filetype off " required
-
+let mapleader=";"
 " set the runtime path to include Vundle
 if exists('g:exvim_custom_path')
     let g:ex_tools_path = g:exvim_custom_path.'/vimfiles/tools/'
@@ -143,16 +144,19 @@ syntax on " required
 "/////////////////////////////////////////////////////////////////////////////
 " Default colorscheme setup 颜色方案设置{{{
 "/////////////////////////////////////////////////////////////////////////////
-
 if g:isGUI
-    set background=dark
+    if  strftime("%H") >= 18
+        set background=dark
+    else
+        set background=light
+    endif
+    colorscheme solarized
 else
     set background=dark
     set t_Co=256 " make sure our terminal use 256 color
     let g:solarized_termcolors = 256
+    colorscheme molokai
 endif
-colorscheme solarized
-"colorscheme molokai
 " }}}
 
 "/////////////////////////////////////////////////////////////////////////////
@@ -230,10 +234,10 @@ if has('gui_running')
         elseif WINDOWS()
             if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
                 set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h11:cANSI
+            elseif getfontname( 'Microsoft YaHei Mono' ) != ''
+                set guifont=Microsoft\ YaHei\ Mono:h11:cANSI
             elseif getfontname( 'DejaVu Sans Mono' ) != ''
                 set guifont=DejaVu\ Sans\ Mono:h11:cANSI
-	    elseif getfontname( 'Microsoft YaHei Mono' ) != ''
-	    	set guifont=Microsoft\ YaHei\ Mono:h11:cANSI
             elseif getfontname( 'Consolas' ) != ''
                 set guifont=Consolas:h11:cANSI " this is the default visual studio font
             else
@@ -248,7 +252,7 @@ endif
 " 界面部分设置 {{{
 " ==============================================================================
 set matchtime=0 " 0 second to show the matching paren ( much faster )
-set nu " show line number
+" set nu " show line number
 set scrolloff=0 " minimal number of screen lines to keep above and below the cursor
 set wrap " do not wrap text
 
@@ -285,7 +289,7 @@ set guioptions-=b "present the bottom scrollbar when the longest visible line ex
 
 " 状态栏设置
 set laststatus=2 " always have status-line
-set statusline=[%{CurModeStr()}]\ [Modify=%m,Read=%r]\ [Format=%{&ff}]\ [Type=%y]\ [Pos=%04l,%04v][%p%%]\ [Len=%L]
+" set statusline=[%{CurModeStr()}]\ [%t:%{&ff}]\ [Type:%y]\ [Pos=%04l,%04v][%p%%:%L]
 func! CurModeStr()
     let modeStr = ""
     let curMode = mode()
@@ -293,12 +297,14 @@ func! CurModeStr()
        let  modeStr = "normal"
     elseif curMode == "i"
        let modeStr = "insert"
-    elseif curMode == "v"
-        let curMode = "visual"
+   elseif curMode == "v"
+       let modeStr = "visual"
+    elseif curMode == "V"
+        let modeStr = "visual line"
     elseif curMode == "c"
-        let curMode = "command"
+        let modeStr = "command"
     else
-        let curMode = "Other"
+        let modeStr = "Other"
     endif
 
     return modeStr
@@ -357,8 +363,8 @@ if (g:iswindows && g:isGUI)
     endfunc
 
     "快捷键设置
-    " nmap <c-up> :call Alpha_add()<CR>
-    " nmap <c-down> :call Alpha_sub()<CR>
+    nmap <c-up> :call Alpha_add()<CR>
+    nmap <c-down> :call Alpha_sub()<CR>
     " nmap <leader>t :call Top_window()<CR>
 endif
 
@@ -403,11 +409,11 @@ set nf=
 " ==============================================================================
 " Desc: Fold text
 " ==============================================================================
-set foldenable                                        "启用折叠
-"set foldmethod=indent                                 "indent 折叠方式
-"set foldlevel=3
+"set foldenable                                        "启用折叠
+set foldmethod=indent                                 "indent 折叠方式
+set foldlevel=3
 " set foldmethod=marker foldmarker={,} foldlevel=9999
-set foldmethod=syntax
+" set foldmethod=syntax
 set diffopt=filler,context:9999
 " 用空格键来开关折叠
 nnoremap <space> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
@@ -472,7 +478,7 @@ if has('autocmd')
         " ------------------------------------------------------------------
         " Desc: file types
         " ------------------------------------------------------------------
-
+        au FileType * setlocal tabstop=4
         au FileType text setlocal textwidth=78 " for all text files set 'textwidth' to 78 characters.
         au FileType c,cpp,cs,swig set nomodeline " this will avoid bug in my project with namespace ex, the vim will tree ex:: as modeline.
 
@@ -480,7 +486,7 @@ if has('autocmd')
         au FileType c,cpp,java,javascript set comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,f://
         au FileType cs set comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,f:///,f://
         au FileType vim set comments=sO:\"\ -,mO:\"\ \ ,eO:\"\",f:\"
-        au FileType vim set foldmethod=indent
+        au FileType vim set foldmethod=marker
         au FileType lua set comments=f:--
 
         " if edit python scripts, check if have \t. ( python said: the programme can only use \t or not, but can't use them together )
@@ -530,21 +536,37 @@ endif
 "}}}
 
 " ==============================================================================
+" Abbraviations 设置{{{
+iabbrev mmail dhf0214@126.com
+"}}}
+
+" ==============================================================================
 " Key Mappings 按键映射 {{{
 " ==============================================================================
 "===================================================
 " 重新映射leader键，default 为\
-let mapleader = ","
+" let mapleader = ","
 " 修改esc 键为jk
-inoremap jk <ESC>
-vnoremap jk <ESC>
-noremap jk  <ESC>
+" inoremap jk <ESC>
+" vnoremap jk <ESC>
+" noremap jk  <ESC>
 
 "===================================================
 " 常规模式下输入 cS 清除行尾空格
 nmap CS :%s/\s\+$//g<CR>:noh<CR>
 " 常规模式下输入 cM 清除行尾 ^M 符号
 nmap CM :%s/\r$//g<CR>:noh<CR>
+
+"===================================================
+" 将当前光标下单词转换成大写
+" noremap <c-U> viwU
+" inoremap <c-U> <ESC>viwU
+" vnoremap <c-U> <ESC>viwU
+
+" 高亮当前光标下单词
+" *
+" 取消当前高亮
+noremap <leader>nh :noh<cr>
 
 "===================================================
 " 上下切换
@@ -554,9 +576,11 @@ nmap CM :%s/\r$//g<CR>:noh<CR>
 " autocmd! bufwritepost .vimrc source ~/.vimrc
 if g:iswindows
     nnoremap <leader>ev :vsplit $VIM\.vimrc<cr>
+    nnoremap <leader>evp :vsplit $VIM\.vimrc.plugins<cr>
     nnoremap <leader>sv :source $MYVIMRC<cr>
 else
     nnoremap <leader>ev :vsplit $MYVIMRC<cr>
+    nnoremap <leader>evp :vsplit $VIM/.vimrc.plugins<cr>
     nnoremap <leader>sv :source $MYVIMRC<cr>
 endif
 
@@ -565,35 +589,14 @@ endif
 " silent! cd G:\
 
 "===================================================
-" 保存文件设置 \s 一键保存
-func! SaveFile()
-    exec "w"
-endfunc
-if g:isGUI
-    noremap  <M-s> :call SaveFile()<CR>
-    inoremap <M-s> <ESC>:call SaveFile()<CR>
-    vnoremap <M-s> <ESC>:call SaveFile()<CR>
-    " 关闭文件
-    noremap <M-q> :bd<CR>
-    inoremap <M-q> <ESC>:bd<CR>
-    vnoremap <M-q> <ESC>:bd<CR>
-    " 关闭当前窗口, 详细请看:help Close
-    noremap <M-c> :close<CR>
-    inoremap <M-c> <ESC>:close<CR>
-    vnoremap <M-c> <ESC>:close<CR>
-else
-    noremap <leader>sf :call SaveFile()<CR>
-    inoremap <leader>sf <ESC>:call SaveFile()<CR>
-    vnoremap <leader>sf <ESC>:call SaveFile()<CR>
-    " 关闭文件
-    noremap <leader>cb :bd<CR>
-    inoremap <leader>cb <ESC>:bd<CR>
-    vnoremap <leader>cb <ESC>:bd<CR>
-    " 关闭当前窗口
-    noremap <leader>cw :close<CR>
-    inoremap <leader>cw <ESC>:close<CR>
-    vnoremap <leader>cw <ESC>:close<CR>
-endif
+" 保存文件设置 <leader>s 一键保存
+noremap  <C-s> :w<CR>
+inoremap <C-s> <ESC>:w<CR>
+vnoremap <C-s> <ESC>:w<CR>
+" 关闭当前窗口, 详细请看:help Close
+noremap <C-c> :close<CR>
+inoremap <C-c> <ESC>:close<CR>
+vnoremap <C-c> <ESC>:close<CR>
 
 " NOTE: F10 looks like have some feature, when map with F10, the map will take no effects
 " Don't use Ex mode, use Q for formatting

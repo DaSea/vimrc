@@ -49,6 +49,7 @@ nnoremap <unique> <silent> <F3> :EXProjectToggle<cr>
 
 Plugin 'exvim/ex-gsearch'
 " ---------------------------------------------------
+let g:ex_gsearch_ignore_case = 0
 call exgsearch#register_hotkey( 100, 0, '<leader>gs', ":EXGSearchToggle<CR>", 'Toggle global search window.' )
 call exgsearch#register_hotkey( 101, 0, '<leader>gg', ":EXGSearchCWord<CR>", 'Search current word.' )
 call exgsearch#register_hotkey( 102, 0, '<leader><S-f>', ":GS ", 'Shortcut for :GS' )
@@ -86,7 +87,7 @@ call exqfix#register_hotkey( 101, 0, '<leader>qq', ":EXQFixPaste<CR>", 'Open qui
 
 " Plugin 'exvim/ex-hierarchy'
 " ---------------------------------------------------
-nnoremap <unique> <leader>hv :EXHierarchyCWord<CR>
+" nnoremap <unique> <leader>hv :EXHierarchyCWord<CR>
 
 Plugin 'exvim/ex-autocomplpop'
 " invoke when you input text
@@ -131,76 +132,36 @@ let c_gnu = 1
 let c_no_curly_error = 1
 let c_no_bracket_error = 1
 
-" ex-taglist: invoke by <leader>tl
-" ---------------------------------------------------
-Plugin 'exvim/ex-taglist'
-
-" F4:  Switch on/off TagList
-nnoremap <unique> <F4> :TlistToggle<CR>
-
-"let Tlist_Ctags_Cmd = $VIM.'/vimfiles/ctags.exe' " location of ctags tool
-let Tlist_Show_One_File = 1 " Displaying tags for only one file~
-let Tlist_Exist_OnlyWindow = 1 " if you are the last, kill yourself
-let Tlist_Use_Right_Window = 1 " split to the right side of the screen
-let Tlist_Sort_Type = "order" " sort by order or name
-let Tlist_Display_Prototype = 0 " do not show prototypes and not tags in the taglist window.
-let Tlist_Compart_Format = 1 " Remove extra information and blank lines from the taglist window.
-let Tlist_GainFocus_On_ToggleOpen = 1 " Jump to taglist window on open.
-let Tlist_Display_Tag_Scope = 1 " Show tag scope next to the tag name.
-let Tlist_Close_On_Select = 0 " Close the taglist window when a file or tag is selected.
-let Tlist_BackToEditBuffer = 0 " If no close on select, let the user choose back to edit buffer or not
-let Tlist_Enable_Fold_Column = 0 " Don't Show the fold indicator column in the taglist window.
-let Tlist_WinWidth = 40
-let Tlist_Compact_Format = 1 " do not show help
-" let Tlist_Ctags_Cmd = 'ctags --c++-kinds=+p --fields=+iaS --extra=+q --languages=c++'
-" very slow, so I disable this
-" let Tlist_Process_File_Always = 1 " To use the :TlistShowTag and the :TlistShowPrototype commands without the taglist window and the taglist menu, you should set this variable to 1.
-":TlistShowPrototype [filename] [linenumber]
-
-" add javascript language
-let tlist_javascript_settings = 'javascript;v:global variable:0:0;c:class;p:property;m:method;f:function;r:object'
-" add hlsl shader language
-let tlist_hlsl_settings = 'c;d:macro;g:enum;s:struct;u:union;t:typedef;v:variable;f:function'
-" add actionscript language
-let tlist_actionscript_settings = 'actionscript;c:class;f:method;p:property;v:variable'
-
 " }}}
 
 " 文件导航 {{{
+Plugin 'Shougo/unite.vim'
+Plugin 'Shougo/neomru.vim'
+Plugin 'Shougo/vimproc.vim'
+Plugin 'Shougo/vimfiler.vim'
 
-Plugin 'scrooloose/nerdtree'
-" Invoke by :NERDTreeToggle
-" ---------------------------------------------------
-let g:NERDChristmasTree=1
-let g:NERDTreeAutoCenter=1
-let g:NERDTreeShowFiles=1
-let g:NERDTreeShowHidden=1
-let g:NERDTreeWinSize = 30
-let g:NERDTreeMouseMode = 2
-let g:NERDTreeMapToggleZoom = '<Space>'
-" 常规模式下输入 F2 调用插件
-nmap <F2> :NERDTreeToggle<CR>
+" 最近文件
+nnoremap <silent> <CR> :Unite -start-insert file_mru<CR>
+" 文件查找
+nnoremap <silent> <C-p> :<C-u>Unite -start-insert file_rec<CR>
+" nnoremap <C-p> :<C-u>Unite -start-insert file_rec/async<CR>
+" 打开的buffer查找
+nnoremap <silent> <M-b> :Unite buffer<CR>
 
-" ---------------------------------------------------
-" Plugin 'jistr/vim-nerdtree-tabs'
-" advanced nerdtree
-" ---------------------------------------------------
-" let g:nerdtree_tabs_open_on_console_startup=0
-" let g:nerdtree_tabs_open_on_gui_startup=0
+" 文件内搜索
+nnoremap <silent> <leader>g :<C-u>Unite grep:. -buffer-name=search-buffer<CR>
+if executable('pt.exe')
+  let g:unite_source_grep_command = 'pt.exe'
+  let g:unite_source_grep_default_opts = '--nogroup --nocolor'
+  let g:unite_source_grep_recursive_opt = ''
+  let g:unite_source_grep_encoding = 'utf-8'
+endif
 
-" ctrlp: invoke by <ctrl-p>
-Plugin 'kien/ctrlp.vim'
-"---------------------------------------------------------------------
-let g:ctrlp_working_path_mode = ''
-let g:ctrlp_match_window = 'top,order:ttb,min:1,max:10,results:10'
-let g:ctrlp_follow_symlinks = 2
-let g:ctrlp_max_files = 0 " Unset cap of 10,000 files so we find everything
-  let g:ctrlp_custom_ignore = {
-    \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-    \ 'file': '\v\.(exe|so|dll|png|bmp|sln|ini|obj|lib|ref|sln|psd)$',
-    \ 'link': 'SOME_BAD_SYMBOLIC_LINKS',
-    \}
-nnoremap <unique> <leader>bs :CtrlPBuffer<CR>
+" 替换nertw
+nnoremap <F2> :VimFilerExplorer<CR>
+nnoremap <leader>fd :VimFilerExplorer file:D:/Develop/<cr>
+nnoremap <leader>fg :VimFilerExplorer file:G:/<cr>
+let g:vimfiler_as_default_explorer = 1
 
 " -----------------------------------------------------------------------------
 Plugin 'vim-scripts/a.vim'
@@ -210,35 +171,40 @@ Plugin 'vim-scripts/a.vim'
 " :AV    ---切换头文件并垂直分割窗口
 " :AS    ---切换头文件并水平分割窗口
 nnoremap <silent> <F12> :A<CR>
+nnoremap <silent> <M-o> :A<CR>
 
 " -----------------------------------------------------------------------------
-Plugin 'vim-scripts/mru.vim'
+" 任意搜索
+Plugin 'sgur/unite-everything'
 " -----------------------------------------------------------------------------
-if g:isGUI
-    nmap <CR> :MRU<CR>
-else
-    nmap <leader>fl :MRU<CR>
-endif
-
-" ---------------------------------------------------
-Plugin 'vim-scripts/LargeFile'
-" ---------------------------------------------------
-let g:LargeFile= 5 " files >= 5MB will use LargeFile rules
-
+" 显示数量
+let g:unite_source_everything_limit = 20
+" 设置为1, 为全路径搜索
+let g:unite_source_everything_full_path_search = 0
+" 设置为1则使用正则搜索
+let g:unite_source_everything_posix_regexp_search = 0
+" 设置为1则对结果进行路径排序
+let g:unite_source_everything_sort_by_full_path = 0
+" 设置为1则大小写敏感
+let g:unite_source_everything_case_sensitive_search = 0
+" 设置everything路径
+let g:unite_source_everything_cmd_path = 'D:/program files/Everything/Everything.exe'
+" 设置异步搜索的最小长度
+let g:unite_source_everything_async_minimum_length = 3
 " }}}
 
 "  文件内跳转{{{
 
-Plugin 'tacahiroy/ctrlp-funky'
+Plugin 'Shougo/unite-outline'
 "---------------------------------------------------------------------
-nnoremap <m-m> :CtrlPFunky<CR>
-" nnoremap <F4> :CtrlPFunky<CR>
-nnoremap <m-w> :execute 'CtrlPFunky '. expand('<cword>')<CR>
+nnoremap <m-m> :Unite outline<CR>
+nnoremap <F4> :Unite outline<CR>
 
 " ---------------------------------------------------
 Plugin 'Lokaltog/vim-easymotion'
 " Invoke by <leader><leader> w,b,e,ge,f,F,h,i,j,k,/
 " ---------------------------------------------------
+map <Leader> <Plug>(easymotion-prefix)
 map <leader><leader>/ <Plug>(easymotion-sn)
 omap <leader><leader>/ <Plug>(easymotion-tn)
 map <leader><leader>j <Plug>(easymotion-j)ap <leader><leader>k <Plug>(easymotion-k)
@@ -274,28 +240,15 @@ let g:NERDCustomDelimiters = {
 map <unique> <F11> <Plug>NERDCommenterAlignBoth
 map <unique> <C-F11> <Plug>NERDCommenterUncomment
 
-" -----------------------------------------------------------------------------
 Plugin 'vim-scripts/DoxygenToolkit.vim'
-" -----------------------------------------------------------------------------
-map <F6>a :D oxAuthor<CR>
-map <F6>f :D ox<CR>
-map <F6>b :D oxBlock<CR>
-map <F6>l :D oxLic<CR>
-map <F6>c odocClass<C-B>
-map <F6>m odocMember<C-B>
-
-let s:licenseTag = "Copyright(C)\<enter>"
-let s:licenseTag = s:licenseTag . "For free\<enter>"
-let s:licenseTag = s:licenseTag . "All right reserved\<enter>"
-let g:DoxygenToolkit_licenseTag = 'GPL 2.0'
-let g:DoxygenToolkit_briefTag_funcName="yes"
-let g:Doxygen_enhanced_color=1
-let g:DoxygenToolkit_briefTag_pre="@Synopsis "
-let g:DoxygenToolkit_paramTag_pre="@Param "
-let g:DoxygenToolkit_returnTag="@Returns "
-" let g:DoxygenToolkit_blockHeader="-----------------------------------------------------------------------------"
-" let g:DoxygenToolkit_blockFooter="-----------------------------------------------------------------------------"
-let g:DoxygenToolkit_authorName="Dasea"
+let g:DoxygenToolkit_commentType = "C++"
+let g:DoxygenToolkit_briefTag_pre="@Brief  "
+let g:DoxygenToolkit_paramTag_pre="@Param  "
+let g:DoxygenToolkit_returnTag="@Return "
+let g:DoxygenToolkit_blockHeader="--------------------------------------------------------------------------"
+let g:DoxygenToolkit_blockFooter="--------------------------------------------------------------------------"
+let g:DoxygenToolkit_authorName="DaSea"
+let g:DoxygenToolkit_licenseTag="None"
 
 "}}}
 
@@ -343,16 +296,76 @@ let g:cpp_experimental_template_highlight = 1
 " python相关 {{{
 
 " -----------------------------------------------------------------------------
-Plugin 'rkulla/pydiction'
+" Plugin 'rkulla/pydiction'
 " -----------------------------------------------------------------------------
-filetype plugin on
-let g:pydiction_location = $VIM.'/vimfiles/bundle/pydiction/complete-dict'
-let g:pydiction_menu_height = 3
+" let g:pydiction_location = $VIM.'/vimfiles/bundle/pydiction/complete-dict'
+" let g:pydiction_menu_height = 3
 
 "}}}
 
 " 界面相关{{{
+" ----------------------------------------------------
+" 状态栏使用airline还是lightline
+let g:statusline="lightline"
+if g:statusline !=? "airline"
+    " ---------------------------------------------------
+    Plugin 'itchyny/lightline.vim'
+    " ---------------------------------------------------
+    let g:lightline = {
+                \ 'colorscheme': 'solarized',
+                \ 'component':{'readonly': '%{&readonly?"":""}'},
+                \ 'active': {
+                \   'left': [ [ 'mode'], ['readonly', 'filename', 'modified' ] ]
+                \ },
+                \ 'component_function': {
+                \   'readonly': 'LightLineReadonly',
+                \   'modified': 'LightLineModified'
+                \ },
+                \ 'separator': {'left': '', 'right': ''}, 
+                \ 'subseparator': {'left': '', 'right': ''}
+                \ }
 
+    function! LightLineModified()
+        if &filetype == "help"
+            return ""
+        elseif &modified
+            return "*"
+        elseif &modifiable
+            return "+"
+        else
+            return "?"
+        endif
+    endfunction
+
+    function! LightLineReadonly()
+        if &filetype == "help"
+            return ""
+        elseif &readonly
+            return ""
+        else
+            return ""
+        endif
+    endfunction
+else
+    Plugin 'bling/vim-airline'
+    " airline 设置
+    let g:airline_extensions = ['tabline', 'unite', 'quickfix']
+    let g:airline_powerline_fonts = 1
+    if !exists('g:ariline_symbols')
+        let g:airline_symbols = {}
+    endif
+    let g:airline_left_sep = ''
+    let g:airline_left_alt_sep = ''
+    let g:airline_right_sep = ''
+    let g:airline_right_alt_sep = ''
+    let g:airline_symbols.branch = ''
+    let g:airline_symbols.readonly = ''
+    let g:airline_symbols.linenr = ''
+    " tabline设置
+    let g:airline#extensions#tabline#formatter = 'unique_tail'
+    let g:airline#extensions#tabline#enabled = 1
+    let g:airline_theme = 'bubblegum'
+endif
 " ---------------------------------------------------
 Plugin 'Yggdroot/indentLine'
 " : 对齐插件
@@ -368,13 +381,23 @@ Plugin 'altercation/vim-colors-solarized'
 
 "}}}
 
-" Markdown{{{
+""VIM关闭问题{{{
+Plugin 'moll/vim-bbye'
+if g:isGUI
+    noremap <M-q> :Bdelete<CR>
+    inoremap <M-q> <ESC>:Bdelete<CR>
+    vnoremap <M-q> <ESC>:Bdelete<CR>
+endif
+noremap <leader>qb :Bdelete<CR>
+inoremap <leader>qb <ESC>:Bdelete<CR>
+vnoremap <leader>qb <ESC>:Bdelete<CR>
+""}}}
 
-Plugin 'plasticboy/vim-markdown'
-" ---------------------------------------------------
-let g:vim_markdown_initial_foldlevel=9999
-
-"}}}
+"""vim session{{{
+Plugin 'Shougo/unite-session'
+" :UniteSessionSave <session-name>
+" :UniteSessionLoad <session-name>
+"""}}}
 
 " vim文档及WIKI{{{
 
@@ -386,38 +409,101 @@ Plugin 'asins/vimcdoc'
 let helptags=$VIM."/vimfiles/doc"
 set helplang=cn
 
-" -----------------------------------------------------------------------------
-"  Plugin 'vimwiki/vimwiki'
-" -----------------------------------------------------------------------------
-"let g:vimwiki_list = [{'path':'G:/Code/github/DaseaWiki/',
-            " \'template_path' : 'G:/Code/github/DaseaWiki/template/',
-            " \'template_default' : 'default_template',
-            " \'template_ext' : '.html',
-            " \'path_html': 'G:/Code/github/DaseaWiki/html/'}]
-" 对中文用户来说，我们并不怎么需要驼峰英文成为维基词条
-" let g:vimwiki_camel_case = 0
-" 标记为完成的 checklist 项目会有特别的颜色
-" let g:vimwiki_hl_cb_checked = 1
-" vim 是没有菜单的，加一个 vimwiki 菜单项也没有意义
-" let g:vimwiki_menu = ''
-" 是否开启按语法折叠  会让文件比较慢
-" let g:vimwiki_folding = 0
-" 是否在计算字串长度时用特别考虑中文字符
-" let g:vimwiki_CJK_length = 1
-" 详见下文...
-" let g:vimwiki_valid_html_tags='b,i,s,u,sub,sup,kbd,del,br,hr,div,code,h1'
-" map <S-F5> :VimwikiAll2HTML<cr>
-" map <F5> :Vimwiki2HTML<cr>
-
 "}}}
 
 " 内容完成 {{{
 " -----------------------------------------------------------------------------
 Plugin 'jiangmiao/auto-pairs'
 " -----------------------------------------------------------------------------
+" -----------------------------------------------------------------------------
 " 用于括号与引号自动补全
 
+" -----------------------------------------------------------------------------
+" 自动完成引擎
+if has("lua")
+    Plugin 'Shougo/neocomplete'
+else
+    Plugin 'Shougo/neocomplcache'
+endif
+Plugin 'Shougo/neosnippet'
+Plugin 'Shougo/neosnippet-snippets'
+" Plugin key-mappings.
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
+
+" Disable AutoComplPop.
+let g:acp_enableAtStartup = 0
+" Use neocomplete.
+let g:neocomplete#enable_at_startup = 1
+" Use smartcase.
+let g:neocomplete#enable_smart_case = 1
+" Set minimum syntax keyword length.
+let g:neocomplete#sources#syntax#min_keyword_length = 3
+let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+" Define dictionary.
+let g:neocomplete#sources#dictionary#dictionaries = {
+    \ 'default' : ''
+        \ }
+" Define keyword.
+if !exists('g:neocomplete#keyword_patterns')
+    let g:neocomplete#keyword_patterns = {}
+endif
+let g:neocomplete#keyword_patterns['default'] = '\h\w*'
+" Plugin key-mappings.
+inoremap <expr><C-g>     neocomplete#undo_completion()
+inoremap <expr><C-l>     neocomplete#complete_common_string()
+
+" Recommended key-mappings.
+" <CR>: close popup and save indent.
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function()
+  return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+  " For no inserting <CR> key.
+  "return pumvisible() ? "\<C-y>" : "\<CR>"
+endfunction
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+" <C-h>, <BS>: close popup and delete backword char.
+inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+" Close popup by <Space>.
+"inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
+
+" AutoComplPop like behavior.
+"let g:neocomplete#enable_auto_select = 1
+" Shell like behavior(not recommended).
+"set completeopt+=longest
+" let g:neocomplete#enable_auto_select = 1
+"let g:neocomplete#disable_auto_complete = 1
+"inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
+
+" Enable heavy omni completion.
+if !exists('g:neocomplete#sources#omni#input_patterns')
+  let g:neocomplete#sources#omni#input_patterns = {}
+endif
+"let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+"let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+
+" SuperTab like snippets behavior.
+"imap <expr><TAB>
+" \ pumvisible() ? "\<C-n>" :
+" \ neosnippet#expandable_or_jumpable() ?
+" \    "\<TAB>" : "\<Plug>(neosnippet_expand_or_jump)"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+
+" For conceal markers.
+if has('conceal')
+  set conceallevel=2 concealcursor=niv
+endif
+
 "}}}
+
+"""模板插件{{{
+Plugin 'aperezdc/vim-template'
+"""}}}
 
 " TEST {{{
 " " test-loading
