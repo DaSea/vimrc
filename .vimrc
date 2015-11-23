@@ -26,23 +26,10 @@ endif
 
 set nocompatible " be iMproved, required，不使用vi模式
 
-function! OSX()
-    " return has('macunix')
-    return g:ismac
-endfunction
-function! LINUX()
-    " return has('unix') && !has('macunix') && !has('win32unix')
-    return g:islinux
-endfunction
-function! WINDOWS()
-    " return  (has('win16') || has('win32') || has('win64'))
-    return g:iswindows
-endfunction
-
 " On Windows, also use '.vim' instead of 'vimfiles'; this makes synchronization
 " across (heterogeneous) systems easier.
 if !exists('g:exvim_custom_path')
-    if WINDOWS()
+    if g:iswindows
         set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
     endif
 endif
@@ -56,9 +43,9 @@ endif
 set langmenu=none
 
 " use English for anaything in vim-editor.
-if WINDOWS()
+if g:iswindows
     silent exec 'language english'
-elseif OSX()
+elseif g:ismac
     silent exec 'language en_US'
 else
     let s:uname = system("uname -s")
@@ -72,7 +59,7 @@ else
 endif
 
 " try to set encoding to utf-8
-if WINDOWS()
+if g:iswindows
     " Be nice and check for multi_byte even if the config requires
     " multi_byte support most of the time
     if has('multi_byte')
@@ -87,16 +74,14 @@ if WINDOWS()
         " fallback into cp1252 instead of eg. iso-8859-15.
         " Newer Windows files might contain utf-8 or utf-16 LE so we might
         " want to try them first.
-	set fileencodings=utf-8,cp936,gbk,gb2312,gb18030,utf-16le,cp1252,ucs-bom,iso-8859-15
+        set fileencodings=utf-8,cp936,gbk,gb2312,gb18030,utf-16le,cp1252,ucs-bom,iso-8859-15
     endif
-
 else
     " set default encoding to utf-8
     set encoding=utf-8
     set termencoding=utf-8
 endif
 scriptencoding utf-8
-
 "}}}
 
 "/////////////////////////////////////////////////////////////////////////////
@@ -104,7 +89,6 @@ scriptencoding utf-8
 "/////////////////////////////////////////////////////////////////////////////
 " vundle#begin
 filetype off " required
-let mapleader=";"
 " set the runtime path to include Vundle
 if exists('g:exvim_custom_path')
     let g:ex_tools_path = g:exvim_custom_path.'/vimfiles/tools/'
@@ -142,27 +126,10 @@ syntax on " required
 "}}}
 
 "/////////////////////////////////////////////////////////////////////////////
-" Default colorscheme setup 颜色方案设置{{{
-"/////////////////////////////////////////////////////////////////////////////
-if g:isGUI
-    if  strftime("%H") >= 18
-        set background=dark
-    else
-        set background=light
-    endif
-    colorscheme solarized
-else
-    set background=dark
-    set t_Co=256 " make sure our terminal use 256 color
-    let g:solarized_termcolors = 256
-    colorscheme molokai
-endif
-" }}}
-
-"/////////////////////////////////////////////////////////////////////////////
 " 备份及 历史等设置{{{
 "/////////////////////////////////////////////////////////////////////////////
-"set path=.,/usr/include/*,, " where gf, ^Wf, :find will search
+" where gf, ^Wf, :find will search
+set path +=.,D:/Develop/Java/android-ndk-r10/platforms/android-14/arch-arm/usr/include,D:/Develop/Java/android-ndk-r10/sources/cxx-stl/gnu-libstdc++/4.6/include
 "set backup " make backup file and leave it around
 set nobackup
 
@@ -225,13 +192,13 @@ if has('gui_running')
         elseif has('x11')
             " Also for GTK 1
             set guifont=*-lucidatypewriter-medium-r-normal-*-*-180-*-*-m-*-*
-        elseif OSX()
+        elseif g:ismac
             if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
                 set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h15
             elseif getfontname( 'DejaVu Sans Mono' ) != ''
                 set guifont=DejaVu\ Sans\ Mono:h15
             endif
-        elseif WINDOWS()
+        elseif g:iswindows
             if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
                 set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h11:cANSI
             elseif getfontname( 'Microsoft YaHei Mono' ) != ''
@@ -277,7 +244,7 @@ if has('gui_running')
     endif
 
     " DISABLE
-    if WINDOWS()
+    if g:iswindows
         au GUIEnter * simalt ~x " Maximize window when enter vim
     else
         " TODO: no way right now
@@ -309,6 +276,9 @@ func! CurModeStr()
 
     return modeStr
 endfunc
+
+" 禁止光标闪烁(设置此项后光标显示块状)
+" set gcr=a:block-blinkon0
 
 " 显示/隐藏菜单栏、工具栏、滚动条，可用 Ctrl + F11 切换
 if g:isGUI
@@ -370,6 +340,25 @@ endif
 
 "}}}
 
+"/////////////////////////////////////////////////////////////////////////////
+" Default colorscheme setup 颜色方案设置{{{
+" g:statuscheme 状态栏配色
+"/////////////////////////////////////////////////////////////////////////////
+if g:isGUI
+    if strftime("%H") >= 17
+        set background=dark
+    else
+        set background=light
+    endif
+    colorscheme solarized
+else
+    set background=dark
+    set t_Co=256 " make sure our terminal use 256 color
+    let g:solarized_termcolors = 256
+    colorscheme molokai
+endif
+" }}}
+
 " ==============================================================================
 " 编辑相关设置(edit text setting){{{
 " ==============================================================================
@@ -406,12 +395,16 @@ set ve=block " in visual block mode, cursor can be positioned where there is no 
 " like 007, it would not become 010
 set nf=
 
+" set vim-clang preview buffer position
+set splitbelow
+set splitright
+
 " ==============================================================================
 " Desc: Fold text
 " ==============================================================================
-"set foldenable                                        "启用折叠
+set foldenable                                        "启用折叠
 set foldmethod=indent                                 "indent 折叠方式
-set foldlevel=3
+set foldlevel=5
 " set foldmethod=marker foldmarker={,} foldlevel=9999
 " set foldmethod=syntax
 set diffopt=filler,context:9999
@@ -419,12 +412,44 @@ set diffopt=filler,context:9999
 nnoremap <space> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
 " ==============================================================================
-" 自己加的的配置
+" 行列设置
 "===============================================================================
 set textwidth=100
 set cc=+1       " 对齐线，当一行的长度大于80时显示一条竖线
 set cuc         " 高亮当前列
 set cursorline  " 高亮当前行
+
+" ==============================================================================
+" 显示不可打印字符
+"===============================================================================
+set list
+set listchars=tab:▸\ ,extends:❯,precedes:❮,nbsp:␣
+set showbreak=↪
+" For conceal markers.
+if has('conceal')
+    set conceallevel=2 concealcursor=niv
+endif
+
+" ==============================================================================
+" 过滤设置
+"===============================================================================
+" 不显示preview 窗口
+set completeopt-=preview
+
+" set wildmode=list:longest,full
+" set wildmenu "turn on wild menu
+set wildignore=*.o,*.obj,*.exe,*~ "stuff to ignore when tab completing
+set wildignore+=*/debug/**
+set wildignore+=*/release/**
+set wildignore+=*.gem
+set wildignore+=*/log/**
+set wildignore+=*/tmp/**
+set wildignore+=*/obj/**
+set wildignore+=*/libs/**
+set wildignore+=*/res/**
+set wildignore+=*.png,*.jpg,*.gif
+set wildignore+=*.so,*.dll,*.a,*.swp,*.zip,*.pdf,*.dmg,*.bak,*.class,*.pyc
+set wildignore+=*/.nx/**,*.app
 
 " }}}
 
@@ -550,18 +575,26 @@ iabbrev mmail dhf0214@126.com
 " inoremap jk <ESC>
 " vnoremap jk <ESC>
 " noremap jk  <ESC>
+" 行首和行尾
+nmap <Leader>lb ^
+nmap <Leader>le $
+" 结对符之间跳转，助记pair
+nmap <Leader>pa %
 
 "===================================================
 " 常规模式下输入 cS 清除行尾空格
-nmap CS :%s/\s\+$//g<CR>:noh<CR>
+" 用vim-trailing-whitespace 插件取代
+" nmap CS :%s/\s\+$//g<CR>:noh<CR>
 " 常规模式下输入 cM 清除行尾 ^M 符号
 nmap CM :%s/\r$//g<CR>:noh<CR>
+" tab 转空格(tab to space)
+noremap <leader>tts :%ret! 4<CR>
 
 "===================================================
 " 将当前光标下单词转换成大写
-" noremap <c-U> viwU
-" inoremap <c-U> <ESC>viwU
-" vnoremap <c-U> <ESC>viwU
+noremap <leader>wu viwU
+inoremap <leader>wu <ESC>viwU
+vnoremap <leader>wu <ESC>viwU
 
 " 高亮当前光标下单词
 " *
@@ -586,7 +619,7 @@ endif
 
 "===================================================
 " VIM 打开的时候加载那个路径
-" silent! cd G:\
+silent! cd D:/Develop/exVim
 
 "===================================================
 " 保存文件设置 <leader>s 一键保存
@@ -597,6 +630,11 @@ vnoremap <C-s> <ESC>:w<CR>
 noremap <C-c> :close<CR>
 inoremap <C-c> <ESC>:close<CR>
 vnoremap <C-c> <ESC>:close<CR>
+noremap <leader>mc :close<CR>
+" 增加窗口宽度window increase
+noremap <leader>iw 20<C-w>|
+" 增加窗口高度
+noremap <leader>dw 20<C-w>_
 
 " NOTE: F10 looks like have some feature, when map with F10, the map will take no effects
 " Don't use Ex mode, use Q for formatting
@@ -639,15 +677,10 @@ nnoremap <S-Up> <C-W><Up>
 nnoremap <S-Down> <C-W><Down>
 nnoremap <S-Left> <C-W><Left>
 nnoremap <S-Right> <C-W><Right>
-
-" easy buffer navigation
-" NOTE: if we already map to EXbn,EXbp. skip setting this
-if !hasmapto(':EXbn<CR>') && mapcheck('<C-l>','n') == ''
-    nnoremap <C-l> :bn<CR>
-endif
-if !hasmapto(':EXbp<CR>') && mapcheck('<C-h>','n') == ''
-    noremap <C-h> :bp<CR>
-endif
+nnoremap <leader>kw <C-W><Up>
+nnoremap <leader>jw <C-W><Down>
+nnoremap <leader>hw <C-W><Left>
+nnoremap <leader>lw <C-W><Right>
 
 " easy diff goto
 noremap <C-k> [c
@@ -667,7 +700,7 @@ noremap <Down> gj
 " Then when you put the cursor on or in a word, press "\sw", and
 " the word will be swapped with the next word.  The words may
 " even be separated by punctuation (such as "abc = def").
-nnoremap <silent> <leader>sw "_yiw:s/\(\%#\w\+\)\(\W\+\)\(\w\+\)/\3\2\1/<cr><c-o>
+nnoremap <silent> <leader>ltr "_yiw:s/\(\%#\w\+\)\(\W\+\)\(\w\+\)/\3\2\1/<cr><c-o>
 
 "}}}
 
