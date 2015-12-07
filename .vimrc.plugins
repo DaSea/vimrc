@@ -26,8 +26,6 @@ nnoremap <unique> <leader>ve :call exconfig#edit_cur_vimentry ()<CR>
 Plugin 'exvim/ex-utility'
 " ---------------------------------------------------
 nnoremap <unique> <silent> <Leader>bd :EXbd<CR>
-" nnoremap <unique> <silent> <C-l> :EXbn<CR>
-" nnoremap <unique> <silent> <C-h> :EXbp<CR>
 nnoremap <unique> <silent> <leader>bn :EXbn<CR>
 nnoremap <unique> <silent> <leader>bp :EXbp<CR>
 nnoremap <unique> <silent> <C-Tab> :EXbalt<CR>
@@ -36,17 +34,14 @@ nmap <unique> <silent> <Leader><Esc> :EXgp<CR><ESC>
 
 Plugin 'exvim/ex-aftercolors'
 " ---------------------------------------------------
-
 Plugin 'exvim/ex-vimentry'
 " ---------------------------------------------------
-
 Plugin 'exvim/ex-project'
 " ---------------------------------------------------
 let g:ex_project_winpos='left'
 let g:ex_project_winsize=28
 let g:ex_project_winsize_zoom=40
 nnoremap <unique> <silent> <F3> :EXProjectToggle<cr>
-
 
 Plugin 'exvim/ex-gsearch'
 " ---------------------------------------------------
@@ -163,17 +158,15 @@ nnoremap <silent> <Leader>fy :<C-u>Unite -buffer-name=yank -start-insert history
 " 定义unite窗口的位置
 " -direction = dynamictop dynamicbottom aboveleft topleft belowright botright
 " 最近文件
-nnoremap <silent> <CR> :<C-u>Unite -no-split -buffer-name=mru -start-insert file_mru<CR>
+nnoremap <silent> <leader>jf :<C-u>Unite -no-split -buffer-name=mru -start-insert file_mru<CR>
 " 文件查找
 nnoremap <silent> <C-p> :<C-u>Unite -no-split -buffer-name=files -start-insert -update-time=100 file_rec<CR>
 nnoremap <silent> <leader>ft :<C-u>Unite -no-split -buffer-name=files -start-insert file_rec/async:!<CR>
 nnoremap <silent> <leader>fs :Unite -no-split file_rec/async<cr>
 " 打开的buffer查找
-nnoremap <silent> <M-b> :<C-u>Unite -buffer-name=buffer buffer<CR>
 nnoremap <silent> <leader>fl :<C-u>Unite -buffer-name=buffer buffer<CR>
-
 " 文件内搜索
-nnoremap <silent> <leader>g :<C-u>Unite grep:. -buffer-name=search-buffer<CR>
+nnoremap <silent> <leader>gw :<C-u>Unite grep:. -buffer-name=search-buffer<CR>
 if executable("pt")
   let g:unite_source_grep_command = 'pt'
   let g:unite_source_grep_default_opts = '-nogroup -nocolor'
@@ -195,8 +188,9 @@ Plugin 'vim-scripts/a.vim'
 " :A     ---切换头文件并独占整个窗口
 " :AV    ---切换头文件并垂直分割窗口
 " :AS    ---切换头文件并水平分割窗口
-nnoremap <silent> <F12> :vsplit<CR>:A<CR>
-nnoremap <silent> <leader>ch :A<CR>
+nnoremap <silent> <leader>ah :A<CR>
+nnoremap <silent> <leader>av :AV<CR>
+nnoremap <silent> <leader>as :AS<CR>
 
 " -----------------------------------------------------------------------------
 " 任意搜索
@@ -259,7 +253,12 @@ let g:ctrlsf_indent = 2
 " width or height
 let g:ctrlsf_winsize = '30%'
 nnoremap <F5> :CtrlSFToggle<CR>
-nnoremap <leader>sw :CtrlSF <cword><CR>
+nnoremap <leader>sw :call CtrlsfCurWord(expand("<cword>"))<CR>
+function! CtrlsfCurWord(word) abort
+    echo "Current search word is: ".a:word
+    let search_word = a:word
+    execute "CtrlSF ".search_word
+endfunction
 
 "---------------------------------------------------------------------
 Plugin 'terryma/vim-multiple-cursors'
@@ -315,21 +314,22 @@ let g:NERDRemoveExtraSpaces = 1
 let g:NERDCustomDelimiters = {
             \ 'vimentry': { 'left': '--' },
             \ }
-map <unique> <F11> <Plug>NERDCommenterAlignBoth
-map <unique> <C-F11> <Plug>NERDCommenterUncomment
 
 " ---------------------------------------------------
-Plugin 'vim-scripts/DoxygenToolkit.vim'
+Plugin 'DaSea/DoxygenToolkit.vim'
 " ---------------------------------------------------
-let g:DoxygenToolkit_commentType = "C++"
-let g:DoxygenToolkit_briefTag_pre="@Brief  "
-let g:DoxygenToolkit_paramTag_pre="@Param  "
-let g:DoxygenToolkit_returnTag="@Return "
-let g:DoxygenToolkit_blockHeader="--------------------------------------------------------------------------"
-let g:DoxygenToolkit_blockFooter="--------------------------------------------------------------------------"
+" let g:DoxygenToolkit_commentType = "C++"
+let g:DoxygenToolkit_briefTag_pre="@brief  "
+let g:DoxygenToolkit_paramTag_pre="@param  "
+let g:DoxygenToolkit_returnTag="@return "
+" let g:DoxygenToolkit_blockHeader="--------------------------------------------------------------------------"
+" let g:DoxygenToolkit_blockFooter="--------------------------------------------------------------------------"
 let g:DoxygenToolkit_authorName="DaSea"
 let g:DoxygenToolkit_licenseTag="None"
-
+let g:DoxygenToolkit_compactDoc="no"
+" map
+nnoremap <leader>di :DoxFunc<CR>
+nnoremap <Leader>df :DoxFile<CR>
 "}}}
 
 "  代码静态分析{{{
@@ -704,9 +704,9 @@ Plugin 'Shougo/neosnippet'
 Plugin 'Dasea/neosnippet-snippets'
 " Forked 'Shougo/neosnippet-snippets'
 " Plugin key-mappings.
-imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-xmap <C-k>     <Plug>(neosnippet_expand_target)
+imap <C-k> <Plug>(neosnippet_expand_or_jump)
+smap <C-k> <Plug>(neosnippet_expand_or_jump)
+xmap <C-k> <Plug>(neosnippet_expand_target)
 "}}}
 
 """ 代码格式化{{{
@@ -739,7 +739,7 @@ Plugin 'plasticboy/vim-markdown'
 " TEST {{{
 " " test-loading
 " echomsg "test-loading: .vimrc"
-" Plugin 'exvim/test-loading'
+" Plugin 'ex-tasklist'
 "}}}
 
 " vim:ts=4:sw=4:sts=4 et fdm=marker:

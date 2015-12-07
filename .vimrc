@@ -236,12 +236,12 @@ set titlestring=%t\ (%{expand(\"%:p:.:h\")}/)
 " set window size (if it's GUI)
 if has('gui_running')
     " set window's width to 130 columns and height to 40 rows
-    if exists('+lines')
-        set lines=40
-    endif
-    if exists('+columns')
-        set columns=130
-    endif
+    " if exists('+lines')
+        " set lines=40
+    " endif
+    " if exists('+columns')
+        " set columns=130
+    " endif
 
     " DISABLE
     if g:iswindows
@@ -602,7 +602,17 @@ vnoremap <leader>wu <ESC>viwU
 noremap <leader>nh :noh<cr>
 
 "===================================================
-" 上下切换
+" 当前文件中搜索光标下单词
+nnoremap <leader>lv :lv /<C-r>=expand("<cword>")<CR>/ %<CR>:lw<CR>
+" quickfix快捷键设置
+nnoremap <leader>cw :cw 10<CR>
+nnoremap <leader>cp :cp<CR>
+nnoremap <leader>cn :cn<CR>
+" location-list快捷键设置
+nnoremap <leader>ll :lw<CR>
+nnoremap <leader>ln :lne<CR>
+nnoremap <leader>lp :lp<CR>
+
 "===================================================
 " 编辑vim配置文件，并重新读取配置文件
 " 当.vimrc文件改变时,自动加载
@@ -619,7 +629,7 @@ endif
 
 "===================================================
 " VIM 打开的时候加载那个路径
-silent! cd D:/Develop/exVim
+" silent! cd D:/Develop/exVim
 
 "===================================================
 " 保存文件设置 <leader>s 一键保存
@@ -627,9 +637,6 @@ noremap  <C-s> :w<CR>
 inoremap <C-s> <ESC>:w<CR>
 vnoremap <C-s> <ESC>:w<CR>
 " 关闭当前窗口, 详细请看:help Close
-noremap <C-c> :close<CR>
-inoremap <C-c> <ESC>:close<CR>
-vnoremap <C-c> <ESC>:close<CR>
 noremap <leader>mc :close<CR>
 " 增加窗口宽度window increase
 noremap <leader>iw 20<C-w>|
