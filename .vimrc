@@ -350,17 +350,17 @@ if g:isGUI
     else
         set background=light
     endif
+    set background=dark
     colorscheme solarized
 else
     set background=dark
     set t_Co=256 " make sure our terminal use 256 color
-    let g:solarized_termcolors = 256
     colorscheme molokai
 endif
 " }}}
 
 " ==============================================================================
-" 编辑相关设置(edit text setting){{{
+" 编辑相关设置(edit text setting, viminfo){{{
 " ==============================================================================
 set ai " autoindent
 set si " smartindent
@@ -433,9 +433,8 @@ endif
 " ==============================================================================
 " 过滤设置
 "===============================================================================
-" 不显示preview 窗口
+" 不显示preview 窗口, 自动完成预览
 set completeopt-=preview
-
 " set wildmode=list:longest,full
 " set wildmenu "turn on wild menu
 set wildignore=*.o,*.obj,*.exe,*~ "stuff to ignore when tab completing
@@ -451,6 +450,10 @@ set wildignore+=*.png,*.jpg,*.gif
 set wildignore+=*.so,*.dll,*.a,*.swp,*.zip,*.pdf,*.dmg,*.bak,*.class,*.pyc
 set wildignore+=*/.nx/**,*.app
 
+" ==============================================================================
+" viminfo设置
+"===============================================================================
+set viminfo='300,f1,<100,:20,@20,/20,
 " }}}
 
 " ==============================================================================
@@ -618,12 +621,12 @@ nnoremap <leader>lp :lp<CR>
 " 当.vimrc文件改变时,自动加载
 " autocmd! bufwritepost .vimrc source ~/.vimrc
 if g:iswindows
-    nnoremap <leader>ev :vsplit $VIM\.vimrc<cr>
-    nnoremap <leader>evp :vsplit $VIM\.vimrc.plugins<cr>
+    nnoremap <leader>ev :e $VIM\.vimrc<cr>
+    nnoremap <leader>evp :e $VIM\.vimrc.plugins<cr>
     nnoremap <leader>sv :source $MYVIMRC<cr>
 else
-    nnoremap <leader>ev :vsplit $MYVIMRC<cr>
-    nnoremap <leader>evp :vsplit $VIM/.vimrc.plugins<cr>
+    nnoremap <leader>ev :e $MYVIMRC<cr>
+    nnoremap <leader>evp :e $VIM/.vimrc.plugins<cr>
     nnoremap <leader>sv :source $MYVIMRC<cr>
 endif
 
