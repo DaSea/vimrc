@@ -586,7 +586,6 @@ nmap <Leader>pa %
 
 "===================================================
 " 常规模式下输入 cS 清除行尾空格
-" 用vim-trailing-whitespace 插件取代
 " nmap CS :%s/\s\+$//g<CR>:noh<CR>
 " 常规模式下输入 cM 清除行尾 ^M 符号
 nmap CM :%s/\r$//g<CR>:noh<CR>

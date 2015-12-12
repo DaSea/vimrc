@@ -125,19 +125,60 @@ let c_no_bracket_error = 1
 
 " }}}
 
-" 文件导航(unite) {{{
+" 版本控制(git,svn){{{
+" 使用git
+Plugin 'tpope/vim-fugitive'
+
+" =================================================================
+" 显示与版本控制中的文件的差异
+let g:show_version_status = 'signify'
+if g:show_version_status !=? 'gitgutter'
+" 显示git文件显示情况
+    Plugin 'airblade/vim-gitgutter'
+    nmap ]h <Plug>GitGutterNextHunk
+    nmap [h <Plug>GitGutterPrevHunk
+    let g:gitgutter_realtime = 0
+    let g:gitgutter_eager = 0
+else
+    Plugin 'mhinz/vim-signify'
+    " let g:signify_disable_by_default = 1
+    let g:signify_cursorhold_insert     = 0
+    let g:signify_cursorhold_normal     = 1
+    let g:signify_update_on_bufenter    = 0
+    let g:signify_update_on_focusgained = 1
+    let g:signify_vcs_list = [ 'git', 'svn' ]
+    let g:signify_skip_filetype = [ 'vimfiler': 1, 'unite': 1, 'exproject': 1 ]
+    " ===============================================
+    nnoremap <leader>gt SignifyToggle
+    nnoremap <leader>gh SignifyToggleHighlight
+    nnoremap <leader>gr SignifyRefresh
+    nnoremap <leader>gd SignifyDebug
+    " hunk jumping
+    nmap <leader>gj <plug>(signify-next-hunk)
+    nmap <leader>gk <plug>(signify-prev-hunk)
+    " hunk text object
+    omap ic <plug>(signify-motion-inner-pending)
+    xmap ic <plug>(signify-motion-inner-visual)
+    omap ac <plug>(signify-motion-outer-pending)
+    xmap ac <plug>(signify-motion-outer-visual)
+
+endif
+"}}}
+
+" 文件导航(unite, a.vim) {{{
 Plugin 'Shougo/unite.vim'
 Plugin 'Shougo/neomru.vim'
 Plugin 'Shougo/vimproc.vim'
 Plugin 'Shougo/vimfiler.vim'
 Plugin 'Shougo/neoyank.vim'
 " 基本设置
+let g:unite_force_overwrite_statusline = 0
 " 设置匹配模式
 call unite#filters#matcher_default#use(['matcher_fuzzy'])
 " direction
 call unite#custom#profile('default', 'context', {
-	\   'direction': 'botright',
-	\ })
+            \   'direction': 'botright',
+            \ })
 let g:unite_source_file_mru_time_format = "%m/%d %T "
 let g:unite_source_directory_mru_limit = 100
 let g:unite_source_directory_mru_time_format = "%m/%d %T "
@@ -146,7 +187,7 @@ let g:unite_enable_ignore_case = 1
 let g:unite_enable_smart_case = 1
 "let g:unite_enable_start_insert=1
 let g:unite_source_history_yank_enable=1
-let g:unite_prompt='▷ '
+let g:unite_prompt='▷'
 let g:unite_winheight=25
 let g:unite_source_grep_default_opts = "-iRHn"
             \ . " --exclude='tags'"
@@ -180,12 +221,9 @@ let g:unite_launch_apps = [
             \ 'git push']
 let g:unite_source_menu_menus = {}
 let g:unite_source_menu_menus.git = {
-            \ 'description' : '            gestionar repositorios git
-            \                            ⌘ [espacio]g',
+            \ 'description' : 'gestionar repositorios git                   ⌘ [espacio]g'
             \}
 let g:unite_source_menu_menus.git.command_candidates = [
-            \['▷ tig                                                        ⌘ ,gt',
-            \'normal ,gt'],
             \['▷ git status       (Fugitive)                                ⌘ ,gs',
             \'Gstatus'],
             \['▷ git diff         (Fugitive)                                ⌘ ,gd',
@@ -196,7 +234,7 @@ let g:unite_source_menu_menus.git.command_candidates = [
             \'exe "silent Glog | Unite quickfix"'],
             \['▷ git blame        (Fugitive)                                ⌘ ,gb',
             \'Gblame'],
-            \['▷ git stage        (Fugitive)                                ⌘ ,gw',
+            \['▷ git add        (Fugitive)                                ⌘ ,gw',
             \'Gwrite'],
             \['▷ git checkout     (Fugitive)                                ⌘ ,go',
             \'Gread'],
@@ -257,11 +295,22 @@ nnoremap <silent> <leader>fl :<C-u>Unite -buffer-name=buffer buffer<CR>
 nnoremap <silent> <leader>gw :<C-u>Unite grep:. -buffer-name=search-buffer<CR>
 
 " 替换nertw(文件浏览器)
-" nnoremap <F2> :VimFilerExplorer<CR>
-nnoremap <F2> :VimFilerExplorer -buffer-name=explorer<CR>
-nnoremap <leader>fd :VimFilerExplorer -buffer-name=explorer file:D:/Develop/<cr>
-nnoremap <leader>fg :VimFilerExplorer -buffer-name=explorer file:E:/<cr>
 let g:vimfiler_as_default_explorer = 1
+let g:vimfiler_force_overwrite_statusline = 0
+let g:vimfiler_min_cache_files = 500
+" Like Textmate icons.
+let g:vimfiler_tree_leaf_icon = '¦'
+let g:vimfiler_tree_opened_icon = '▾'
+let g:vimfiler_tree_closed_icon = '▸'
+let g:vimfiler_file_icon = '-'
+let g:vimfiler_readonly_file_icon = ''
+let g:vimfiler_marked_file_icon = '√'
+let g:vimfiler_expand_jump_to_first_child = 0
+let g:vimfiler_ignore_pattern = []
+nnoremap <F2> :VimFiler -buffer-name=explorer -split -toggle<CR>
+autocmd FileType vimfiler nmap <silent><buffer><expr> <CR> vimfiler#smart_cursor_map(
+\ "\<Plug>(vimfiler_expand_tree)",
+\ "\<Plug>(vimfiler_edit_file)")
 
 " -----------------------------------------------------------------------------
 Plugin 'vim-scripts/a.vim'
@@ -279,7 +328,6 @@ nnoremap <silent> <leader>as :AS<CR>
 
 Plugin 'Shougo/unite-outline'
 "---------------------------------------------------------------------
-nnoremap <F4> :Unite -start-insert -buffer-name=outline outline<CR>
 nnoremap <leader>fm :Unite -start-insert -no-split -buffer-name=outline outline<CR>
 
 " ---------------------------------------------------
@@ -288,7 +336,7 @@ Plugin 'Lokaltog/vim-easymotion'
 " ---------------------------------------------------
 let g:EasyMotion_smartcase = 1
 let g:EasyMotion_startofline = 0 " keep cursor colum when JK motion
-map <Leader> <Plug>(easymotion-prefix)
+" map <leader> <Plug>(easymotion-prefix)
 map <leader><leader>/ <Plug>(easymotion-sn)
 omap <leader><leader>/ <Plug>(easymotion-tn)
 map <leader><leader>j <Plug>(easymotion-j)
@@ -346,6 +394,10 @@ function! Multiple_cursors_after()
     exe 'NeoCompleteUnlock'
   endif
 endfunction
+"}}}
+
+"任务列表 {{{
+Plugin 'vim-scripts/TaskList.vim'
 "}}}
 
 "  内容注释及选择{{{
@@ -406,23 +458,11 @@ nnoremap <Leader>df :DoxFile<CR>
 " }}}
 
 " c++友好提升 {{{
-
 " -----------------------------------------------------------------------------
 Plugin 'octol/vim-cpp-enhanced-highlight'
 " -----------------------------------------------------------------------------
 let g:cpp_class_scope_highlight=1
 let g:cpp_experimental_template_highlight = 1
-
-"}}}
-
-" python相关 {{{
-
-" -----------------------------------------------------------------------------
-" Plugin 'rkulla/pydiction'
-" -----------------------------------------------------------------------------
-" let g:pydiction_location = $VIM.'/vimfiles/bundle/pydiction/complete-dict'
-" let g:pydiction_menu_height = 3
-
 "}}}
 
 " 界面相关{{{
@@ -431,6 +471,7 @@ let g:cpp_experimental_template_highlight = 1
 Plugin 'mhinz/vim-startify'
 " ----------------------------------------------------
 " set session path
+nnoremap <F4> :Startify<CR>
 let g:startify_session_dir = 'D:/Develop/exVim/vimfiles/session'
 let g:startify_list_order = [
             \ ['   MRU:'],
@@ -458,11 +499,18 @@ let g:startify_custom_header = [
 let g:startify_custom_footer = ['', "   可以做到,相信自己! ", '']
 
 " ----------------------------------------------------
-Plugin 'bronson/vim-trailing-whitespace'
-" 显示行尾空格
+" 显示行尾空格(better, trailing)
 " ----------------------------------------------------
-let g:extra_whitespace_ignored_filetypes = ['unite']
-noremap CS :FixWhitespace<CR>
+let g:whitespace_plugin = 'better'
+if g:whitespace_plugin !=? 'better'
+    Plugin 'bronson/vim-trailing-whitespace'
+    let g:extra_whitespace_ignored_filetypes = ['unite', 'vimfiler']
+    noremap CS :FixWhitespace<CR>
+else
+    Plugin 'ntpeters/vim-better-whitespace'
+    let g:better_whitespace_filetypes_blacklist = ['unite', 'vimfiler']
+    noremap CS :StripWhitespace<CR>
+endif
 
 " ----------------------------------------------------
 " 状态栏使用airline还是lightline
@@ -477,40 +525,84 @@ if g:statusline !=? "airline"
     " ---------------------------------------------------
     Plugin 'itchyny/lightline.vim'
     " ---------------------------------------------------
-    let g:lightline = {
-                \ 'colorscheme':g:statuscheme,
-                \ 'component':{'readonly': '%{&readonly?"":""}'},
-                \ 'active': {
-                \   'left': [ [ 'mode'], ['readonly', 'filename', 'modified' ] ]
+    let g:lightline ={
+                \ 'enable' :{
+                \ 'statusline': 1,
+                \ 'tabline': 0
                 \ },
+                \ 'colorscheme':g:statuscheme,
+                \ 'component':{
+                \ 'readonly': '%{&readonly?"":""}',
+                \   'lineinfo': '%3l:%-2v',
+                \ },
+                \ 'active': {
+                \ 'left': [ ['mode', 'paste'], ['fugitive'], ['filename', 'modified' ] ],
+                \ 'right': [ [ 'lineinfo' ], [ 'fileformat', 'fileencoding', 'filetype' ] ]
+                \ },
+                \ 'inactive': {
+                \ 'left': [['filename']],
+                \ 'right': [['lineinfo']]
+                \},
                 \ 'component_function': {
-                \   'readonly': 'LightLineReadonly',
-                \   'modified': 'LightLineModified'
+                \   'modified': 'LightLineModified',
+                \   'fugitive': 'LightLineFugitive',
+                \   'filename': 'LightLineFilename',
+                \   'mode': 'LightLineMode',
+                \   'filetype': 'LightLineFiletype',
+                \   'fileencoding': 'LightLineFileencoding',
+                \   'fileformat': 'LightLineFileformat'
                 \ },
                 \ 'separator': {'left': '', 'right': ''},
                 \ 'subseparator': {'left': '', 'right': ''}
                 \ }
 
+    function! LightLineFugitive()
+        if winwidth(0) > 70
+            if exists('*fugitive#head')
+                let githead = fugitive#head()
+                return strlen(githead) ? ''.'['.githead.']': ''
+            endif
+        endif
+            return ''
+    endfunction
+
+    function! LightLineFilename()
+        let fname = expand('%:t')
+        return '' != fname ? fname : '[No Name]'
+        " return &ft == 'vimfiler' ? vimfiler#get_status_string() :
+                    " \ &ft == 'unite' ? unite#get_status_string() :
+                    " \ &ft == 'vimshell' ? vimshell#get_status_string() :
+                    " \ ('' != fname ? fname : '[No Name]')
+    endfunction
+
+    function! LightLineMode()
+        return  winwidth(0) > 60 ? lightline#mode() : ''
+    endfunction
+
     function! LightLineModified()
-        if &filetype == "help"
-            return ""
-        elseif &modified
-            return "*"
-        elseif &modifiable
-            return "+"
+        if winwidth(0) > 70
+            if &filetype == "help"
+                return ""
+            elseif &modified
+                return "*"
+            elseif &modifiable
+                return "+"
+            else
+                return "?"
+            endif
         else
-            return "?"
+            return ''
         endif
     endfunction
 
-    function! LightLineReadonly()
-        if &filetype == "help"
-            return ""
-        elseif &readonly
-            return ""
-        else
-            return ""
-        endif
+    function! LightLineFileformat()
+        return winwidth(0) > 70 ? &fileformat : ''
+    endfunction
+    function! LightLineFiletype()
+        return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'Unkown') : ''
+    endfunction
+    function! LightLineFileencoding()
+        return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
     endfunction
 else
     Plugin 'bling/vim-airline'
@@ -543,12 +635,14 @@ let g:indentLine_char = '|'
 
 " ---------------------------------------------------
 Plugin 'altercation/vim-colors-solarized'
-" 配色设置
 " ---------------------------------------------------
 let g:solaried_bold = 1
 let g:solaried_underline = 1
 let g:solaried_italic = 0
 
+" ---------------------------------------------------
+Plugin 'ujihisa/unite-colorscheme'
+" ---------------------------------------------------
 "}}}
 
 ""VIM关闭问题{{{
@@ -566,17 +660,9 @@ Plugin 'asins/vimcdoc'
 " 设定doc文档目录
 let helptags=$VIM."/vimfiles/doc"
 set helplang=cn
-
 "}}}
 
 " 内容完成 {{{
-" -----------------------------------------------------------------------------
-Plugin 'jiangmiao/auto-pairs'
-" 用于括号与引号自动补全
-" -----------------------------------------------------------------------------
-" <A-p> 可以开启和关闭此功能
-nnoremap <leader>t[ %
-
 " -----------------------------------------------------------------------------
 " Plugin 'justmao945/vim-clang'
 " -----------------------------------------------------------------------------
@@ -615,6 +701,7 @@ if has("lua")
     let g:neocomplete#enable_at_startup = 1
     " Use smartcase.
     let g:neocomplete#enable_smart_case = 1
+    let g:neocomplete#max_list = 20
     " Set minimum syntax keyword length.
     let g:neocomplete#sources#syntax#min_keyword_length = 3
     let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
@@ -635,27 +722,27 @@ if has("lua")
     " <CR>: close popup and save indent.
     inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
     function! s:my_cr_function()
-        return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+        " return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
         " For no inserting <CR> key.
-        "return pumvisible() ? "\<C-y>" : "\<CR>"
+        return pumvisible() ? "\<C-y>" : "\<CR>"
     endfunction
+
     " <TAB>: completion.
-    inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+    " SuperTab like snippets behavior.
+    imap <expr><TAB> neosnippet#expandable_or_jumpable()?
+                \ "\<Plug>(neosnippet_expand_or_jump)":
+                \ (pumvisible() ? "\<C-n>" : "\<TAB>")
+    smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+                \ "\<Plug>(neosnippet_expand_or_jump)" :
+                \ "\<TAB>"
+
     " <C-h>, <BS>: close popup and delete backword char.
     inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
     inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
     " Close popup by <Space>.
     "inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
 
-    " AutoComplPop like behavior.
-    "let g:neocomplete#enable_auto_select = 1
-    " Shell like behavior(not recommended).
-    " let g:neocomplete#enable_auto_select = 1
-    "let g:neocomplete#disable_auto_complete = 1
-    "inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
-
     " let g:neocomplete#force_overwrite_completefunc = 1
-
     " Enable omni completion.
     autocmd FileType c,cpp setlocal omnifunc=omni#cpp#complete#Main
 
@@ -667,13 +754,12 @@ if has("lua")
     let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
     let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
 
-    " SuperTab like snippets behavior.
-    "imap <expr><TAB>
-    " \ pumvisible() ? "\<C-n>" :
-    " \ neosnippet#expandable_or_jumpable() ?
-    " \    "\<TAB>" : "\<Plug>(neosnippet_expand_or_jump)"
-    smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-                \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+    "if !exists('g:neocomplete#force_omni_input_patterns')
+    ""  let g:neocomplete#force_omni_input_patterns = {}
+    "endif
+    "let g:neocomplete#force_omni_input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
+    "let g:neocomplete#force_omni_input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
+
 else
     Plugin 'Shougo/neocomplcache'
     " Disable AutoComplPop.
@@ -765,12 +851,24 @@ else
 endif
 
 Plugin 'Shougo/neosnippet'
-Plugin 'Dasea/neosnippet-snippets'
-" Forked 'Shougo/neosnippet-snippets'
+Plugin 'Shougo/neosnippet-snippets'
+if g:iswindows
+    let g:neosnippet#snippets_directory=$VIM.'\snippets'
+else
+    let g:neosnippet#snippets_directory='~/.vim/snippets'
+endif
+let g:neosnippet#enable_complete_done = 1
+" let g:neosnippet#enable_snipmate_compatibility=1
 " Plugin key-mappings.
 imap <C-k> <Plug>(neosnippet_expand_or_jump)
 smap <C-k> <Plug>(neosnippet_expand_or_jump)
 xmap <C-k> <Plug>(neosnippet_expand_target)
+" define pairs
+inoremap <expr><silent> ;( neosnippet#anonymous('(${1})${0}')
+inoremap <expr><silent> ;" neosnippet#anonymous('"${1}"${0}')
+inoremap <expr><silent> ;{ neosnippet#anonymous('{${1}}${0}')
+inoremap <expr><silent> ;[ neosnippet#anonymous('[${1}]${0}')
+inoremap <expr><silent> ;' neosnippet#anonymous("'${1}'${0}")
 "}}}
 
 """ 代码格式化{{{
