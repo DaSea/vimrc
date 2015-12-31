@@ -24,8 +24,6 @@ else
     let g:isGUI = 0
 endif
 
-set nocompatible " be iMproved, required，不使用vi模式
-
 " On Windows, also use '.vim' instead of 'vimfiles'; this makes synchronization
 " across (heterogeneous) systems easier.
 if !exists('g:exvim_custom_path')
@@ -84,45 +82,88 @@ endif
 scriptencoding utf-8
 "}}}
 
+" 全局配置变量(Dictionnary){{{
+let g:setting = {}
+" 全局设置
+" number一般行号, relative_num绝对行号, none不显示行号
+let g:setting.global_num = 'none'
+let g:setting.color_scheme = 'solarized'
+let g:setting.status_color = 'solarized_light'
+let g:setting.tab_size = 4
+let g:setting.help_lang = 'cn'
+" 插件设置
+" 关于更改行的设置(git(vim-gitgutter), git_svn(vim-signify))
+let g:setting.version_status = 'git'
+" 是否要开始欢迎界面(yes, no)
+let g:setting.starty_screen = 'no'
+" 状态栏(lightline, airline)
+let g:setting.status_line = 'lightline'
+" 是否开启代码格式化(使用vim-clang-format)
+let g:setting.source_format = 'no'
+" 是否需要开启代码的静态语法检查(syntastic插件)
+let g:setting.syntastic_need = 'no'
+" name
+let g:setting.author_name = 'DaSea'
+" 自动补全
+if has('lua')
+    let g:setting.complete_method = 'neocomplete'
+else
+    let g:setting.complete_method = 'neocomplcache'
+endif
+" windows与linux使用不同的目录
+if g:iswindows
+    let g:setting.vimwiki_path = 'E:/Self/dasea/wiki/'
+    let g:setting.vimwiki_html_path = 'E:/Self/dasea/wiki/html/'
+    let g:setting.private_snippets = $VIM.'/snippets'
+else
+    let g:setting.vimwiki_path = '~/wiki/'
+    let g:setting.vimwiki_html_path = '~/wiki/html/'
+    let g:setting.private_snippets = '~/.vim/snippets'
+endif
+" 是否需要markdown插件支持
+let g:setting.markdown_need = 'no'
+" 是否需要vim补全(neco-vim)
+let g:setting.vimcomplete_need = 'yes'
+" 是否需要shell功能
+let g:setting.shell_need = 'no'
+" }}}
+
 "/////////////////////////////////////////////////////////////////////////////
 " Bundle steup 插件管理插件设置{{{
 "/////////////////////////////////////////////////////////////////////////////
-" vundle#begin
-filetype off " required
-" set the runtime path to include Vundle
+set nocompatible
+filetype off
+
+" 设置exvim工作路径
 if exists('g:exvim_custom_path')
     let g:ex_tools_path = g:exvim_custom_path.'/vimfiles/tools/'
-    exec 'set rtp+=' . fnameescape ( g:exvim_custom_path.'/vimfiles/bundle/Vundle.vim/' )
-    call vundle#rc(g:exvim_custom_path.'/vimfiles/bundle/')
+    let g:vim_plugin_path = g:exvim_custom_path.'/.vimrc.plugins'
 else
     let g:ex_tools_path = '~/.vim/tools/'
-    set rtp+=~/.vim/bundle/Vundle.vim/
-    call vundle#rc('~/.vim/bundle/')
+    let g:vim_plugin_path = '~/.vimrc.plugins'
 endif
 
-" load .vimrc.plugins & .vimrc.plugins.local
+" Vundle.vim设置{{{
+" set the runtime path to include Vundle
 if exists('g:exvim_custom_path')
-    let vimrc_plugins_path = g:exvim_custom_path.'/.vimrc.plugins'
+    exec 'set rtp+='.fnameescape(g:exvim_custom_path.'/vimfiles/bundle/Vundle.vim')
+    call vundle#rc(g:exvim_custom_path.'/vimfiles/bundle')
 else
-    let vimrc_plugins_path = '~/.vimrc.plugins'
+    set rtp+=~/.vim/bundle/Vundle.vim
+    call vundle#rc('~/.vim/bundle')
 endif
-if filereadable(expand(vimrc_plugins_path))
-    exec 'source ' . fnameescape(vimrc_plugins_path)
-endif
+" source $VIMRUNTIME/ftplugin/man.vim
+Plugin 'gmarik/Vundle.vim'
 
-" vundle#end
+" 读取插件配置信息
+if filereadable(expand(g:vim_plugin_path))
+    exec 'source ' . fnameescape(g:vim_plugin_path)
+endif
+call vundle#end()
+"}}}
+
 filetype plugin indent on " required
 syntax on " required
-"
-" Brief help  -- 此处后面都是vundle的使用命令
-" :BundleList          - list configured bundles
-" :BundleInstall(!)    - install(update) bundles
-" :BundleSearch(!) foo - search(or refresh cache first) for foo
-" :BundleClean(!)      - confirm(or auto-approve) removal of unused bundles
-"
-" see :h vundle for more details or wiki for FAQ
-" NOTE: comments after Bundle command are not allowed
-
 "}}}
 
 "/////////////////////////////////////////////////////////////////////////////
@@ -231,7 +272,7 @@ set hidden " allow to change buffer without saving
 set shortmess=aoOtTI " shortens messages to avoid 'press a key' prompt
 set lazyredraw " do not redraw while executing macros (much faster)
 set display+=lastline " for easy browse last line with wrap text
-set titlestring=%t\ (%{expand(\"%:p:.:h\")}/)
+set titlestring=%t\ [%{expand(\"%:p:.:h\")}]
 
 " set window size (if it's GUI)
 if has('gui_running')
@@ -277,9 +318,6 @@ func! CurModeStr()
     return modeStr
 endfunc
 
-" 禁止光标闪烁(设置此项后光标显示块状)
-" set gcr=a:block-blinkon0
-
 " 显示/隐藏菜单栏、工具栏、滚动条，可用 Ctrl + F11 切换
 if g:isGUI
     set guioptions-=m
@@ -306,8 +344,9 @@ endif
 " 常规模式下 Ctrl + Up（上方向键） 增加不透明度，Ctrl + Down（下方向键） 减少不透明度
 " <Leader>t 窗口置顶与否切换
 if (g:iswindows && g:isGUI)
-    let g:Current_Alpha = 255
+    let g:Current_Alpha = 230
     let g:Top_Most = 0
+    call libcallnr("vimtweak.dll","SetAlpha", g:Current_Alpha)
     func! Alpha_add()
         let g:Current_Alpha = g:Current_Alpha + 10
         if g:Current_Alpha > 255
@@ -333,9 +372,8 @@ if (g:iswindows && g:isGUI)
     endfunc
 
     "快捷键设置
-    nmap <c-up> :call Alpha_add()<CR>
-    nmap <c-down> :call Alpha_sub()<CR>
-    " nmap <leader>t :call Top_window()<CR>
+    noremap <c-up> :call Alpha_add()<CR>
+    noremap <c-down> :call Alpha_sub()<CR>
 endif
 
 "}}}
@@ -353,8 +391,10 @@ if g:isGUI
     set background=dark
     colorscheme solarized
 else
-    set background=dark
-    set t_Co=256 " make sure our terminal use 256 color
+    if !g:iswindows
+        set background=dark
+        set t_Co=256 " make sure our terminal use 256 color
+    endif
     colorscheme molokai
 endif
 " }}}
@@ -367,7 +407,7 @@ set si " smartindent
 set backspace=indent,eol,start " allow backspacing over everything in insert mode
 " indent options
 " see help cinoptions-values for more details
-set	cinoptions=>s,e0,n0,f0,{0,}0,^0,:0,=s,l0,b0,g0,hs,ps,ts,is,+s,c3,C0,0,(0,us,U0,w0,W0,m0,j0,)20,*30
+set cinoptions=>s,e0,n0,f0,{0,}0,^0,:0,=s,l0,b0,g0,hs,ps,ts,is,+s,c3,C0,0,(0,us,U0,w0,W0,m0,j0,)20,*30
 " default '0{,0},0),:,0#,!^F,o,O,e' disable 0# for not ident preprocess
 " set cinkeys=0{,0},0),:,!^F,o,O,e
 
@@ -438,17 +478,17 @@ set completeopt-=preview
 " set wildmode=list:longest,full
 " set wildmenu "turn on wild menu
 set wildignore=*.o,*.obj,*.exe,*~ "stuff to ignore when tab completing
-set wildignore+=*/debug/**
-set wildignore+=*/release/**
+set wildignore+=debug/**
+set wildignore+=release/**
 set wildignore+=*.gem
-set wildignore+=*/log/**
-set wildignore+=*/tmp/**
-set wildignore+=*/obj/**
-set wildignore+=*/libs/**
-set wildignore+=*/res/**
+set wildignore+=log/**
+set wildignore+=tmp/**
+set wildignore+=obj/**
+set wildignore+=libs/**
+set wildignore+=res/**
 set wildignore+=*.png,*.jpg,*.gif
 set wildignore+=*.so,*.dll,*.a,*.swp,*.zip,*.pdf,*.dmg,*.bak,*.class,*.pyc
-set wildignore+=*/.nx/**,*.app
+set wildignore+=.exvim.*/**,.settings/**,.metadata/**
 
 " ==============================================================================
 " viminfo设置
@@ -507,7 +547,6 @@ if has('autocmd')
         " Desc: file types
         " ------------------------------------------------------------------
         au FileType * setlocal tabstop=4
-        au FileType text setlocal textwidth=78 " for all text files set 'textwidth' to 78 characters.
         au FileType c,cpp,cs,swig set nomodeline " this will avoid bug in my project with namespace ex, the vim will tree ex:: as modeline.
 
         " disable auto-comment for c/cpp, lua, javascript, c# and vim-script
@@ -564,11 +603,6 @@ endif
 "}}}
 
 " ==============================================================================
-" Abbraviations 设置{{{
-iabbrev mmail dhf0214@126.com
-"}}}
-
-" ==============================================================================
 " Key Mappings 按键映射 {{{
 " ==============================================================================
 "===================================================
@@ -595,8 +629,6 @@ noremap <leader>tts :%ret! 4<CR>
 "===================================================
 " 将当前光标下单词转换成大写
 noremap <leader>wu viwU
-inoremap <leader>wu <ESC>viwU
-vnoremap <leader>wu <ESC>viwU
 
 " 高亮当前光标下单词
 " *
@@ -618,7 +650,6 @@ nnoremap <leader>lp :lp<CR>
 "===================================================
 " 编辑vim配置文件，并重新读取配置文件
 " 当.vimrc文件改变时,自动加载
-" autocmd! bufwritepost .vimrc source ~/.vimrc
 if g:iswindows
     nnoremap <leader>ev :e $VIM\.vimrc<cr>
     nnoremap <leader>evp :e $VIM\.vimrc.plugins<cr>
@@ -630,22 +661,13 @@ else
 endif
 
 "===================================================
-" VIM 打开的时候加载那个路径
-" silent! cd D:/Develop/exVim
-
-"===================================================
 " 保存文件设置 <leader>s 一键保存
 noremap  <C-s> :w<CR>
 inoremap <C-s> <ESC>:w<CR>
 vnoremap <C-s> <ESC>:w<CR>
 " 关闭当前窗口, 详细请看:help Close
 noremap <leader>mc :close<CR>
-" 增加窗口宽度window increase
-noremap <leader>iw 20<C-w>|
-" 增加窗口高度
-noremap <leader>dw 20<C-w>_
 
-" NOTE: F10 looks like have some feature, when map with F10, the map will take no effects
 " Don't use Ex mode, use Q for formatting
 map Q gq
 

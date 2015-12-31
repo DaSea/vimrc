@@ -2,7 +2,7 @@
 snippet t_header
 abbr include_header
     /*
-     * Copyright (C) strftime("%Y-%m-%d") Dasea <hello@world.com>
+     * Copyright (C) `strftime("%Y-%m-%d")` Dasea <dhf0214@126.com>
      *
      * Description: ${1:#:You will get it!}
      */
@@ -11,7 +11,7 @@ abbr include_header
 snippet s_header
 abbr source_header
     /*
-     * Copyright (C) strftime("%Y-%m-%d") Dasea <hello@world.com>
+     * Copyright (C) `strftime("%Y-%m-%d")` Dasea <dhf0214@126.com>
      *
      * Description: ${1:#:You will get it!}
      */
@@ -31,8 +31,8 @@ alias   #inc2, #include2
     #include "${1}.h"${0}
 
 snippet     if
-abbr        if() {}
-    if (${1:#:condition}) {
+abbr        if(){}
+    if(${1:#:condition}) {
         ${0:TARGET}
     }
 
@@ -47,7 +47,7 @@ snippet elseif
     }
 
 snippet     ifelse
-abbr        if (){} else {}
+abbr        if(){}else{}
     if(${1:#:condition}) {
         ${2:TARGET}
     } else {
@@ -55,9 +55,9 @@ abbr        if (){} else {}
     }
 
 snippet     for
-abbr        for() {}
+abbr        for(){}
     for(${1:int} ${2:i} = ${3:0}; $2 < ${4}; $2++) {
-        ${0:#:TARGET}
+        ${0:TARGET}
     }
 
 snippet     while
@@ -70,55 +70,59 @@ snippet     do_while
 alias       do
     do {
         ${0:TARGET:code}
-    } while(${1:#:condition});
+    }while(${1:#:condition});
 
 snippet     switch
 abbr        switch() {}
     switch(${1:#:var}) {
-        case ${2:#:val}:
+        case ${2:#:val}: {
             ${0:TARGET}
-            break;
+        }
+        break;
+        default:
+        // No select
+        break;
     }
 
 # Declare function
-snippet     function_dcr
-alias       func
+snippet     func_dcr
 abbr        func();
-    ${1:void} ${2:#:func_name}(${3:void});${0}
+    ${1:void} ${2:func_name}(${3:void});${0}
 
 # Implement function
-snippet     function_ipt
-alias       func
+snippet     func_ipt
 abbr        func() {}
-    ${1:void} ${2:#:func_name}(${3:#:void}) {
+    ${1:void} ${2:func_name}(${3:void}) {
         ${0:TARGET}
     }
 
 snippet     struct
 abbr        struct {}
-    struct ${1:#:name} {
+    struct ${1:name} {
         ${0:TARGET:data}
     };
 
 # Typedef struct
 snippet struct_typedef
-    typedef struct ${1:#:name} {
+    typedef struct ${1:name} {
         ${0:TARGET:data}
     };
 
 snippet     enum
 abbr        enum {}
-    enum ${1:#:name} {
+    enum ${1:NAME} {
         ${0:TARGET}
     };
 
 # hard-tab is necessary; C indent doesn't support this.
-snippet main
+snippet cmain
+    #include <stdio.h>
 	int main(int argc, char const* argv[])
 	{
 		${0:TARGET}
 		return 0;
 	}
+
 
 snippet ifndef
 alias   #ifndef
@@ -135,7 +139,7 @@ alias   #def, #define
 snippet once
 abbr include-guard
     #ifndef ${1:SYMBOL}
-        #define $1
+    #define $1
 
         ${0:TARGET}
 
@@ -157,27 +161,36 @@ abbr    fprintf(..., "...\n", ...);
     fprintf(${1:stderr}, "${2}\n"${3});
 
 snippet comment
-alias /*
+alias /**/
     /* ${1:#:comment} */
     ${0}
+    
+snippet comment_l
+alias //
+    // ${1:#:comment}
+    ${0}                                            
 
 snippet sizeof
 alias size
     sizeof(${0:TARGET})
 
-snippet helloworld
-    #include <stdio.h>
-    int main(int argc, char const* argv[])
-    {
-        puts("hello, world!");
-        return 0;
-    }
-
-snippet fopen
+snippet fopen_rc
 abbr fopen("...", "...");
-    fopen("${1:PATH}", "${2:MODE}");
+    FILE* ${1:file} = fopen("${1:PATH}", "r${2:#:b+}");
     ${0:TARGET}
-    fclose(${3:FD});
+    fclose(${1});
+
+snippet fopen_wc
+abbr fopen("...", "...");
+    FILE* ${1:file} = fopen("${1:PATH}", "w${2:#:b+}");
+    ${0:TARGET}
+    fclose(${1});
+
+snippet fopen_ac
+abbr fopen("...", "...");
+    FILE* ${1:file} = fopen("${1:PATH}", "a${2:#:b+}");
+    ${0:TARGET}
+    fclose(${1});
 
 snippet fgets
 abbr fgets(row, length, file);

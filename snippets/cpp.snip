@@ -10,6 +10,8 @@ abbr        class {}
     public:
         $1(${2});
         ~$1(void);
+
+        ${0}
     };
 
 snippet     class_vir
@@ -30,7 +32,7 @@ abbr        class {}
 snippet     func_class_ipt
 alias       func
 abbr        class::func() {}
-    ${1:void} ${2:#:class_name}::${3:#:func_name}(${4:#:void}) {
+    ${1:void} ${2:#:class_name}::${3:#:func_name}(${4:void}) {
         ${0:TARGET}
     }
 
@@ -85,19 +87,19 @@ options     head
     ${0:TARGET}
     } // namespace $1
 
-snippet     static_cast
+snippet     cast_static
 abbr        static_cast<>()
     static_cast<${1}>(${2})${0}
 
-snippet     reinterpret_cast
+snippet     cast_reinterpret
 abbr        reinterpret_cast<>()
     reinterpret_cast<${1}>(${2})${0}
 
-snippet     const_cast
+snippet     cast_const
 abbr        const_cast<>()
     const_cast<${1}>(${2})${0}
 
-snippet     dynamic_cast
+snippet     cast_dynamic
 abbr        dynamic_cast<>()
     dynamic_cast<${1}>(${2})${0}
 
@@ -113,8 +115,16 @@ abbr        #include<iostream> int main...
 
 snippet     cout
 options     head
-  std::cout
+    std::cout
 
 snippet     coutend
 options     head
-  std::cout << ${0:TARGET} << std::endl;
+    std::cout << ${0:TARGET} << std::endl;
+
+snippet     str
+abbr     std::string
+    std::string ${1:str};${0}
+
+snippet     logd
+abbr     LOGD_S
+    LOGD_S("${1}"${2:,}${0});
