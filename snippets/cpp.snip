@@ -19,7 +19,8 @@ abbr        class_virtual {}
     class ${1:#:name} {
     public:
         $1(${2});
-        ${3:#:virtual} ~$1(void);${0}
+        ${3:#:virtual} ~$1(void);
+        ${0}
     };
 
 snippet     class-without-constructor
@@ -27,6 +28,29 @@ abbr        class {}
     class ${1:#:name} {
         ${2}
     };
+
+snippet     class_inherit
+abbr        class_inherit {}
+    class ${1:#:name}: ${2:public} ${3:#:baseclass}{
+    public:
+        $1();
+        ${4:#:virtual} ~$1(void);
+        ${0:TARGET}
+    };
+
+snippet     class_constructor
+abbr        class::class{}
+        ${1:class}::$1(${2:param}){
+           // Constructor
+           ${0:TARGET}
+        }
+
+snippet     class_desturctor
+abbr        class::~class{}
+        ${1:class}::~$1(){
+           // Destructor
+           ${0:TARGET}
+        }
 
 # Implement class function
 snippet     func_class_ipt
@@ -64,12 +88,20 @@ abbr        for(:) {}
         ${0:TARGET}
     }
 
+snippet     for_inter
+abbr        for(it: != end;++it) {}
+    std::${1:#:vector}<${2:#:int}>::iterator ${4:#:it} = ${3:var}begin();
+    for(; $4 != $3end(); ++$4) {
+        ${0:TARGET}
+    }
+
 # lambda expression ( C++11 feature )
 snippet     lambda
 abbr        [](){}
     [${1}](${2})${3}{ ${4:TARGET} }${0:;}
 
 # scoped enumeration ( C++11 feature )
+    std::vector<_KqOfflineTileScale>::iterator it = m_serviceInfo->scales.begin();
 snippet     enum_scoped
 abbr        enum struct {};
     enum struct ${1:#:name} { ${2:#:TARGET} };

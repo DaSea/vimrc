@@ -117,8 +117,10 @@ let c_no_bracket_error = 1
 
 " 版本控制(git,svn){{{
 " 使用git
-Plugin 'tpope/vim-fugitive' "{{{
-"}}}
+if g:setting.version_status !=? 'no'
+    Plugin 'tpope/vim-fugitive' "{{{
+    "}}}
+endif
 
 " =================================================================
 " 显示与版本控制中的文件的差异
@@ -213,7 +215,7 @@ if g:setting.complete_method ==? 'neocomplete'
     "}}}
 endif
 
-if g:setting.complete_method ==? 'eocomplcache'
+if g:setting.complete_method ==? 'neocomplcache'
     Plugin 'Shougo/neocomplcache.vim' "{{{
     " Disable AutoComplPop.
     let g:acp_enableAtStartup = 0
@@ -306,6 +308,11 @@ endif
 
 Plugin 'ludovicchabant/vim-gutentags' "{{{
 " General tags file
+if !exists('g:gutentags_project_root')
+    let g:gutentags_project_root = ['.exvim']
+else
+    call insert(g:gutentags_project_root, '.exvim')
+endif
 "}}}
 Plugin 'Shougo/neoinclude.vim' "{{{
 " disable ctags
@@ -331,8 +338,9 @@ nnoremap <leader>ns :execute ":NeoSnippetEdit ".&filetype<CR>
 
 Plugin 'jiangmiao/auto-pairs' "括号补全{{{
 let g:AutoPairsFlyMode = 0
-let g:AutoPairsShortcutToggle = '<leader>pp'
 let g:AutoPairsShortcutBackInsert = '<leader>pb'
+" 上面俩项为flyMode下使用
+let g:AutoPairsShortcutToggle = '<leader>pp'
 let g:AutoPairsShortcutFastWrap = '<leader>pe'
 let g:AutoPairsShortcutJump = '<leader>pn'
 "}}}
@@ -472,15 +480,16 @@ let g:ctrlsf_default_root = 'project'
 " make result windows compact
 let g:ctrlsf_indent = 2
 " width or height
-let g:ctrlsf_winsize = '55%'
 " 显示的上下文函数
-let g:ctrlsf_context = '-B 2 -A 2'
+let g:ctrlsf_context = '-B 1 -A 1'
 " 高亮匹配行: o->打开的目标文件;p->预览文件
 let g:ctrlsf_selected_line_hl = 'op'
 nnoremap <F5> :CtrlSFToggle<CR>
 nnoremap <leader>sw :call CtrlsfCurWord(expand("<cword>"))<CR>
 function! CtrlsfCurWord(word) abort
-    execute "CtrlSF ".a:word
+    let s:type = &filetype
+    let s:filetype = '-filetype '.s:type
+    execute "CtrlSF ".s:filetype.' '. a:word
 endfunction
 "}}}
 
@@ -515,13 +524,17 @@ Plugin 'junkblocker/unite-tasklist'
 
 "  内容注释及选择{{{
 Plugin 'terryma/vim-expand-region' "{{{
+nnoremap <leader>J <Plug>(expand_region_expand)
+nnoremap <leader>K <Plug>(expand_region_shrink)
 "}}}
 
-Plugin 'tpope/vim-surround' "{{{
-" invoke when you select words and press 's'
-" ---------------------------------------------------
-" cs修改已经有的符号 ds删除已有的复活啊 ys添加符号
-"}}}
+if 'yes' ==? g:setting.surround
+    Plugin 'tpope/vim-surround' "{{{
+    " invoke when you select words and press 's'
+    " ---------------------------------------------------
+    " cs修改已经有的符号 ds删除已有的复活啊 ys添加符号
+    "}}}
+endif
 
 " ---------------------------------------------------
 Plugin 'scrooloose/nerdcommenter' "{{{
@@ -561,6 +574,8 @@ nnoremap <Leader>df :DoxFile<CR>
 "}}}
 
 "  代码静态分析{{{
+Plugin 'DaSea/unite-cppcheck'
+
 if g:setting.syntastic_need ==? 'yes'
     Plugin 'scrooloose/syntastic' "{{{
     " Invoke when you save file and have syntac-checker

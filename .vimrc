@@ -63,10 +63,9 @@ if g:iswindows
     if has('multi_byte')
         " Windows cmd.exe still uses cp850. If Windows ever moved to
         " Powershell as the primary terminal, this would be utf-8
-        set termencoding=cp850
+        set termencoding=cp936
         " Let Vim use utf-8 internally, because many scripts require this
         set encoding=utf-8
-        scriptencoding utf-8
         setglobal fileencoding=utf-8
         " Windows has traditionally used cp1252, so it's probably wise to
         " fallback into cp1252 instead of eg. iso-8859-15.
@@ -92,8 +91,10 @@ let g:setting.status_color = 'solarized_light'
 let g:setting.tab_size = 4
 let g:setting.help_lang = 'cn'
 " 插件设置
-" 关于更改行的设置(git(vim-gitgutter), git_svn(vim-signify))
-let g:setting.version_status = 'git'
+" vim-surround 是否需要
+let g:setting.surround = 'no'
+" 关于更改行的设置(git(vim-gitgutter), git_svn(vim-signify), no)
+let g:setting.version_status = 'no'
 " 是否要开始欢迎界面(yes, no)
 let g:setting.starty_screen = 'no'
 " 状态栏(lightline, airline)
@@ -615,8 +616,16 @@ endif
 " 行首和行尾
 nmap <Leader>lb ^
 nmap <Leader>le $
+nnoremap <Home> ^
+nnoremap <End> $
 " 结对符之间跳转，助记pair
 nmap <Leader>pa %
+
+" ==================================================
+" redo
+nnoremap <leader>u <c-r>
+" undo
+" u
 
 "===================================================
 " 常规模式下输入 cS 清除行尾空格
@@ -634,6 +643,13 @@ noremap <leader>wu viwU
 " *
 " 取消当前高亮
 noremap <leader>nh :noh<cr>
+
+"===================================================
+" 插入模式下移动光标
+inoremap <leader>hh <Left>
+inoremap <leader>jj <Down>
+inoremap <leader>kk <Up>
+inoremap <leader>ll <Right>
 
 "===================================================
 " 当前文件中搜索光标下单词

@@ -18,15 +18,15 @@ abbr source_header
     #include "${2}.h"
     ${0}
 
-# #include <...>
+
 snippet inc
-abbr #include""
+abbr #include <>
 alias   #inc, #include
     #include <${1:stdio}>${0}
 
-# #include "..."
+
 snippet inc2
-abbr #include<>
+abbr #include ""
 alias   #inc2, #include2
     #include "${1}.h"${0}
 
