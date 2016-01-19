@@ -37,9 +37,9 @@ snippet     function
 abbr        func endfunc
 alias       func
 options     head
-    function! ${1:#:func_name}(${2}) abort
+    function! ${1:#:func_name}(${2}) abort "{{{
       ${0:TARGET}
-    endfunction
+    endfunction "}}}
 
 snippet     try
 abbr        try endtry

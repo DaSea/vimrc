@@ -103,6 +103,8 @@ let g:setting.status_line = 'lightline'
 let g:setting.source_format = 'no'
 " 是否需要开启代码的静态语法检查(syntastic插件)
 let g:setting.syntastic_need = 'no'
+" 是否需要开启cppcheck功能
+let g:setting.cppcheck_need = 'no'
 " name
 let g:setting.author_name = 'DaSea'
 " 自动补全
@@ -111,6 +113,8 @@ if has('lua')
 else
     let g:setting.complete_method = 'neocomplcache'
 endif
+" 括号的自动补全机制 neopairs, auto-pairs, no(disable)
+let g:setting.complete_pairs = 'no'
 " windows与linux使用不同的目录
 if g:iswindows
     let g:setting.vimwiki_path = 'E:/Self/dasea/wiki/'
@@ -122,11 +126,16 @@ else
     let g:setting.private_snippets = '~/.vim/snippets'
 endif
 " 是否需要markdown插件支持
-let g:setting.markdown_need = 'no'
+let g:setting.markdown_need = 'yes'
 " 是否需要vim补全(neco-vim)
 let g:setting.vimcomplete_need = 'yes'
 " 是否需要shell功能
 let g:setting.shell_need = 'no'
+
+" 插件设置{{{
+" 工程列表插件用哪个(unite-exprj, ex-prjlist)
+let g:setting.exprj_list = 'ex'
+"}}}
 " }}}
 
 "/////////////////////////////////////////////////////////////////////////////
@@ -430,6 +439,7 @@ endfunction
 set cindent shiftwidth=4 " set cindent on to autoinent when editing c/c++ file, with 4 shift width
 set tabstop=4 " set tabstop to 4 characters
 set expandtab " set expandtab on, the tab will be change to space automaticaly
+set smarttab
 set ve=block " in visual block mode, cursor can be positioned where there is no actual character
 
 " set Number format to null(default is octal) , when press CTRL-A on number
