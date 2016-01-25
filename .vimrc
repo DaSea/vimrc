@@ -92,7 +92,7 @@ let g:setting.tab_size = 4
 let g:setting.help_lang = 'cn'
 " 插件设置
 " vim-surround 是否需要
-let g:setting.surround = 'no'
+let g:setting.surround_enable = 'no'
 " 关于更改行的设置(git(vim-gitgutter), git_svn(vim-signify), no)
 let g:setting.version_status = 'no'
 " 是否要开始欢迎界面(yes, no)
@@ -107,14 +107,15 @@ let g:setting.syntastic_need = 'no'
 let g:setting.cppcheck_need = 'no'
 " name
 let g:setting.author_name = 'DaSea'
-" 自动补全
+" 自动补全 {{{
 if has('lua')
     let g:setting.complete_method = 'neocomplete'
 else
     let g:setting.complete_method = 'neocomplcache'
 endif
+"}}}
 " 括号的自动补全机制 neopairs, auto-pairs, no(disable)
-let g:setting.complete_pairs = 'no'
+let g:setting.complete_pairs = 'auto-pairs'
 " windows与linux使用不同的目录
 if g:iswindows
     let g:setting.vimwiki_path = 'E:/Self/dasea/wiki/'
@@ -129,10 +130,14 @@ endif
 let g:setting.markdown_need = 'yes'
 " 是否需要vim补全(neco-vim)
 let g:setting.vimcomplete_need = 'yes'
-" 是否需要shell功能
-let g:setting.shell_need = 'no'
+" 是否需要c++语言的一些支持{{{
+let g:setting.cpp_enable = 'yes'
+" }}}
+" 是否开启go语言开发功能 "{{{
+let g:setting.golang_enable = 'yes'
+"}}}
 
-" 插件设置{{{
+" 自己测试插件设置{{{
 " 工程列表插件用哪个(unite-exprj, ex-prjlist)
 let g:setting.exprj_list = 'ex'
 "}}}
@@ -475,6 +480,7 @@ set cursorline  " 高亮当前行
 "===============================================================================
 set list
 set listchars=tab:▸\ ,extends:❯,precedes:❮,nbsp:␣
+" set listchars=extends:❯,precedes:❮,nbsp:␣
 set showbreak=↪
 " For conceal markers.
 if has('conceal')

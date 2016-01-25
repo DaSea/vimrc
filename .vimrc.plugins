@@ -9,7 +9,8 @@ source $VIMRUNTIME/ftplugin/man.vim
 "========================================================================================
 " ex系列插件 {{{
 
-Plugin 'exvim/ex-config'
+Plugin 'DaSea/ex-config'
+" Fork 'exvim/ex-config', change '.exvim.project_name' to '.exvim'
 " ---------------------------------------------------
 nnoremap <unique> <leader>ve :call exconfig#edit_cur_vimentry ()<CR>
 
@@ -24,8 +25,11 @@ nmap <unique> <silent> <Leader><Esc> :EXgp<CR><ESC>
 
 Plugin 'exvim/ex-aftercolors'
 " ---------------------------------------------------
-Plugin 'exvim/ex-vimentry'
+
+Plugin 'DaSea/ex-vimentry'
+"Fork 'exvim/ex-vimentry', and change default template
 " ---------------------------------------------------
+
 Plugin 'exvim/ex-project'
 " ---------------------------------------------------
 let g:ex_project_winpos='left'
@@ -148,9 +152,10 @@ if g:setting.version_status ==? 'git_svn'
 endif
 "}}}
 
-"  内容完成(括号补全) {{{
-Plugin 'vim-scripts/OmniCppComplete' "{{{
-"}}}
+"  内容完成(括号补全, vim补全) {{{
+if 'yes' ==? g:setting.cpp_enable "{{{
+    Plugin 'vim-scripts/OmniCppComplete'
+endif "}}}
 
 if g:setting.complete_method ==? 'neocomplete'
     Plugin 'Shougo/neocomplete.vim' "{{{
@@ -183,9 +188,9 @@ if g:setting.complete_method ==? 'neocomplete'
     " <CR>: close popup and save indent.
     inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
     function! s:my_cr_function()
-        " return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+        return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
         " For no inserting <CR> key.
-        return pumvisible() ? "\<C-y>" : "\<CR>"
+        " return pumvisible() ? "\<C-y>" : "\<CR>"
     endfunction
 
     " <TAB>: completion.
@@ -206,6 +211,7 @@ if g:setting.complete_method ==? 'neocomplete'
     " let g:neocomplete#force_overwrite_completefunc = 1
     " Enable omni completion.
     autocmd FileType c,cpp setlocal omnifunc=omni#cpp#complete#Main
+    autocmd FileType go setlocal omnifunc=gocode#Complete
 
     " Enable heavy omni completion.
     if !exists('g:neocomplete#sources#omni#input_patterns')
@@ -338,6 +344,12 @@ xmap <C-k> <Plug>(neosnippet_expand_target)
 nnoremap <leader>ns :execute ":NeoSnippetEdit ".&filetype<CR>
 "}}}
 
+" vim 补全{{{
+if 'yes' ==? g:setting.vimcomplete_need
+    Plugin 'Shougo/neco-vim'
+endif
+"}}}
+
 "括号补全{{{
 if g:setting.complete_pairs ==? 'auto-pairs'  "{{{
     Plugin 'jiangmiao/auto-pairs'
@@ -439,21 +451,27 @@ let g:vimfiler_readonly_file_icon = ''
 let g:vimfiler_marked_file_icon = '√'
 let g:vimfiler_expand_jump_to_first_child = 0
 let g:vimfiler_ignore_pattern = []
+call vimfiler#custom#profile('default', 'context', {
+            \ 'explorer' : 1,
+            \ 'safe': 0,
+            \ 'autocd': 1,
+            \ })
 nnoremap <F2> :VimFilerExplorer<CR>
 autocmd FileType vimfiler nmap <silent><buffer><expr> <CR> vimfiler#smart_cursor_map(
             \ "\<Plug>(vimfiler_expand_tree)",
             \ "\<Plug>(vimfiler_edit_file)")
 "}}}
 
-Plugin 'vim-scripts/a.vim' "{{{
-" 用于切换C/C++头文件
-" :A     ---切换头文件并独占整个窗口
-" :AV    ---切换头文件并垂直分割窗口
-" :AS    ---切换头文件并水平分割窗口
-nnoremap <silent> <leader>ah :A<CR>
-nnoremap <silent> <leader>av :AV<CR>
-nnoremap <silent> <leader>as :AS<CR>
-" }}}
+if 'yes' ==? g:setting.cpp_enable "{{{
+    Plugin 'vim-scripts/a.vim'
+    " 用于切换C/C++头文件
+    " :A     ---切换头文件并独占整个窗口
+    " :AV    ---切换头文件并垂直分割窗口
+    " :AS    ---切换头文件并水平分割窗口
+    nnoremap <silent> <leader>ah :A<CR>
+    nnoremap <silent> <leader>av :AV<CR>
+    nnoremap <silent> <leader>as :AS<CR>
+endif "}}}
 "}}}
 
 "  文件内跳转{{{
@@ -478,7 +496,8 @@ map <leader><leader>. <Plug>(easymotion-repeat)
 "}}}
 
 "  文件内容搜索和替换{{{
-Plugin 'dyng/ctrlsf.vim' "{{{
+Plugin 'DaSea/ctrlsf.vim' "{{{
+" Fork'dyng/ctrlsf.vim', and add g:ctrlsf_vcs_folder;
 "---------------------------------------------------------------------
 " 设置CtrlSF使用的搜索工具,默认使用ag,如果没有ag,则考虑使用ack
 " let g:ctrlsf_ackprg = 'pt'
@@ -488,11 +507,13 @@ let g:ctrlsf_auto_close = 0
 let g:ctrlsf_case_sensitive = 'yes'
 " 默认搜索路径, 设置为project则从本文件的工程目录搜索
 let g:ctrlsf_default_root = 'project'
+" 工程目录的顶级文件夹
+let g:ctrlsf_vcs_folder = ['.exvim', '.git', '.hg', '.svn', '.bzr', '_darcs']
 " make result windows compact
 let g:ctrlsf_indent = 2
 " width or height
 " 显示的上下文函数
-let g:ctrlsf_context = '-B 1 -A 1'
+let g:ctrlsf_context = '-B 0 -A 0'
 " 高亮匹配行: o->打开的目标文件;p->预览文件
 let g:ctrlsf_selected_line_hl = 'op'
 nnoremap <F5> :CtrlSFToggle<CR>
@@ -537,13 +558,12 @@ Plugin 'junkblocker/unite-tasklist'
 Plugin 'terryma/vim-expand-region' "{{{
 "}}}
 
-if 'yes' ==? g:setting.surround
-    Plugin 'tpope/vim-surround' "{{{
+if 'yes' ==? g:setting.surround_enable "{{{
+    Plugin 'tpope/vim-surround'
     " invoke when you select words and press 's'
     " ---------------------------------------------------
     " cs修改已经有的符号 ds删除已有的复活啊 ys添加符号
-    "}}}
-endif
+endif "}}}
 
 " ---------------------------------------------------
 Plugin 'scrooloose/nerdcommenter' "{{{
@@ -597,11 +617,12 @@ endif "}}}
 " }}}
 
 " c++友好提升 {{{
-Plugin 'octol/vim-cpp-enhanced-highlight' "{{{
-" -----------------------------------------------------------------------------
-let g:cpp_class_scope_highlight=1
-let g:cpp_experimental_template_highlight = 1
-"}}}
+if 'yes' ==? g:setting.cpp_enable "{{{
+    Plugin 'octol/vim-cpp-enhanced-highlight'
+    " -----------------------------------------------------------------------------
+    let g:cpp_class_scope_highlight=1
+    let g:cpp_experimental_template_highlight = 1
+endif "}}}
 "}}}
 
 " 界面相关{{{
@@ -759,20 +780,26 @@ let g:indentLine_color_gui = '#FF4040'
 let g:indentLine_char = '|'
 "}}}
 
-Plugin 'altercation/vim-colors-solarized'
-Plugin 'NLKNguyen/papercolor-theme'
-Plugin 'chriskempson/vim-tomorrow-theme' "{{{
+Plugin 'altercation/vim-colors-solarized' "{{{
 " ---------------------------------------------------
 let g:solaried_bold = 1
 let g:solaried_underline = 1
 let g:solaried_italic = 0
 "}}}
 
+" Plugin 'tomasr/molokai' "{{{
+let g:molokai_original = 1
+let g:rehas256 = 1
+" }}}
+
 Plugin 'ujihisa/unite-colorscheme'"{{{
+"}}}
+
+Plugin 'ap/vim-css-color' "{{{
 "}}}
 "}}}
 
-""VIM关闭问题{{{
+"VIM关闭问题{{{
 Plugin 'moll/vim-bbye' "{{{
 noremap <leader>mq :Bdelete<CR>
 inoremap <leader>mq <ESC>:Bdelete<CR>
@@ -806,6 +833,8 @@ let wiki_1.nested_syntaxes = {'python': 'python', 'c++': 'cpp', 'c': 'c', 'vim':
 " dinary 设置
 let g:vimwiki_list = [wiki_1]
 " 全局变量配置
+let g:vimwiki_folding = 1
+let g:vimwiki_fold_lists = 1
 let g:vimwiki_hl_headers = 1
 let g:vimwiki_hl_cb_checked = 1
 let g:vimwiki_global_ext = 0
@@ -839,24 +868,29 @@ if g:setting.source_format ==? 'yes'
 endif
 "}}}
 
-" Shell {{{
-if g:setting.shell_need ==? 'yes'
-    Plugin 'Shougo/vimshell.vim' "{{{
-    "}}}
-endif
-"}}}
-
-" vim 补全{{{
-Plugin 'Shougo/neco-vim' "{{{
-"}}}
-"}}}
-
-" markdown {{{
+" markdown支持 {{{
 if g:setting.markdown_need ==? 'yes'
     Plugin 'godlygeek/tabular' "{{{
     "}}}
     Plugin 'plasticboy/vim-markdown' "{{{
     "}}}
+endif
+"}}}
+
+" golang开发支持 {{{
+if 'yes' ==? g:setting.golang_enable
+    Plugin 'fatih/vim-go'
+    let g:go_highlight_functions = 1
+    let g:go_highlight_methods = 1
+    let g:go_highlight_structs = 1
+    let g:go_highlight_interfaces = 1
+    let g:go_highlight_operators = 1
+    let g:go_highlight_build_constraints = 1
+    let g:go_fmt_command = "goimports"
+    let g:go_fmt_autosave = 0
+    let g:go_play_open_browser = 0
+    let g:go_bin_path = 'D:/Develop/GO/bin'
+    let g:go_snippet_engine = "neosnippet"
 endif
 "}}}
 
