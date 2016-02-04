@@ -31,6 +31,11 @@ if !exists('g:exvim_custom_path')
         set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
     endif
 endif
+
+" 重新映射leader键，default 为\
+if g:islinux
+ let mapleader = "<"
+endif
 " }}}
 
 "/////////////////////////////////////////////////////////////////////////////
@@ -625,8 +630,6 @@ endif
 " Key Mappings 按键映射 {{{
 " ==============================================================================
 "===================================================
-" 重新映射leader键，default 为\
-" let mapleader = ","
 " 修改esc 键为jk
 " inoremap jk <ESC>
 " vnoremap jk <ESC>
