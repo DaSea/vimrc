@@ -32,9 +32,8 @@ if !exists('g:exvim_custom_path')
     endif
 endif
 
-" 重新映射leader键，default 为\
 if g:islinux
- let mapleader = "<"
+    let mapleader='<'
 endif
 " }}}
 
@@ -129,13 +128,14 @@ if g:iswindows
 else
     let g:setting.vimwiki_path = '~/wiki/'
     let g:setting.vimwiki_html_path = '~/wiki/html/'
-    let g:setting.private_snippets = '~/.vim/snippets'
+    let g:setting.private_snippets = '~/snippets'
 endif
 " 是否需要markdown插件支持
 let g:setting.markdown_need = 'yes'
 " 是否需要vim补全(neco-vim)
 let g:setting.vimcomplete_need = 'yes'
 " 是否需要c++语言的一些支持{{{
+let g:setting.cpp_syntax_extent = 'yes'
 let g:setting.cpp_enable = 'yes'
 " }}}
 " 是否开启go语言开发功能 "{{{
@@ -630,6 +630,8 @@ endif
 " Key Mappings 按键映射 {{{
 " ==============================================================================
 "===================================================
+" 重新映射leader键，default 为\
+" let mapleader = ","
 " 修改esc 键为jk
 " inoremap jk <ESC>
 " vnoremap jk <ESC>
@@ -717,7 +719,7 @@ if g:iswindows
     nnoremap <leader>sv :source $MYVIMRC<cr>
 else
     nnoremap <leader>ev :e $MYVIMRC<cr>
-    nnoremap <leader>evp :e $VIM/.vimrc.plugins<cr>
+    nnoremap <leader>evp :e ~/.vimrc.plugins<cr>
     nnoremap <leader>sv :source $MYVIMRC<cr>
 endif
 

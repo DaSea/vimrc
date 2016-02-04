@@ -616,13 +616,18 @@ if g:setting.syntastic_need ==? 'yes' "{{{
 endif "}}}
 " }}}
 
-" c++友好提升 {{{
-if 'yes' ==? g:setting.cpp_enable "{{{
+" c++ syntax extent {{{
+if 'yes' ==? g:setting.cpp_syntax_extent "{{{
     Plugin 'octol/vim-cpp-enhanced-highlight'
     " -----------------------------------------------------------------------------
     let g:cpp_class_scope_highlight=1
     let g:cpp_experimental_template_highlight = 1
+
+    Plugin 'DaSea/vim-syntax'
+    let g:ndk_syntax_enable = 1
 endif "}}}
+
+
 "}}}
 
 " 界面相关{{{
@@ -699,6 +704,11 @@ if g:setting.status_line ==? "lightline"
                 \ 'separator': {'left': '', 'right': ''},
                 \ 'subseparator': {'left': '', 'right': ''}
                 \ }
+
+    if g:islinux
+        let g:lightline.separator = { 'left': '', 'right': '' }
+        let g:lightline.subseparator = { 'left': '|', 'right': '|' }
+    endif
 
     function! LightLineFugitive()
         if winwidth(0) > 70
@@ -904,6 +914,10 @@ if g:setting.exprj_list ==? 'ex' "{{{
 endif "}}}
 "}}}
 
+" Encoding check{{{
+Plugin 'mbbill/fencview'
+let g:fencview_autodetect = 1
+"}}}
 " TEST {{{
 " " test-loading
 " echomsg "test-loading: .vimrc"
