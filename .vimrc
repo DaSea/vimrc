@@ -410,7 +410,8 @@ else
         set background=dark
         set t_Co=256 " make sure our terminal use 256 color
     endif
-    colorscheme molokai
+    " colorscheme molokai
+    colorscheme solarized
 endif
 " }}}
 
@@ -472,7 +473,7 @@ nnoremap <space> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 "===============================================================================
 set textwidth=100
 set cc=+1       " 对齐线，当一行的长度大于80时显示一条竖线
-set cuc         " 高亮当前列
+" set cuc         " 高亮当前列
 set cursorline  " 高亮当前行
 
 " ==============================================================================
@@ -572,6 +573,7 @@ if has('autocmd')
         au FileType vim set comments=sO:\"\ -,mO:\"\ \ ,eO:\"\",f:\"
         au FileType vim set foldmethod=marker
         au FileType lua set comments=f:--
+        au FileType help noremap <buffer> q :close<CR>
 
         " if edit python scripts, check if have \t. ( python said: the programme can only use \t or not, but can't use them together )
         au FileType python,coffee call s:check_if_expand_tab()
@@ -660,24 +662,48 @@ noremap <leader>wu viwU
 " 取消当前高亮
 noremap <leader>nh :noh<cr>
 
+" If you want n to always search forward and N backward, use this:
+nnoremap <expr> n  'Nn'[v:searchforward]
+nnoremap <expr> N  'nN'[v:searchforward]
+
+" 命令行历史窗口关闭
+autocmd CmdwinEnter * noremap <buffer> q o<Esc><CR>
+" 命令行下浏览历史
+cnoremap <c-n>  <down>
+cnoremap <c-p>  <up>
+" 移动行(lu:上移, ld下移)
+nnoremap <leader>lu  :<c-u>execute 'move -1-'. v:count1<cr>
+nnoremap <leader>ld  :<c-u>execute 'move +'. v:count1<cr>
+" 快速增加空行
+nnoremap [<space>  :put! =''<cr>
+nnoremap ]<space>  :put =''<cr>
+" 快速增加空格
+" nnoremap <leader><space>  :put! =''
+" nnoremap <leader><space>  :put =''
+" 字体大小
+command! Bigger  :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)+1', '')
+command! Smaller :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)-1', ''
+
 "===================================================
-" 插入模式下移动光标
-inoremap <leader>hh <Left>
-inoremap <leader>jj <Down>
-inoremap <leader>kk <Up>
-inoremap <leader>ll <Right>
+" 快速切换窗口
+nnoremap <leader>wk <C-W><Up>
+nnoremap <leader>wj <C-W><Down>
+nnoremap <leader>wh <C-W><Left>
+nnoremap <leader>wl <C-W><Right>
 
 "===================================================
 " 当前文件中搜索光标下单词
 nnoremap <leader>lv :lv /<C-r>=expand("<cword>")<CR>/ %<CR>:lw<CR>
-" quickfix快捷键设置
-nnoremap <leader>cw :cw 10<CR>
-nnoremap <leader>cp :cp<CR>
-nnoremap <leader>cn :cn<CR>
 " location-list快捷键设置
 nnoremap <leader>ll :lw<CR>
 nnoremap <leader>ln :lne<CR>
 nnoremap <leader>lp :lp<CR>
+" quickfix快捷键设置
+nnoremap <leader>cw :cw 10<CR>
+nnoremap <leader>cp :cp<CR>
+nnoremap <leader>cn :cn<CR>
+" 定义快速关闭快捷键
+autocmd FileType qf noremap <buffer> q :close<CR>
 
 "===================================================
 " 编辑vim配置文件，并重新读取配置文件
@@ -734,16 +760,6 @@ nnoremap <leader>/ :let @/=""<CR>
 "          filter method
 " nnoremap <F8> :nohlsearch<CR>
 " nnoremap <leader>/ :nohlsearch<CR>
-
-" map Ctrl-Tab to switch window
-nnoremap <S-Up> <C-W><Up>
-nnoremap <S-Down> <C-W><Down>
-nnoremap <S-Left> <C-W><Left>
-nnoremap <S-Right> <C-W><Right>
-nnoremap <leader>kw <C-W><Up>
-nnoremap <leader>jw <C-W><Down>
-nnoremap <leader>hw <C-W><Left>
-nnoremap <leader>lw <C-W><Right>
 
 " easy diff goto
 noremap <C-k> [c
