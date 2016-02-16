@@ -2,13 +2,16 @@
 " 系统及gui判断{{{
 "/////////////////////////////////////////////////////////////////////////////
 " -----------------------------------------------------------------------------
-"  < 判断操作系统是否是 Windows 还是 Linux >
+"  判断操作系统:1, windows; 2, cygwin,msys; 3. linux; 4, mac;
 " -----------------------------------------------------------------------------
 let g:iswindows = 0
+let g:iswinunix = 0
 let g:islinux = 0
-let g:ismac=0
+let g:ismac = 0
 if(has("win32") || has("win64") || has("win95") || has("win16"))
     let g:iswindows = 1
+elseif has("win32unix")
+    let g:iswinunix = 1
 elseif has('macunix')
     let g:ismac = 1
 else
@@ -142,8 +145,7 @@ let g:setting.cpp_enable = 'yes'
 let g:setting.golang_enable = 'yes'
 "}}}
 
-" 自己测试插件设置{{{
-" 工程列表插件用哪个(unite-exprj, ex-prjlist)
+" 工程列表插件用哪个(unite-exprj, ex-prjlist){{{
 let g:setting.exprj_list = 'ex'
 "}}}
 " }}}
@@ -740,8 +742,6 @@ map Q gq
 
 "===================================================
 " 复制粘贴相关设置 {{{
-" 删除单个不存入寄存器
-nnoremap d "_d
 " 删除行不存入寄存器
 nnoremap dl "_dd
 " 删除单词不存入寄存器

@@ -434,7 +434,7 @@ nnoremap <silent> <C-p> :<C-u>Unite -no-split -buffer-name=files -start-insert -
 nnoremap <silent> <leader>ft :<C-u>Unite -no-split -buffer-name=files -start-insert file_rec/async:!<CR>
 nnoremap <silent> <leader>fs :Unite -no-split -buffer-name=files -start-insert file_rec/async<cr>
 " 打开的buffer查找
-nnoremap <silent> <leader>fl :<C-u>Unite -buffer-name=buffer buffer<CR>
+nnoremap <silent> <leader>fl :<C-u>Unite -quick-match -buffer-name=buffer buffer<CR>
 " 文件内搜索
 nnoremap <silent> <leader>gw :<C-u>Unite grep:. -buffer-name=search-buffer<CR>
 
