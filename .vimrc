@@ -623,7 +623,6 @@ if has('autocmd')
         endif
     endfunction
 endif
-
 "}}}
 
 " ==============================================================================
@@ -680,8 +679,8 @@ cnoremap <c-p>  <up>
 nnoremap <leader>lu  :<c-u>execute 'move -1-'. v:count1<cr>
 nnoremap <leader>ld  :<c-u>execute 'move +'. v:count1<cr>
 " 快速增加空行
-nnoremap [<space>  :put! =''<cr>
-nnoremap ]<space>  :put =''<cr>
+nnoremap <leader>us :put! =''<cr>
+nnoremap <leader>ds :put =''<cr>
 " 快速增加空格
 " nnoremap <leader><space>  :put! =''
 " nnoremap <leader><space>  :put =''
@@ -695,6 +694,11 @@ nnoremap <leader>wk <C-W><Up>
 nnoremap <leader>wj <C-W><Down>
 nnoremap <leader>wh <C-W><Left>
 nnoremap <leader>wl <C-W><Right>
+" 分割窗口(上, 下, 左, 右)
+nnoremap <leader>kw :<C-u>split<CR><C-W><Up>
+nnoremap <leader>jw :<C-u>split<CR>
+nnoremap <leader>hw :<C-u>vsplit<CR><C-W><Left>
+nnoremap <leader>lw :<C-u>vsplit<CR>
 
 "===================================================
 " 当前文件中搜索光标下单词
@@ -725,15 +729,25 @@ endif
 
 "===================================================
 " 保存文件设置 <leader>s 一键保存
-noremap  <C-s> :w<CR>
-inoremap <C-s> <ESC>:w<CR>
-vnoremap <C-s> <ESC>:w<CR>
+noremap  <leader>ws :w<CR>
+inoremap <leader>ws <ESC>:w<CR>
+vnoremap <leader>ws <ESC>:w<CR>
 " 关闭当前窗口, 详细请看:help Close
 noremap <leader>mc :close<CR>
 
 " Don't use Ex mode, use Q for formatting
 map Q gq
 
+"===================================================
+" 复制粘贴相关设置 {{{
+" 删除单个不存入寄存器
+nnoremap d "_d
+" 删除行不存入寄存器
+nnoremap dl "_dd
+" 删除单词不存入寄存器
+nnoremap dW "_dw
+" 删除单个不放入寄存器
+nnoremap x "_x
 " define the copy/paste judged by clipboard
 set clipboard+=unnamed
 set clipboard+=unnamedplus
@@ -756,6 +770,7 @@ nnoremap <silent> <leader>y2 :let @*=fnamemodify(bufname('%'),":p:t")<CR>
 
 " copy full path to clipboard, foo/bar/foobar.c => foo/bar/foobar.c
 nnoremap <silent> <leader>y3 :let @*=fnamemodify(bufname('%'),":p")<CR>
+"}}}
 
 " F8 or <leader>/:  Set Search pattern highlight on/off
 nnoremap <F8> :let @/=""<CR>

@@ -476,7 +476,7 @@ endif "}}}
 
 "  文件内跳转{{{
 Plugin 'Shougo/unite-outline' "{{{
-nnoremap <leader>fm :Unite -start-insert -no-split -buffer-name=outline outline<CR>
+nnoremap <leader>fm :Unite -quick-match -start-insert -no-split -buffer-name=outline outline<CR>
 "}}}
 
 Plugin 'Lokaltog/vim-easymotion' "{{{
@@ -626,8 +626,6 @@ if 'yes' ==? g:setting.cpp_syntax_extent "{{{
     Plugin 'DaSea/vim-syntax'
     let g:ndk_syntax_enable = 1
 endif "}}}
-
-
 "}}}
 
 " 界面相关{{{
@@ -918,6 +916,7 @@ endif "}}}
 Plugin 'mbbill/fencview'
 let g:fencview_autodetect = 1
 "}}}
+
 " TEST {{{
 " " test-loading
 " echomsg "test-loading: .vimrc"
