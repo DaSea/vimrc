@@ -92,11 +92,8 @@ scriptencoding utf-8
 let g:setting = {}
 " 全局设置
 " number一般行号, relative_num绝对行号, none不显示行号
-let g:setting.global_num = 'none'
-let g:setting.color_scheme = 'solarized'
-let g:setting.status_color = 'solarized_light'
-let g:setting.tab_size = 4
-let g:setting.help_lang = 'cn'
+let g:setting.color_scheme = 'last256'
+let g:setting.status_color = 'PaperColor_light'
 " 插件设置
 " vim-surround 是否需要
 let g:setting.surround_enable = 'no'
@@ -121,7 +118,7 @@ else
     let g:setting.complete_method = 'neocomplcache'
 endif
 "}}}
-" 括号的自动补全机制 neopairs, auto-pairs, no(disable)
+" 括号的自动补全机制 auto-pairs, no(disable)
 let g:setting.complete_pairs = 'auto-pairs'
 " windows与linux使用不同的目录
 if g:iswindows
@@ -148,6 +145,18 @@ let g:setting.golang_enable = 'yes'
 " 工程列表插件用哪个(unite-exprj, ex-prjlist){{{
 let g:setting.exprj_list = 'ex'
 "}}}
+
+" 插件一些目录配置 {{{
+if exists('g:exvim_custom_path')
+    let g:ex_tools_path = g:exvim_custom_path.'/vimfiles/tools/'
+    let g:vim_plugin_path = g:exvim_custom_path.'/.vimrc.plugins'
+    let g:setting.undodir = g:exvim_custom_path.'/undodir/'
+else
+    let g:ex_tools_path = '~/.vim/tools/'
+    let g:vim_plugin_path = '~/.vimrc.plugins'
+    let g:setting.undodir = '~/.undodir/'
+endif
+"}}}
 " }}}
 
 "/////////////////////////////////////////////////////////////////////////////
@@ -155,15 +164,6 @@ let g:setting.exprj_list = 'ex'
 "/////////////////////////////////////////////////////////////////////////////
 set nocompatible
 filetype off
-
-" 设置exvim工作路径
-if exists('g:exvim_custom_path')
-    let g:ex_tools_path = g:exvim_custom_path.'/vimfiles/tools/'
-    let g:vim_plugin_path = g:exvim_custom_path.'/.vimrc.plugins'
-else
-    let g:ex_tools_path = '~/.vim/tools/'
-    let g:vim_plugin_path = '~/.vimrc.plugins'
-endif
 
 " Vundle.vim设置{{{
 " set the runtime path to include Vundle
@@ -183,6 +183,9 @@ if filereadable(expand(g:vim_plugin_path))
 endif
 call vundle#end()
 "}}}
+
+" 插件加载完成后调用一些初始化函数
+call PluginLoadFinished()
 
 filetype plugin indent on " required
 syntax on " required
@@ -411,14 +414,15 @@ if g:isGUI
         set background=light
     endif
     set background=dark
-    colorscheme solarized
+    exec 'colorscheme ' . g:setting.color_scheme
 else
     if !g:iswindows
         set background=dark
         set t_Co=256 " make sure our terminal use 256 color
     endif
     " colorscheme molokai
-    colorscheme solarized
+    " colorscheme solarized
+    exec 'colorscheme ' . g:setting.color_scheme
 endif
 " }}}
 
@@ -468,7 +472,7 @@ set splitright
 " ==============================================================================
 set foldenable                                        "启用折叠
 set foldmethod=indent                                 "indent 折叠方式
-set foldlevel=5
+set foldlevel=3
 " set foldmethod=marker foldmarker={,} foldlevel=9999
 " set foldmethod=syntax
 set diffopt=filler,context:9999
@@ -576,6 +580,7 @@ if has('autocmd')
 
         " disable auto-comment for c/cpp, lua, javascript, c# and vim-script
         au FileType c,cpp,java,javascript set comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,f://
+        au FileType c,cpp,java set foldmethod=syntax
         au FileType cs set comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,f:///,f://
         au FileType vim set comments=sO:\"\ -,mO:\"\ \ ,eO:\"\",f:\"
         au FileType vim set foldmethod=marker
@@ -734,6 +739,10 @@ endif
 noremap  <leader>ws :w<CR>
 inoremap <leader>ws <ESC>:w<CR>
 vnoremap <leader>ws <ESC>:w<CR>
+noremap  <leader>wa :wa<CR>
+inoremap <leader>wa <ESC>:wa<CR>
+vnoremap <leader>wa <ESC>:wa<CR>
+
 " 关闭当前窗口, 详细请看:help Close
 noremap <leader>mc :close<CR>
 
