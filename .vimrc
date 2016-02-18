@@ -36,7 +36,7 @@ if !exists('g:exvim_custom_path')
 endif
 
 if g:islinux
-    let mapleader='<'
+    let mapleader=','
 endif
 " }}}
 
@@ -90,10 +90,16 @@ scriptencoding utf-8
 
 " 全局配置变量(Dictionnary){{{
 let g:setting = {}
+" Plugin manager plug(vim-plug, Vundle)
+let g:setting.plug_manager = 'vim-plug'
+let g:plugins_file = '.vimrc.vundle'
+if 'vim-plug' ==? g:setting.plug_manager
+    let g:plugins_file = '.vimrc.vimplug'
+endif
 " 全局设置
 " number一般行号, relative_num绝对行号, none不显示行号
-let g:setting.color_scheme = 'last256'
-let g:setting.status_color = 'PaperColor_light'
+let g:setting.color_scheme = 'solarized'
+let g:setting.status_color = 'solarized_light'
 " 插件设置
 " vim-surround 是否需要
 let g:setting.surround_enable = 'no'
@@ -145,50 +151,65 @@ let g:setting.golang_enable = 'yes'
 " 工程列表插件用哪个(unite-exprj, ex-prjlist){{{
 let g:setting.exprj_list = 'ex'
 "}}}
-
-" 插件一些目录配置 {{{
-if exists('g:exvim_custom_path')
-    let g:ex_tools_path = g:exvim_custom_path.'/vimfiles/tools/'
-    let g:vim_plugin_path = g:exvim_custom_path.'/.vimrc.plugins'
-    let g:setting.undodir = g:exvim_custom_path.'/undodir/'
-else
-    let g:ex_tools_path = '~/.vim/tools/'
-    let g:vim_plugin_path = '~/.vimrc.plugins'
-    let g:setting.undodir = '~/.undodir/'
-endif
-"}}}
 " }}}
 
 "/////////////////////////////////////////////////////////////////////////////
 " Bundle steup 插件管理插件设置{{{
 "/////////////////////////////////////////////////////////////////////////////
 set nocompatible
-filetype off
 
-" Vundle.vim设置{{{
-" set the runtime path to include Vundle
+" 设置exvim工作路径
 if exists('g:exvim_custom_path')
-    exec 'set rtp+='.fnameescape(g:exvim_custom_path.'/vimfiles/bundle/Vundle.vim')
-    call vundle#rc(g:exvim_custom_path.'/vimfiles/bundle')
+    let g:ex_tools_path = g:exvim_custom_path.'/vimfiles/tools/'
 else
-    set rtp+=~/.vim/bundle/Vundle.vim
-    call vundle#rc('~/.vim/bundle')
+    let g:ex_tools_path = '~/.vim/tools/'
 endif
-" source $VIMRUNTIME/ftplugin/man.vim
-Plugin 'gmarik/Vundle.vim'
 
-" 读取插件配置信息
-if filereadable(expand(g:vim_plugin_path))
-    exec 'source ' . fnameescape(g:vim_plugin_path)
+if 'Vundle.vim' ==# g:setting.plug_manager
+    filetype off
+    " Vundle.vim设置{{{
+    " set the runtime path to include Vundle
+    if exists('g:exvim_custom_path')
+        let g:vim_plugin_path = g:exvim_custom_path.'/.vimrc.vundle'
+        exec 'set rtp+='.fnameescape(g:exvim_custom_path.'/vimfiles/bundle/Vundle.vim')
+        call vundle#rc(g:exvim_custom_path.'/vimfiles/bundle')
+    else
+        let g:vim_plugin_path = '~/.vimrc.vundle'
+        set rtp+=~/.vim/bundle/Vundle.vim
+        call vundle#rc('~/.vim/bundle')
+    endif
+    " source $VIMRUNTIME/ftplugin/man.vim
+    Plugin 'gmarik/Vundle.vim'
+
+    " 读取插件配置信息
+    if filereadable(expand(g:vim_plugin_path))
+        exec 'source ' . fnameescape(g:vim_plugin_path)
+    endif
+    call vundle#end()
+    "}}}
+    filetype plugin indent on " required
+else
+    " Vim-plug setting {{{
+    " set the runtime path to include Vundle
+    if exists('g:exvim_custom_path')
+        let g:vim_plugin_path = g:exvim_custom_path.'/.vimrc.vimplug'
+        call plug#begin(g:exvim_custom_path.'/vimfiles/plugged')
+    else
+        let g:vim_plugin_path = '~/.vimrc.vimplug'
+        call plug#begin('~/.vim/plugged')
+    endif
+
+    " 读取插件配置信息
+    if filereadable(expand(g:vim_plugin_path))
+        exec 'source ' . fnameescape(g:vim_plugin_path)
+    endif
+
+    call plug#end()
+    "}}}
 endif
-call vundle#end()
-"}}}
-
+syntax on " required
 " 插件加载完成后调用一些初始化函数
 call PluginLoadFinished()
-
-filetype plugin indent on " required
-syntax on " required
 "}}}
 
 "/////////////////////////////////////////////////////////////////////////////
@@ -414,16 +435,13 @@ if g:isGUI
         set background=light
     endif
     set background=dark
-    exec 'colorscheme ' . g:setting.color_scheme
 else
     if !g:iswindows
         set background=dark
         set t_Co=256 " make sure our terminal use 256 color
     endif
-    " colorscheme molokai
-    " colorscheme solarized
-    exec 'colorscheme ' . g:setting.color_scheme
 endif
+exec 'colorscheme ' . g:setting.color_scheme
 " }}}
 
 " ==============================================================================
@@ -472,7 +490,7 @@ set splitright
 " ==============================================================================
 set foldenable                                        "启用折叠
 set foldmethod=indent                                 "indent 折叠方式
-set foldlevel=3
+set foldlevel=5
 " set foldmethod=marker foldmarker={,} foldlevel=9999
 " set foldmethod=syntax
 set diffopt=filler,context:9999
@@ -580,7 +598,6 @@ if has('autocmd')
 
         " disable auto-comment for c/cpp, lua, javascript, c# and vim-script
         au FileType c,cpp,java,javascript set comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,f://
-        au FileType c,cpp,java set foldmethod=syntax
         au FileType cs set comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,f:///,f://
         au FileType vim set comments=sO:\"\ -,mO:\"\ \ ,eO:\"\",f:\"
         au FileType vim set foldmethod=marker
@@ -726,11 +743,11 @@ autocmd FileType qf noremap <buffer> q :close<CR>
 " 当.vimrc文件改变时,自动加载
 if g:iswindows
     nnoremap <leader>ev :e $VIM\.vimrc<cr>
-    nnoremap <leader>evp :e $VIM\.vimrc.plugins<cr>
+    exec 'nnoremap <leader>evp :e $VIM\'.g:plugins_file.'<cr>'
     nnoremap <leader>sv :source $MYVIMRC<cr>
 else
     nnoremap <leader>ev :e $MYVIMRC<cr>
-    nnoremap <leader>evp :e ~/.vimrc.plugins<cr>
+    exec 'nnoremap <leader>evp :e ~/'.g:plugins_file.'<cr>'
     nnoremap <leader>sv :source $MYVIMRC<cr>
 endif
 
@@ -739,10 +756,6 @@ endif
 noremap  <leader>ws :w<CR>
 inoremap <leader>ws <ESC>:w<CR>
 vnoremap <leader>ws <ESC>:w<CR>
-noremap  <leader>wa :wa<CR>
-inoremap <leader>wa <ESC>:wa<CR>
-vnoremap <leader>wa <ESC>:wa<CR>
-
 " 关闭当前窗口, 详细请看:help Close
 noremap <leader>mc :close<CR>
 
