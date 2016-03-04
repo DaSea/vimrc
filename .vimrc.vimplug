@@ -329,7 +329,7 @@ if g:setting.complete_method ==? 'neocomplcache'
     "}}}
 endif
 
-Plug 'ludovicchabant/vim-gutentags' "{{{
+Plug 'DaSea/vim-gutentags' "{{{
 " General tags file
 if !exists('g:gutentags_project_root')
     let g:gutentags_project_root = ['.exvim']

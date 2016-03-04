@@ -165,7 +165,7 @@ else
     let g:ex_tools_path = '~/.vim/tools/'
 endif
 
-if 'Vundle.vim' ==# g:setting.plug_manager
+if 'Vundle' ==# g:setting.plug_manager
     filetype off
     " Vundle.vim设置{{{
     " set the runtime path to include Vundle
@@ -189,11 +189,12 @@ if 'Vundle.vim' ==# g:setting.plug_manager
     "}}}
     filetype plugin indent on " required
 else
+    let g:plug_threads = 1
     " Vim-plug setting {{{
     " set the runtime path to include Vundle
     if exists('g:exvim_custom_path')
         let g:vim_plugin_path = g:exvim_custom_path.'/.vimrc.vimplug'
-        call plug#begin(g:exvim_custom_path.'/vimfiles/plugged')
+        call plug#begin(g:exvim_custom_path.'/vimfiles/plugged/')
     else
         let g:vim_plugin_path = '~/.vimrc.vimplug'
         call plug#begin('~/.vim/plugged')
@@ -207,9 +208,10 @@ else
     call plug#end()
     "}}}
 endif
-syntax on " required
 " 插件加载完成后调用一些初始化函数
 call PluginLoadFinished()
+
+syntax on " required
 "}}}
 
 "/////////////////////////////////////////////////////////////////////////////
@@ -650,11 +652,30 @@ endif
 "}}}
 
 " ==============================================================================
+" 修改字符的默认行为 {{{
+" 插入字符的行为
+if 0
+    autocmd InsertCharPre call s:insertcharpre()
+    function! s:insertCharPre() abort "{{{
+        if ';' == v:char
+            normal! <ESC>l
+            let word = expand('<cword>')
+            if '(' ==? word[0]
+                <End>
+            endif
+        endif
+    endfunction "}}}
+endif
+"}}}
+
+" ==============================================================================
 " Key Mappings 按键映射 {{{
 " ==============================================================================
 "===================================================
 " 重新映射leader键，default 为\
 " let mapleader = ","
+" 修改 :
+nnoremap ; :
 " 修改esc 键为jk
 " inoremap jk <ESC>
 " vnoremap jk <ESC>
@@ -752,10 +773,13 @@ else
 endif
 
 "===================================================
-" 保存文件设置 <leader>s 一键保存
+" 保存文件设置
 noremap  <leader>ws :w<CR>
 inoremap <leader>ws <ESC>:w<CR>
 vnoremap <leader>ws <ESC>:w<CR>
+noremap  <leader>wa :wa<CR>
+inoremap <leader>wa <ESC>:wa<CR>
+vnoremap <leader>wa <ESC>:wa<CR>
 " 关闭当前窗口, 详细请看:help Close
 noremap <leader>mc :close<CR>
 

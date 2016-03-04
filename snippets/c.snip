@@ -75,13 +75,13 @@ alias       do
 snippet     switch
 abbr        switch() {}
     switch(${1:#:var}) {
-        case ${2:#:val}: {
-            ${0:TARGET}
-        }
-        break;
-        default:
-        // No select
-        break;
+    case ${2:#:val}: {
+        ${0:TARGET}
+    }
+    break;
+    default:
+    // No select
+    break;
     }
 
 # Declare function
@@ -117,11 +117,11 @@ abbr        enum {}
 # hard-tab is necessary; C indent doesn't support this.
 snippet cmain
     #include <stdio.h>
-	int main(int argc, char const* argv[])
-	{
-		${0:TARGET}
-		return 0;
-	}
+    int main(int argc, char const* argv[])
+    {
+    ${0:TARGET}
+    return 0;
+    }
 
 
 snippet ifndef
@@ -129,7 +129,7 @@ alias   #ifndef
 abbr #ifndef ... #define ... #endif
     #ifndef $1
     #define ${1:#:SYMBOL}
-    #endif${0}
+    #endif${0} // $1
 
 snippet def
 alias   #def, #define
@@ -164,11 +164,11 @@ snippet comment
 alias /**/
     /* ${1:#:comment} */
     ${0}
-    
+
 snippet comment_l
 alias //
     // ${1:#:comment}
-    ${0}                                            
+    ${0}
 
 snippet sizeof
 alias size
@@ -195,3 +195,30 @@ abbr fopen("...", "...");
 snippet fgets
 abbr fgets(row, length, file);
     fgets(${0:ROW}, ${1:LENGTH}, ${2:FILE});
+
+snippet     var_int
+abbr        int a = 0;
+options     head
+    int ${1:var} = ${2:0.0};${0}
+
+snippet     var_double
+abbr        double a = 0.0;
+options     head
+    double ${1:var} = ${2:0.0};${0}
+
+snippet     var_float
+abbr        float a = 0;
+options     head
+    float ${1:var} = ${2:0.0};${0}
+
+snippet     var_long
+abbr        long var=0
+options     head
+    long ${1:var} = ${2:0};${0}
+
+snippet     var_unsigned_long
+abbr        unsigned long var=0
+options     head
+    unsigned long ${1:var} = ${2:0};${0}
+
+
