@@ -97,9 +97,8 @@ if 'vim-plug' ==? g:setting.plug_manager
     let g:plugins_file = '.vimrc.vimplug'
 endif
 " 全局设置
-" number一般行号, relative_num绝对行号, none不显示行号
 let g:setting.color_scheme = 'solarized'
-let g:setting.status_color = 'solarized_light'
+let g:setting.status_color = 'cool'
 " 插件设置
 " vim-surround 是否需要
 let g:setting.surround_enable = 'no'
@@ -108,7 +107,7 @@ let g:setting.version_status = 'no'
 " 是否要开始欢迎界面(yes, no)
 let g:setting.starty_screen = 'no'
 " 状态栏(lightline, airline)
-let g:setting.status_line = 'lightline'
+let g:setting.status_line = 'airline'
 " 是否开启代码格式化(使用vim-clang-format)
 let g:setting.source_format = 'no'
 " 是否需要开启代码的静态语法检查(syntastic插件)
@@ -157,6 +156,7 @@ let g:setting.exprj_list = 'ex'
 " Bundle steup 插件管理插件设置{{{
 "/////////////////////////////////////////////////////////////////////////////
 set nocompatible
+set hidden
 
 " 设置exvim工作路径
 if exists('g:exvim_custom_path')
@@ -189,7 +189,9 @@ if 'Vundle' ==# g:setting.plug_manager
     "}}}
     filetype plugin indent on " required
 else
-    let g:plug_threads = 1
+    if !has("python")
+        let g:plug_threads = 1
+    endif
     " Vim-plug setting {{{
     " set the runtime path to include Vundle
     if exists('g:exvim_custom_path')
@@ -316,7 +318,7 @@ set wildmenu " turn on wild menu, try typing :h and press <Tab>
 set showcmd " display incomplete commands
 set cmdheight=1 " 1 screen lines to use for the command-line
 set ruler " show the cursor position all the time
-set hidden " allow to change buffer without saving
+" set hidden " allow to change buffer without saving
 set shortmess=aoOtTI " shortens messages to avoid 'press a key' prompt
 set lazyredraw " do not redraw while executing macros (much faster)
 set display+=lastline " for easy browse last line with wrap text
@@ -677,7 +679,7 @@ endif
 " 修改 :
 nnoremap ; :
 " 修改esc 键为jk
-" inoremap jk <ESC>
+inoremap jk <ESC>
 " vnoremap jk <ESC>
 " noremap jk  <ESC>
 " 行首和行尾
@@ -746,6 +748,10 @@ nnoremap <leader>hw :<C-u>vsplit<CR><C-W><Left>
 nnoremap <leader>lw :<C-u>vsplit<CR>
 
 "===================================================
+" 修改光标的快速上移或下移
+nnoremap J  10j
+
+"===================================================
 " 当前文件中搜索光标下单词
 nnoremap <leader>lv :lv /<C-r>=expand("<cword>")<CR>/ %<CR>:lw<CR>
 " location-list快捷键设置
@@ -791,7 +797,7 @@ map Q gq
 " 删除行不存入寄存器
 nnoremap dl "_dd
 " 删除单词不存入寄存器
-nnoremap dW "_dw
+nnoremap dc "_dw
 " 删除单个不放入寄存器
 nnoremap x "_x
 " define the copy/paste judged by clipboard

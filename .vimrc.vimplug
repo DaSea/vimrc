@@ -18,9 +18,9 @@ nnoremap <unique> <leader>ve :call exconfig#edit_cur_vimentry ()<CR>
 
 Plug 'exvim/ex-utility'
 " ---------------------------------------------------
-nnoremap <unique> <silent> <Leader>bd :EXbd<CR>
-nnoremap <unique> <silent> <leader>bn :EXbn<CR>
-nnoremap <unique> <silent> <leader>bp :EXbp<CR>
+nnoremap <unique> <silent> <Leader>ad :EXbd<CR>
+nnoremap <unique> <silent> <leader>an :EXbn<CR>
+nnoremap <unique> <silent> <leader>ap :EXbp<CR>
 nnoremap <unique> <silent> <C-Tab> :EXbalt<CR>
 nnoremap <unique> <silent> <Leader><Tab> :EXsw<CR>
 nmap <unique> <silent> <Leader><Esc> :EXgp<CR><ESC>
@@ -169,7 +169,18 @@ endif
 
 "  内容完成(括号补全, vim补全) {{{
 if 'yes' ==? g:setting.cpp_enable "{{{
-    Plug 'vim-scripts/OmniCppComplete'
+    " Plug 'vim-scripts/OmniCppComplete'
+    Plug 'osyo-manga/vim-marching'
+    let g:marching_clang_command = "D:/Develop/LLVM/bin/clang++.exe"
+    let g:marching#clang_command#options = {
+    \   "cpp" : "-std=gnu++1y"
+    \}
+    let g:marching_include_paths = [
+    \   "D:/Develop/msys64/mingw64/include/c++/5.3.0"
+    \]
+    let g:marching_enable_neocomplete = 1
+    imap <buffer> <C-x><C-o> <Plug>(marching_start_omni_complete)
+    imap <buffer> <C-x><C-x><C-o> <Plug>(marching_force_start_omni_complete)
 endif "}}}
 
 if g:setting.complete_method ==? 'neocomplete'
@@ -329,14 +340,6 @@ if g:setting.complete_method ==? 'neocomplcache'
     "}}}
 endif
 
-Plug 'DaSea/vim-gutentags' "{{{
-" General tags file
-if !exists('g:gutentags_project_root')
-    let g:gutentags_project_root = ['.exvim']
-else
-    call insert(g:gutentags_project_root, '.exvim')
-endif
-"}}}
 Plug 'Shougo/neoinclude.vim' "{{{
 " disable ctags
 let g:neoinclude#ctags_command = ""
@@ -381,6 +384,7 @@ Plug 'tpope/vim-endwise'
 "}}}
 
 " 文件导航(unite, a.vim) {{{
+Plug 'Shougo/vimproc.vim'
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/neomru.vim'
 Plug 'Shougo/vimfiler.vim' " 文件浏览器, 最近使用文件{{{
@@ -546,6 +550,7 @@ let g:ctrlsf_selected_line_hl = 'op'
 nnoremap <F5> :CtrlSFToggle<CR>
 nnoremap <leader>sw :call CtrlsfCurWord(expand("<cword>"))<CR>
 function! CtrlsfCurWord(word) abort
+    " TODO: 需要修改为根据exvim工程文件类型进行搜索
     let s:type = &filetype
     let s:filetype = '-filetype '.s:type
     execute "CtrlSF ".s:filetype.' '. a:word
@@ -615,6 +620,7 @@ let g:NERDCustomDelimiters = {
 
 Plug 'DaSea/DoxygenToolkit.vim' "生成文件注释和函数注释{{{
 " ---------------------------------------------------
+"  TODO: 考虑加入在已经有注释的情况下刷洗注释,比较难
 " let g:DoxygenToolkit_commentType = "C++"
 let g:DoxygenToolkit_briefTag_pre="@brief  "
 let g:DoxygenToolkit_paramTag_pre="@param  "
@@ -644,7 +650,7 @@ if 'yes' ==? g:setting.syntastic_need "代码语法等检查{{{
 endif "}}}
 " }}}
 
-" c++等相关语言的语法扩展 {{{
+" c++, qml, ndk等相关的语法扩展 {{{
 if 'yes' ==? g:setting.cpp_syntax_extent "c++语法扩展{{{
     Plug 'octol/vim-cpp-enhanced-highlight'
     " -----------------------------------------------------------------------------
@@ -659,6 +665,7 @@ endif "}}}
 " 界面显示相关{{{
 if g:setting.starty_screen ==? 'yes'
     Plug 'mhinz/vim-startify' " 开始界面,可以显示MRU, Session等{{{
+    " TODO: 考虑将此进行改造, 只显示exvim工程的插件
     "开始欢迎界面
     nnoremap <F4> :Startify<CR>
     " set session path
@@ -697,13 +704,17 @@ let g:better_whitespace_filetypes_blacklist = ['unite', 'vimfiler']
 noremap CS :StripWhitespace<CR>
 "}}}
 
+" lightline 与 airline 都是状态栏, 根据个人喜好选择, lightline的tabline不出来(bug)
 if g:setting.status_line ==? "lightline"
     Plug 'itchyny/lightline.vim'"{{{
     " ---------------------------------------------------
     let g:lightline ={
                 \ 'enable' :{
                 \ 'statusline': 1,
-                \ 'tabline': 0
+                \ 'tabline': 1
+                \ },
+                \ 'component_expand': {
+                \ 'tabs': 'lighline#tabs'
                 \ },
                 \ 'colorscheme':g:setting.status_color,
                 \ 'component':{
@@ -715,8 +726,8 @@ if g:setting.status_line ==? "lightline"
                 \ 'right': [ [ 'lineinfo' ], [ 'fileformat', 'fileencoding', 'filetype' ] ]
                 \ },
                 \ 'inactive': {
-                \ 'left': [['filename']],
-                \ 'right': [['lineinfo']]
+                \ 'left': [['filename', 'modified']],
+                \ 'right': [ [ 'lineinfo' ], [ 'fileformat', 'fileencoding', 'filetype' ] ]
                 \},
                 \ 'component_function': {
                 \   'modified': 'LightLineModified',
@@ -728,7 +739,9 @@ if g:setting.status_line ==? "lightline"
                 \   'fileformat': 'LightLineFileformat'
                 \ },
                 \ 'separator': {'left': '', 'right': ''},
-                \ 'subseparator': {'left': '', 'right': ''}
+                \ 'subseparator': {'left': '', 'right': ''},
+                \ 'tabline_separator': {'left': '', 'right': ''},
+                \ 'tabline_subseparator': {'left': '', 'right': ''}
                 \ }
 
     if g:islinux
@@ -786,9 +799,9 @@ if g:setting.status_line ==? "lightline"
     endfunction
     "}}}
 endif
-
 if g:setting.status_line ==? 'airline'
-    Plug 'bling/vim-airline' "{{{
+    Plug 'bling/vim-airline'
+    Plug 'vim-airline/vim-airline-themes' "{{{
     " airline 设置
     let g:airline_extensions = ['tabline', 'unite', 'quickfix']
     let g:airline_powerline_fonts = 1
@@ -805,7 +818,7 @@ if g:setting.status_line ==? 'airline'
     " tabline设置
     let g:airline#extensions#tabline#formatter = 'unique_tail'
     let g:airline#extensions#tabline#enabled = 1
-    let g:airline_theme = g:statuscheme
+    let g:airline_theme = g:setting.status_color
     "}}}
 endif
 
@@ -822,7 +835,8 @@ let g:solaried_bold = 1
 let g:solaried_underline = 1
 let g:solaried_italic = 0
 
-Plug 'DaSea/vim-personcolors'
+" 个人收集的一些主题
+" Plug 'DaSea/vim-personcolors'
 "}}}
 
 Plug 'ujihisa/unite-colorscheme' "快速浏览已有的颜色主题并选择{{{
@@ -940,6 +954,12 @@ endif "}}}
 " Encoding check{{{
 Plug 'mbbill/fencview'
 let g:fencview_autodetect = 1
+"}}}
+
+" 一些简短vim脚本的合集{{{
+Plug 'DaSea/vim-myUtilities'
+" 定义运行qml文件的脚本
+nnoremap <leader>mr :call system("qmlscene.exe ". expand("%"))<CR>
 "}}}
 
 " TEST {{{
