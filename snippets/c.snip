@@ -32,23 +32,23 @@ alias   #inc2, #include2
 
 snippet     if
 abbr        if(){}
-    if(${1:#:condition}) {
+    if (${1:#:condition}) {
         ${0:TARGET}
     }
 
 snippet else
-    else{
+    else {
         ${0:TARGET}
     }
 
 snippet elseif
-    else if(${1:#:condition}) {
+    else if (${1:#:condition}) {
         ${0:TARGET}
     }
 
 snippet     ifelse
 abbr        if(){}else{}
-    if(${1:#:condition}) {
+    if (${1:#:condition}) {
         ${2:TARGET}
     } else {
         ${3}
@@ -56,13 +56,13 @@ abbr        if(){}else{}
 
 snippet     for
 abbr        for(){}
-    for(${1:int} ${2:i} = ${3:0}; $2 < ${4}; ++$2) {
+    for (${1:int} ${2:i} = ${3:0}; $2 < ${4}; ++$2) {
         ${0:TARGET}
     }
 
 snippet     while
 abbr        while () {}
-    while(${1:#:condition}) {
+    while (${1:#:condition}) {
         ${0:TARGET}
     }
 
@@ -70,7 +70,7 @@ snippet     do_while
 alias       do
     do {
         ${0:TARGET:code}
-    }while(${1:#:condition});
+    } while (${1:#:condition});
 
 snippet     switch
 abbr        switch() {}
@@ -220,5 +220,3 @@ snippet     var_unsigned_long
 abbr        unsigned long var=0
 options     head
     unsigned long ${1:var} = ${2:0};${0}
-
-

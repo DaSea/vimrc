@@ -169,7 +169,10 @@ endif
 
 "  内容完成(括号补全, vim补全) {{{
 if 'yes' ==? g:setting.cpp_enable "{{{
-    " Plug 'vim-scripts/OmniCppComplete'
+    Plug 'vim-scripts/OmniCppComplete'
+endif "}}}
+
+if 0 " 禁止vim-marching插件{{{
     Plug 'osyo-manga/vim-marching'
     let g:marching_clang_command = "D:/Develop/LLVM/bin/clang++.exe"
     let g:marching#clang_command#options = {
@@ -353,6 +356,7 @@ let g:neosnippet#disable_runtime_snippets = {
             \ }
 let g:neosnippet#snippets_directory=g:setting.private_snippets
 let g:neosnippet#enable_complete_done = 1
+let g:neosnippet#enable_conceal_markers = 0
 " let g:neosnippet#enable_snipmate_compatibility=1
 " Plug key-mappings.
 imap <C-k> <Plug>(neosnippet_expand_or_jump)
@@ -377,6 +381,12 @@ if g:setting.complete_pairs ==? 'auto-pairs'  "{{{
     let g:AutoPairsShortcutToggle = '<leader>pp'
     let g:AutoPairsShortcutFastWrap = '<leader>pe'
     let g:AutoPairsShortcutJump = '<leader>pn'
+endif "}}}
+
+if g:setting.complete_pairs ==? 'delimitMate'  "{{{
+    Plug 'Raimondi/delimitMate'
+    let delimitMate_expand_cr = 2
+    " let delimitMate_expand_space = 0
 endif "}}}
 
 Plug 'tpope/vim-endwise'
@@ -421,7 +431,7 @@ elseif executable('pt')
     let g:unite_source_grep_encoding = 'utf-8'
 endif
 
-" 替换nertw(文件浏览器)
+" 替换nertw(文件浏览器) {{{
 let g:vimfiler_as_default_explorer = 1
 let g:vimfiler_force_overwrite_statusline = 0
 let g:vimfiler_min_cache_files = 500
@@ -447,18 +457,27 @@ let g:vimfiler_readonly_file_icon = ''
 let g:vimfiler_marked_file_icon = '√'
 let g:vimfiler_expand_jump_to_first_child = 0
 let g:vimfiler_ignore_pattern = []
+" }}}
 
 " 按键绑定{{{
 " 最近文件
 nnoremap <silent> <leader>jf :<C-u>Unite -no-split -buffer-name=mru -start-insert file_mru<CR>
+" 浏览当前工程所在目录的mru
+" nnoremap <silent> <leader>jf :<C-u>Unite -no-split -buffer-name=mru -start-insert file_mru<CR>
+
 " 文件查找
 nnoremap <silent> <C-p> :<C-u>Unite -no-split -buffer-name=files -start-insert -update-time=100 file_rec<CR>
 nnoremap <silent> <leader>ft :<C-u>Unite -no-split -buffer-name=files -start-insert file_rec/async:!<CR>
 nnoremap <silent> <leader>fs :Unite -no-split -buffer-name=files -start-insert file_rec/async<cr>
 " 打开的buffer查找
 nnoremap <silent> <leader>fl :<C-u>Unite -buffer-name=buffer buffer<CR>
+nnoremap <silent> <leader>fk :<C-u>Unite -quick-match -buffer-name=buffer buffer<CR>
 " 文件内搜索
-nnoremap <silent> <leader>gw :<C-u>Unite grep:. -buffer-name=search-buffer<CR>
+" nnoremap <silent> <leader>gw :<C-u>Unite grep:%:expand("<cword>")<CR>
+nnoremap <silent> <leader>gw :<C-u>UniteWithCursorWord grep<CR>
+" 需要一个在任意时候可以打开文件所在目录列表的定义
+nnoremap <silent> <leader>fb :VimFilerBufferDir -buffer-name=explorer
+            \ -split -direction=aboveleft -simple -winwidth=35 -toggle
 " 文件浏览器
 nnoremap <F2> :VimFilerExplorer<CR>
 autocmd FileType vimfiler nmap <silent><buffer><expr> <CR> vimfiler#smart_cursor_map(
@@ -494,7 +513,7 @@ call add(g:init_func_list, function('UnitInit'))
 "}}}
 
 if 'yes' ==? g:setting.cpp_enable "h与cpp文件的交换{{{
-    Plug 'vim-scripts/a.vim'
+    Plug 'DaSea/ex-avim'
     " 用于切换C/C++头文件
     " :A     ---切换头文件并独占整个窗口
     " :AV    ---切换头文件并垂直分割窗口
@@ -503,6 +522,26 @@ if 'yes' ==? g:setting.cpp_enable "h与cpp文件的交换{{{
     nnoremap <silent> <leader>av :AV<CR>
     nnoremap <silent> <leader>as :AS<CR>
 endif "}}}
+"}}}
+
+" 文件导航之vim-ctrlpspace{{{
+if 0 == g:iswinunix
+    Plug 'vim-ctrlspace/vim-ctrlspace'
+    let g:CtrlSpaceSearchTiming = 500
+    let g:CtrlSpaceLoadLastWorkspaceOnStart = 1
+    let g:CtrlSpaceSaveWorkspaceOnSwitch = 1
+    let g:CtrlSpaceSaveWorkspaceOnExit = 1
+    let g:airline_exclude_preview = 1
+    let g:CtrlSpaceHeight = 10
+    let g:CtrlSpaceUseTabline = 0
+    if executable("ag")
+        let g:CtrlSpaceGlobCommand = 'ag -l --nocolor -g ""'
+    endif
+    " 定义快捷键
+    " let g:CtrlSpaceSetDefaultMapping = 0
+    " let g:CtrlSpaceDefaultMappingKey = "<M-p>"
+    nnoremap <silent><M-p> :CtrlSpace O<CR>
+endif
 "}}}
 
 "  文件内跳转{{{
@@ -652,10 +691,12 @@ endif "}}}
 
 " c++, qml, ndk等相关的语法扩展 {{{
 if 'yes' ==? g:setting.cpp_syntax_extent "c++语法扩展{{{
-    Plug 'octol/vim-cpp-enhanced-highlight'
+    " Plug 'octol/vim-cpp-enhanced-highlight'
     " -----------------------------------------------------------------------------
-    let g:cpp_class_scope_highlight=1
-    let g:cpp_experimental_template_highlight = 1
+    " let g:cpp_class_scope_highlight=1
+    " let g:cpp_experimental_template_highlight = 1
+
+    Plug 'justinmk/vim-syntax-extra'
 
     Plug 'DaSea/vim-syntax'
     let g:ndk_syntax_enable = 1
@@ -710,8 +751,7 @@ if g:setting.status_line ==? "lightline"
     " ---------------------------------------------------
     let g:lightline ={
                 \ 'enable' :{
-                \ 'statusline': 1,
-                \ 'tabline': 1
+                \ 'statusline': 1
                 \ },
                 \ 'component_expand': {
                 \ 'tabs': 'lighline#tabs'
@@ -803,7 +843,7 @@ if g:setting.status_line ==? 'airline'
     Plug 'bling/vim-airline'
     Plug 'vim-airline/vim-airline-themes' "{{{
     " airline 设置
-    let g:airline_extensions = ['tabline', 'unite', 'quickfix']
+    let g:airline_extensions = ['unite', 'quickfix']
     let g:airline_powerline_fonts = 1
     if !exists('g:ariline_symbols')
         let g:airline_symbols = {}
@@ -816,8 +856,8 @@ if g:setting.status_line ==? 'airline'
     let g:airline_symbols.readonly = ''
     let g:airline_symbols.linenr = ''
     " tabline设置
-    let g:airline#extensions#tabline#formatter = 'unique_tail'
-    let g:airline#extensions#tabline#enabled = 1
+    " let g:airline#extensions#tabline#formatter = 'unique_tail'
+    " let g:airline#extensions#tabline#enabled = 1
     let g:airline_theme = g:setting.status_color
     "}}}
 endif
@@ -834,6 +874,18 @@ Plug 'altercation/vim-colors-solarized'
 let g:solaried_bold = 1
 let g:solaried_underline = 1
 let g:solaried_italic = 0
+
+" Plug 'morhetz/gruvbox'
+
+" Plug 'nanotech/jellybeans.vim'
+" let g:jellybeans_use_lowcolor_black = 0
+" let g:jellybeans_use_term_italics = 1
+
+Plug 'w0ng/vim-hybrid'
+let g:hybrid_custom_term_colors = 1
+let g:hybrid_reduced_contrast = 1
+
+" Plug 'sickill/vim-monokai'
 
 " 个人收集的一些主题
 " Plug 'DaSea/vim-personcolors'
