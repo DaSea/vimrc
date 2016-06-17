@@ -448,11 +448,13 @@ if g:isGUI
 else
     if !g:iswindows
         set background=dark
-        set t_Co=256 " make sure our terminal use 256 color
     endif
+    set t_Co=256 " make sure our terminal use 256 color
 endif
 if g:isGUI
     exec 'colorscheme ' . g:setting.color_scheme
+else
+    exec 'colorscheme desert'
 endif
 " }}}
 
