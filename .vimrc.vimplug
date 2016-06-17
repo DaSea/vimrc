@@ -890,6 +890,12 @@ let g:solaried_bold = 1
 let g:solaried_underline = 1
 let g:solaried_italic = 0
 
+" Plug 'morhetz/gruvbox'
+
+" Plug 'nanotech/jellybeans.vim'
+" let g:jellybeans_use_lowcolor_black = 0
+" let g:jellybeans_use_term_italics = 1
+
 Plug 'w0ng/vim-hybrid'
 let g:hybrid_custom_term_colors = 1
 let g:hybrid_reduced_contrast = 1

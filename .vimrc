@@ -112,7 +112,13 @@ let g:setting.version_status = 'no'
 " 是否要开始欢迎界面(yes, no)
 let g:setting.starty_screen = 'no'
 " 状态栏(lightline, airline)
-let g:setting.status_line = 'lightline'
+if g:iswinunix
+    let g:setting.status_line = 'lightline'
+    let g:setting.status_color = 'solarized_light'
+else
+    let g:setting.status_line = 'airline'
+    let g:setting.status_color = 'cool'
+endif
 " 是否开启代码格式化(使用vim-clang-format)
 let g:setting.source_format = 'no'
 " 是否需要开启代码的静态语法检查(syntastic插件)
@@ -448,10 +454,14 @@ if g:isGUI
 else
     if !g:iswindows
         set background=dark
-        set t_Co=256 " make sure our terminal use 256 color
     endif
+    set t_Co=256 " make sure our terminal use 256 color
 endif
-exec 'colorscheme ' . g:setting.color_scheme
+if g:isGUI
+    exec 'colorscheme ' . g:setting.color_scheme
+else
+    exec 'colorscheme desert'
+endif
 " }}}
 
 " ==============================================================================
