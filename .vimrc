@@ -97,9 +97,14 @@ if 'vim-plug' ==? g:setting.plug_manager
     let g:plugins_file = '.vimrc.vimplug'
 endif
 " 全局设置
-let g:setting.color_scheme = 'solarized'
-let g:setting.status_color = 'cool'
+let g:setting.color_scheme = 'onedark'
+" cool, 
+let g:setting.status_color = 'solarized_light'
 " 插件设置
+let g:setting.vimctrlspace_enable = 'yes'
+if g:iswinunix
+    let g:setting.vimctrlspace_enable = 'no'
+endif
 " vim-surround 是否需要
 let g:setting.surround_enable = 'no'
 " 关于更改行的设置(git(vim-gitgutter), git_svn(vim-signify), no)
@@ -107,7 +112,7 @@ let g:setting.version_status = 'no'
 " 是否要开始欢迎界面(yes, no)
 let g:setting.starty_screen = 'no'
 " 状态栏(lightline, airline)
-let g:setting.status_line = 'airline'
+let g:setting.status_line = 'lightline'
 " 是否开启代码格式化(使用vim-clang-format)
 let g:setting.source_format = 'no'
 " 是否需要开启代码的静态语法检查(syntastic插件)
@@ -123,12 +128,12 @@ else
     let g:setting.complete_method = 'neocomplcache'
 endif
 "}}}
-" 括号的自动补全机制 auto-pairs, no(disable)
+" 括号的自动补全机制 auto-pairs, no(disable),delimitMate
 let g:setting.complete_pairs = 'auto-pairs'
 " windows与linux使用不同的目录
 if g:iswindows
-    let g:setting.vimwiki_path = 'E:/Self/dasea/wiki/'
-    let g:setting.vimwiki_html_path = 'E:/Self/dasea/wiki/html/'
+    let g:setting.vimwiki_path = 'E:/Self/01_mywiki/wiki/'
+    let g:setting.vimwiki_html_path = 'E:/Self/01_mywiki/wiki/html/'
     let g:setting.private_snippets = $VIM.'/snippets'
 else
     let g:setting.vimwiki_path = '~/wiki/'
@@ -157,6 +162,7 @@ let g:setting.exprj_list = 'ex'
 "/////////////////////////////////////////////////////////////////////////////
 set nocompatible
 set hidden
+set showtabline=0
 
 " 设置exvim工作路径
 if exists('g:exvim_custom_path')
@@ -517,8 +523,10 @@ set listchars=tab:▸\ ,extends:❯,precedes:❮,nbsp:␣
 " set listchars=extends:❯,precedes:❮,nbsp:␣
 set showbreak=↪
 " For conceal markers.
-if has('conceal')
-    set conceallevel=2 concealcursor=niv
+if has("conceal")
+    set conceallevel=1
+    " set concealcursor=niv
+    set concealcursor=c
 endif
 
 " ==============================================================================
@@ -606,6 +614,7 @@ if has('autocmd')
         au FileType vim set comments=sO:\"\ -,mO:\"\ \ ,eO:\"\",f:\"
         au FileType vim set foldmethod=marker
         au FileType lua set comments=f:--
+        au FileType qml set foldmethod=indent
         au FileType help noremap <buffer> q :close<CR>
 
         " if edit python scripts, check if have \t. ( python said: the programme can only use \t or not, but can't use them together )
@@ -695,6 +704,16 @@ nmap <Leader>pa %
 nnoremap <leader>u <c-r>
 " undo
 " u
+
+"===================================================
+" 观看当前单词的帮助
+" nnoremap <Leader>hh :call FindWord()<CR>
+nnoremap <F1> :call FindWord()<CR>
+function! FindWord() abort "{{{
+    let curWord = expand("<cword>")
+    echo curWord
+    execute "h " . curWord
+endfunction "}}}
 
 "===================================================
 " 常规模式下输入 cS 清除行尾空格

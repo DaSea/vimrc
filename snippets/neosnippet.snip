@@ -7,6 +7,12 @@ options     head
     options     head
         ${3:#:TARGET}
 
+snippet     snipm
+abbr        snippet abbr <snippet code>
+    snippet     ${1:#:trigger}
+    abbr        ${2:#:abbr}
+        ${3:#:TARGET}
+
 snippet     include
 abbr        include *.snip
 alias       inc
