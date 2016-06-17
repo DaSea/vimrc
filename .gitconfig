@@ -1,0 +1,13 @@
+[user]
+	email = dhf0214@16.com
+	name = DaSea
+[branch]
+	autosetuprebase = always
+[color]
+	ui = true
+	status = auto
+	branch = auto
+[core]
+	editor = nano
+[merge]
+	tool = vimdiff
