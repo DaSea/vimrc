@@ -97,7 +97,7 @@ if 'vim-plug' ==? g:setting.plug_manager
     let g:plugins_file = '.vimrc.vimplug'
 endif
 " 全局设置
-let g:setting.color_scheme = 'solarized'
+let g:setting.color_scheme = 'onedark'
 " 关于更改行的设置(git(vim-gitgutter), git_svn(vim-signify), no)
 let g:setting.version_status = 'no'
 " 是否要开始欢迎界面(yes, no)

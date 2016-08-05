@@ -855,15 +855,13 @@ endfunction " }}}
 " }}}
 "}}}
 
-" 代码格式化{{{
+" 代码格式化:{{{
 "}}}
 
 " markdown支持 {{{
 if g:setting.markdown_need ==? 'yes'
-    Plug 'godlygeek/tabular', {'for': 'md'} "{{{
-    "}}}
-    Plug 'plasticboy/vim-markdown', {'for': 'md'} "{{{
-    "}}}
+    Plug 'godlygeek/tabular', {'for': 'md'}
+    Plug 'plasticboy/vim-markdown', {'for': 'md'}
 endif
 "}}}
 
