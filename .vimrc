@@ -97,30 +97,13 @@ if 'vim-plug' ==? g:setting.plug_manager
     let g:plugins_file = '.vimrc.vimplug'
 endif
 " 全局设置
-let g:setting.color_scheme = 'onedark'
-" cool, 
-let g:setting.status_color = 'solarized_light'
-" 插件设置
-let g:setting.vimctrlspace_enable = 'yes'
-if g:iswinunix
-    let g:setting.vimctrlspace_enable = 'no'
-endif
-" vim-surround 是否需要
-let g:setting.surround_enable = 'no'
+let g:setting.color_scheme = 'solarized'
 " 关于更改行的设置(git(vim-gitgutter), git_svn(vim-signify), no)
 let g:setting.version_status = 'no'
 " 是否要开始欢迎界面(yes, no)
 let g:setting.starty_screen = 'no'
-" 状态栏(lightline, airline)
-if g:iswinunix
-    let g:setting.status_line = 'lightline'
-    let g:setting.status_color = 'solarized_light'
-else
-    let g:setting.status_line = 'airline'
-    let g:setting.status_color = 'cool'
-endif
-" 是否开启代码格式化(使用vim-clang-format)
-let g:setting.source_format = 'no'
+" 状态栏(ariline)
+let g:setting.status_color = 'light'
 " 是否需要开启代码的静态语法检查(syntastic插件)
 let g:setting.syntastic_need = 'no'
 " 是否需要开启cppcheck功能
@@ -134,16 +117,12 @@ else
     let g:setting.complete_method = 'neocomplcache'
 endif
 "}}}
-" 括号的自动补全机制 auto-pairs, no(disable),delimitMate
-let g:setting.complete_pairs = 'auto-pairs'
 " windows与linux使用不同的目录
 if g:iswindows
-    let g:setting.vimwiki_path = 'E:/Self/01_mywiki/wiki/'
-    let g:setting.vimwiki_html_path = 'E:/Self/01_mywiki/wiki/html/'
+    let g:setting.vimwiki_path = 'E:/Self/01_mywiki/dasea.github.io/'
     let g:setting.private_snippets = $VIM.'/snippets'
 else
-    let g:setting.vimwiki_path = '~/wiki/'
-    let g:setting.vimwiki_html_path = '~/wiki/html/'
+    let g:setting.vimwiki_path = '~/dasea.github.io/'
     let g:setting.private_snippets = '~/snippets'
 endif
 " 是否需要markdown插件支持
@@ -158,9 +137,6 @@ let g:setting.cpp_enable = 'yes'
 let g:setting.golang_enable = 'yes'
 "}}}
 
-" 工程列表插件用哪个(unite-exprj, ex-prjlist){{{
-let g:setting.exprj_list = 'ex'
-"}}}
 " }}}
 
 "/////////////////////////////////////////////////////////////////////////////
@@ -201,7 +177,9 @@ if 'Vundle' ==# g:setting.plug_manager
     "}}}
     filetype plugin indent on " required
 else
-    if !has("python")
+    if has("python") || has("python3")
+        let g:plug_threads = 10
+    else
         let g:plug_threads = 1
     endif
     " Vim-plug setting {{{
@@ -304,15 +282,18 @@ if has('gui_running')
         elseif g:iswindows
             if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
                 set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h11:cANSI
+            elseif getfontname('Inconsolata-g for Powerline') != ''
+                set guifont=Inconsolata-g\ for\ Powerline:h12:cANSI
             elseif getfontname( 'Microsoft YaHei Mono' ) != ''
-                set guifont=Microsoft\ YaHei\ Mono:h11:cANSI
+                set guifont=Microsoft\ YaHei\ Mono:h12:cANSI
             elseif getfontname( 'DejaVu Sans Mono' ) != ''
-                set guifont=DejaVu\ Sans\ Mono:h11:cANSI
+                set guifont=DejaVu\ Sans\ Mono:h12:cANSI
             elseif getfontname( 'Consolas' ) != ''
-                set guifont=Consolas:h11:cANSI " this is the default visual studio font
+                set guifont=Consolas:h12:cANSI " this is the default visual studio font
             else
-                set guifont=Lucida_Console:h11:cANSI
+                set guifont=Lucida_Console:h12:cANSI
             endif
+            " set guifontwide=Microsoft\ Yahei:h12
         endif
     endfunction
 endif
@@ -337,20 +318,9 @@ set display+=lastline " for easy browse last line with wrap text
 set titlestring=%t\ [%{expand(\"%:p:.:h\")}]
 
 " set window size (if it's GUI)
-if has('gui_running')
-    " set window's width to 130 columns and height to 40 rows
-    " if exists('+lines')
-        " set lines=40
-    " endif
-    " if exists('+columns')
-        " set columns=130
-    " endif
-
-    " DISABLE
+if g:isGUI
     if g:iswindows
         au GUIEnter * simalt ~x " Maximize window when enter vim
-    else
-        " TODO: no way right now
     endif
 endif
 
@@ -359,26 +329,7 @@ set guioptions-=b "present the bottom scrollbar when the longest visible line ex
 
 " 状态栏设置
 set laststatus=2 " always have status-line
-" set statusline=[%{CurModeStr()}]\ [%t:%{&ff}]\ [Type:%y]\ [Pos=%04l,%04v][%p%%:%L]
-func! CurModeStr()
-    let modeStr = ""
-    let curMode = mode()
-    if curMode == "n"
-       let  modeStr = "normal"
-    elseif curMode == "i"
-       let modeStr = "insert"
-   elseif curMode == "v"
-       let modeStr = "visual"
-    elseif curMode == "V"
-        let modeStr = "visual line"
-    elseif curMode == "c"
-        let modeStr = "command"
-    else
-        let modeStr = "Other"
-    endif
-
-    return modeStr
-endfunc
+" set statusline=[%{mode()}]\ [%t:%{&ff}]\ [Type:%y]\ [Pos=%04l,%04v][%p%%:%L]
 
 " 显示/隐藏菜单栏、工具栏、滚动条，可用 Ctrl + F11 切换
 if g:isGUI
@@ -450,16 +401,12 @@ if g:isGUI
     else
         set background=light
     endif
-    set background=dark
+    exec 'colorscheme ' . g:setting.color_scheme
 else
     if !g:iswindows
         set background=dark
     endif
     set t_Co=256 " make sure our terminal use 256 color
-endif
-if g:isGUI
-    exec 'colorscheme ' . g:setting.color_scheme
-else
     exec 'colorscheme desert'
 endif
 " }}}
@@ -467,6 +414,7 @@ endif
 " ==============================================================================
 " 编辑相关设置(edit text setting, viminfo){{{
 " ==============================================================================
+set mouse=a " Disable mouse
 set ai " autoindent
 set si " smartindent
 set backspace=indent,eol,start " allow backspacing over everything in insert mode
@@ -529,14 +477,14 @@ set cursorline  " 高亮当前行
 " 显示不可打印字符
 "===============================================================================
 set list
-set listchars=tab:▸\ ,extends:❯,precedes:❮,nbsp:␣
-" set listchars=extends:❯,precedes:❮,nbsp:␣
+" set listchars=tab:▸\ ,eol:¬,trail:⋅,extends:❯,precedes:❮
+set listchars=tab:▸\ ,trail:⋅,extends:❯,precedes:❮
 set showbreak=↪
 " For conceal markers.
 if has("conceal")
-    set conceallevel=1
+    set conceallevel=0
     " set concealcursor=niv
-    set concealcursor=c
+    " set concealcursor=c
 endif
 
 " ==============================================================================
@@ -577,7 +525,9 @@ set smartcase " set smartcase mode on, If there is upper case character in the s
 " set this to use id-utils for global search
 set grepprg=lid\ -Rgrep\ -s
 set grepformat=%f:%l:%m
-
+" gtags 搜索
+set cscopetag " 使用cscope作为tags命令
+set cscopeprg=gtags-cscope "使用gtags-cscope 替代自带的ctags和cscope
 "}}}
 
 " ==============================================================================
@@ -606,12 +556,6 @@ if has('autocmd')
         au BufEnter * :syntax sync fromstart " ensure every file does syntax highlighting (full)
         au BufNewFile,BufRead *.avs set syntax=avs " for avs syntax file.
 
-        " DISABLE {
-        " NOTE: will have problem with exvim, because exvim use exES_CWD as working directory for tag and other thing
-        " Change current directory to the file of the buffer ( from Script#65"CD.vim"
-        " au   BufEnter *   execute ":lcd " . expand("%:p:h")
-        " } DISABLE end
-
         " ------------------------------------------------------------------
         " Desc: file types
         " ------------------------------------------------------------------
@@ -625,7 +569,10 @@ if has('autocmd')
         au FileType vim set foldmethod=marker
         au FileType lua set comments=f:--
         au FileType qml set foldmethod=indent
+        au FileType c,cpp set foldmethod=indent
         au FileType help noremap <buffer> q :close<CR>
+        au FileType dosbatch setlocal fileencoding=cp936
+        au FileType org setlocal tabstop=2
 
         " if edit python scripts, check if have \t. ( python said: the programme can only use \t or not, but can't use them together )
         au FileType python,coffee call s:check_if_expand_tab()
@@ -699,21 +646,17 @@ endif
 nnoremap ; :
 " 修改esc 键为jk
 inoremap jk <ESC>
-" vnoremap jk <ESC>
-" noremap jk  <ESC>
 " 行首和行尾
-nmap <Leader>lb ^
-nmap <Leader>le $
 nnoremap <Home> ^
 nnoremap <End> $
+vnoremap <Home> ^
+vnoremap <End> $
 " 结对符之间跳转，助记pair
 nmap <Leader>pa %
 
 " ==================================================
 " redo
-nnoremap <leader>u <c-r>
-" undo
-" u
+nnoremap U <c-r>
 
 "===================================================
 " 观看当前单词的帮助
@@ -721,7 +664,6 @@ nnoremap <leader>u <c-r>
 nnoremap <F1> :call FindWord()<CR>
 function! FindWord() abort "{{{
     let curWord = expand("<cword>")
-    echo curWord
     execute "h " . curWord
 endfunction "}}}
 
@@ -738,7 +680,7 @@ noremap <leader>tts :%ret! 4<CR>
 noremap <leader>wu viwU
 
 " 高亮当前光标下单词
-" *
+" * #
 " 取消当前高亮
 noremap <leader>nh :noh<cr>
 
@@ -752,14 +694,14 @@ autocmd CmdwinEnter * noremap <buffer> q o<Esc><CR>
 cnoremap <c-n>  <down>
 cnoremap <c-p>  <up>
 " 移动行(lu:上移, ld下移)
-nnoremap <leader>lu  :<c-u>execute 'move -1-'. v:count1<cr>
 nnoremap <leader>ld  :<c-u>execute 'move +'. v:count1<cr>
+nnoremap <leader>lu  :<c-u>execute 'move -1-'. v:count1<cr>
 " 快速增加空行
 nnoremap <leader>us :put! =''<cr>
 nnoremap <leader>ds :put =''<cr>
 " 快速增加空格
-" nnoremap <leader><space>  :put! =''
-" nnoremap <leader><space>  :put =''
+" nnoremap <leader><space>  a<C-R>=" "<CR><ESC>
+" nnoremap <leader><space>  i<C-R>=" "<CR><ESC>
 " 字体大小
 command! Bigger  :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)+1', '')
 command! Smaller :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)-1', ''
@@ -778,7 +720,7 @@ nnoremap <leader>lw :<C-u>vsplit<CR>
 
 "===================================================
 " 修改光标的快速上移或下移
-nnoremap J  10j
+" nnoremap J  10j
 
 "===================================================
 " 当前文件中搜索光标下单词
@@ -788,10 +730,10 @@ nnoremap <leader>ll :lw<CR>
 nnoremap <leader>ln :lne<CR>
 nnoremap <leader>lp :lp<CR>
 " quickfix快捷键设置
-nnoremap <leader>cw :cw 10<CR>
-nnoremap <leader>cp :cp<CR>
-nnoremap <leader>cn :cn<CR>
-" 定义快速关闭快捷键
+nnoremap <leader>qw :cw 10<CR>
+nnoremap <leader>qp :cp<CR>
+nnoremap <leader>qn :cn<CR>
+" quickfix 定义快速关闭快捷键
 autocmd FileType qf noremap <buffer> q :close<CR>
 
 "===================================================
@@ -809,12 +751,12 @@ endif
 
 "===================================================
 " 保存文件设置
-noremap  <leader>ws :w<CR>
-inoremap <leader>ws <ESC>:w<CR>
-vnoremap <leader>ws <ESC>:w<CR>
-noremap  <leader>wa :wa<CR>
-inoremap <leader>wa <ESC>:wa<CR>
-vnoremap <leader>wa <ESC>:wa<CR>
+noremap  <leader>wa :w<CR>
+inoremap <leader>wa <ESC>:w<CR>
+vnoremap <leader>wa <ESC>:w<CR>
+noremap  <leader>ws :wa<CR>
+inoremap <leader>ws <ESC>:wa<CR>
+vnoremap <leader>ws <ESC>:wa<CR>
 " 关闭当前窗口, 详细请看:help Close
 noremap <leader>mc :close<CR>
 
@@ -823,6 +765,8 @@ map Q gq
 
 "===================================================
 " 复制粘贴相关设置 {{{
+" 命令行粘贴
+cnoremap <c-g> <c-r>"
 " 删除行不存入寄存器
 nnoremap dl "_dd
 " 删除单词不存入寄存器

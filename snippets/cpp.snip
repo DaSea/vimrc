@@ -1,5 +1,31 @@
 include c.snip
 
+snippet     pub_func_group
+abbr        comment
+    /*****************************************************************************************
+     * public function group
+    *****************************************************************************************/
+    ${0}
+
+snippet     pri_func_group
+abbr        comment
+    /*****************************************************************************************
+     * private function group
+    *****************************************************************************************/
+    ${0}
+    
+snippet     extern_c
+abbr        extern_c
+    #ifdef __cplusplus
+    extern "C" {
+    #endif
+
+    ${0}
+
+    #ifdef __cplusplus
+    }
+    #endif
+
 snippet     ret
 abbr        return ();
     return (${1});${0}

@@ -16,7 +16,7 @@ Plug 'DaSea/ex-config'
 " ---------------------------------------------------
 nnoremap <unique> <leader>ve :call exconfig#edit_cur_vimentry ()<CR>
 
-Plug 'exvim/ex-utility'
+Plug 'DaSea/ex-utility'
 " ---------------------------------------------------
 nnoremap <unique> <silent> <Leader>ad :EXbd<CR>
 nnoremap <unique> <silent> <leader>an :EXbn<CR>
@@ -24,6 +24,8 @@ nnoremap <unique> <silent> <leader>ap :EXbp<CR>
 nnoremap <unique> <silent> <C-Tab> :EXbalt<CR>
 nnoremap <unique> <silent> <Leader><Tab> :EXsw<CR>
 nmap <unique> <silent> <Leader><Esc> :EXgp<CR><ESC>
+" 定义运行qml文件的脚本
+nnoremap <leader>mr :call system("qmlscene.exe ". expand("%"))<CR>
 
 Plug 'exvim/ex-aftercolors'
 " ---------------------------------------------------
@@ -125,15 +127,6 @@ Plug 'exvim/ex-easyhl'
 Plug 'exvim/ex-searchcompl'
 " invoke by /
 " ---------------------------------------------------
-
-Plug 'exvim/ex-cref'
-" Invoke by <leader>cr
-" ---------------------------------------------------
-" this is modified for default c syntax highlight settings
-" make it don't highlight error pattern
-let c_gnu = 1
-let c_no_curly_error = 1
-let c_no_bracket_error = 1
 " }}}
 
 " 版本控制(git,svn)及修改状态显示{{{
@@ -170,20 +163,30 @@ endif
 "  内容完成(括号补全, vim补全) {{{
 if 'yes' ==? g:setting.cpp_enable "{{{
     Plug 'vim-scripts/OmniCppComplete'
-endif "}}}
 
-if 0 " 禁止vim-marching插件{{{
-    Plug 'osyo-manga/vim-marching'
-    let g:marching_clang_command = "D:/Develop/LLVM/bin/clang++.exe"
-    let g:marching#clang_command#options = {
-    \   "cpp" : "-std=gnu++1y"
-    \}
-    let g:marching_include_paths = [
-    \   "D:/Develop/msys64/mingw64/include/c++/5.3.0"
-    \]
-    let g:marching_enable_neocomplete = 1
-    imap <buffer> <C-x><C-o> <Plug>(marching_start_omni_complete)
-    imap <buffer> <C-x><C-x><C-o> <Plug>(marching_force_start_omni_complete)
+    if 0
+        Plug 'osyo-manga/vim-marching' " {{{
+        let g:marching_clang_command = "D:/Develop/LLVM/bin/clang.exe"
+
+        let g:marching#clang_command#options = {
+                    \   "cpp" : "-std=gnu++1y"
+                    \}
+
+        let g:marching_include_paths = [
+                    \   "D:/Develop/msys64/mingw64/include/c++/5.4.0"
+                    \]
+
+        let g:marching_enable_neocomplete = 1
+
+        set updatetime=200
+        let g:marching_enable_refresh_always=1
+
+        imap <buffer> <C-x><C-o> <Plug>(marching_start_omni_complete)
+        imap <buffer> <C-x><C-x><C-o> <Plug>(marching_force_start_omni_complete)
+
+        let g:marching_backend = "sync_clang_command"
+        " }}}
+    endif
 endif "}}}
 
 if g:setting.complete_method ==? 'neocomplete'
@@ -373,31 +376,34 @@ endif
 "}}}
 
 "括号补全{{{
-if g:setting.complete_pairs ==? 'auto-pairs'  "{{{
-    Plug 'jiangmiao/auto-pairs'
-    let g:AutoPairsFlyMode = 0
-    let g:AutoPairsShortcutBackInsert = '<leader>pb'
-    " 上面俩项为flyMode下使用
-    let g:AutoPairsShortcutToggle = '<leader>pp'
-    let g:AutoPairsShortcutFastWrap = '<leader>pe'
-    let g:AutoPairsShortcutJump = '<leader>pn'
-endif "}}}
-
-if g:setting.complete_pairs ==? 'delimitMate'  "{{{
-    Plug 'Raimondi/delimitMate'
-    let delimitMate_expand_cr = 2
-    " let delimitMate_expand_space = 0
-endif "}}}
+Plug 'jiangmiao/auto-pairs'
+let g:AutoPairsFlyMode = 0
+let g:AutoPairsShortcutBackInsert = '<leader>pb'
+" 上面俩项为flyMode下使用
+let g:AutoPairsShortcutToggle = '<leader>pp'
+let g:AutoPairsShortcutFastWrap = '<leader>pe'
+let g:AutoPairsShortcutJump = '<leader>pn'
 
 Plug 'tpope/vim-endwise'
 "}}}
 "}}}
 
+" gtags设置{{{
+Plug 'aceofall/gtags.vim'
+" set cscopetag " 使用cscope作为tags命令
+" set cscopeprg='gtags-cscope' "使用gtags-cscope 替代自带的ctags和cscope
+let GtagsCscope_Auto_Load = 1
+let GtagsCscope_Auto_Map = 1
+let GtagsCscope_Quiet = 1
+" 快捷键设置
+" 添加到当前目录
+nnoremap ,gg :GtagsCursor<CR>
+"}}}
+
 " 文件导航(unite, a.vim) {{{
 Plug 'Shougo/vimproc.vim'
 Plug 'Shougo/unite.vim'
-Plug 'Shougo/neomru.vim'
-Plug 'Shougo/vimfiler.vim' " 文件浏览器, 最近使用文件{{{
+Plug 'Shougo/neomru.vim' " {{{
 " 基本设置
 let g:unite_force_overwrite_statusline = 0
 " 设置匹配模式
@@ -430,8 +436,9 @@ elseif executable('pt')
     let g:unite_source_grep_recursive_opt = ''
     let g:unite_source_grep_encoding = 'utf-8'
 endif
+"}}}
 
-" 替换nertw(文件浏览器) {{{
+Plug 'Shougo/vimfiler.vim'  " 替换nertw(文件浏览器) {{{
 let g:vimfiler_as_default_explorer = 1
 let g:vimfiler_force_overwrite_statusline = 0
 let g:vimfiler_min_cache_files = 500
@@ -477,7 +484,7 @@ nnoremap <silent> <leader>fk :<C-u>Unite -quick-match -buffer-name=buffer buffer
 nnoremap <silent> <leader>gw :<C-u>UniteWithCursorWord grep<CR>
 " 需要一个在任意时候可以打开文件所在目录列表的定义
 nnoremap <silent> <leader>fb :VimFilerBufferDir -buffer-name=explorer
-            \ -split -direction=aboveleft -simple -winwidth=35 -toggle
+            \ -split -direction=aboveleft -simple -winwidth=35 -toggle<CR>
 " 文件浏览器
 nnoremap <F2> :VimFilerExplorer<CR>
 autocmd FileType vimfiler nmap <silent><buffer><expr> <CR> vimfiler#smart_cursor_map(
@@ -503,47 +510,39 @@ function! UnitInit() abort " unite 系列加载完成后的初始化{{{
                 \ '\.gitignore/',
                 \ '\.bundle/',
                 \ '\.neobundle/',
-                \ '\.exvim.*/',
+                \ '\.exvim/',
                 \ '\.metadata/',
                 \ '\release/',
                 \ '\debug/',
                 \ ], '\|'))
+    " call unite#custom#source('file_rec/async,file_rec/git', 'ignore_globs', [])
 endfunction "}}}
 call add(g:init_func_list, function('UnitInit'))
 "}}}
 
-if 'yes' ==? g:setting.cpp_enable "h与cpp文件的交换{{{
-    Plug 'DaSea/ex-avim'
-    " 用于切换C/C++头文件
-    " :A     ---切换头文件并独占整个窗口
-    " :AV    ---切换头文件并垂直分割窗口
-    " :AS    ---切换头文件并水平分割窗口
-    nnoremap <silent> <leader>ah :A<CR>
-    nnoremap <silent> <leader>av :AV<CR>
-    nnoremap <silent> <leader>as :AS<CR>
-endif "}}}
+Plug 'DaSea/ex-avim' " h与cpp文件的交换{{{
+" 用于切换C/C++头文件
+" :A     ---切换头文件并独占整个窗口
+" :AV    ---切换头文件并垂直分割窗口
+" :AS    ---切换头文件并水平分割窗口
+" let g:alternateSearchPath = "D:\\Develop\\msys64\\mingw64\\include\\c++\\5.4.0"
+let g:alternateSearchPath = "D:\\Develop\\Java\\android-ndk-r11b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include"
+nnoremap <silent> <leader>ah :A<CR>
+nnoremap <silent> <leader>av :AV<CR>
+nnoremap <silent> <leader>as :AS<CR>
+"}}}
 "}}}
 
-" 文件导航之vim-ctrlpspace{{{
-if 'yes' ==? g:setting.vimctrlspace_enable "{{{
-    Plug 'vim-ctrlspace/vim-ctrlspace',{'on': 'CtrlSpace'}
-    let g:CtrlSpaceSearchTiming = 500
-    let g:CtrlSpaceLoadLastWorkspaceOnStart = 1
-    let g:CtrlSpaceSaveWorkspaceOnSwitch = 1
-    let g:CtrlSpaceSaveWorkspaceOnExit = 1
-    let g:airline_exclude_preview = 1
-    let g:CtrlSpaceHeight = 10
-    let g:CtrlSpaceUseTabline = 0
-    if executable("ag")
-        let g:CtrlSpaceGlobCommand = 'ag -l --nocolor -g ""'
-    endif
-    " 定义快捷键
-    " let g:CtrlSpaceSetDefaultMapping = 0
-    " let g:CtrlSpaceDefaultMappingKey = "<M-p>"
-    nnoremap <silent><M-p> :CtrlSpace O<CR>
-endif "}}}
-
-" Plug 'Yggdroot/LeaderF'
+" 由于unite.vim浏览文件实在慢, 所以用LeaderF替换 {{{
+Plug 'Yggdroot/LeaderF'
+let g:Lf_ShowRelativePath = 1
+let g:Lf_WindowPosition = 0
+let g:Lf_ShortcutF = '<Leader>lf'
+let g:Lf_WildIgnore = {
+            \ 'dir': ['.svn','.git', '.exvim', '.vscode', '.setting', '.imdone', 'bin', 'res'. 'obj'],
+            \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]', '*.png', "*.dll",
+            \ '*.exvim', '*.class', '*.o.d', '.setting', '.project']
+            \}
 "}}}
 
 "  文件内跳转{{{
@@ -554,6 +553,10 @@ nnoremap <leader>fm :Unite -start-insert -no-split -buffer-name=outline outline<
 Plug 'rhysd/clever-f.vim' " 行内搜索{{{
 let g:clever_f_across_no_line = 1
 let g:clever_f_smart_case = 1
+" }}}
+
+Plug 'majutsushi/tagbar' " 主要为了在状态栏显示当前行所在函数{{{
+nnoremap <Leader>tb :TagbarToggle<CR>
 " }}}
 
 Plug 'Lokaltog/vim-easymotion' "快速跳转{{{
@@ -638,13 +641,6 @@ endif
 Plug 'terryma/vim-expand-region' "快速选择{{{
 "}}}
 
-if 'yes' ==? g:setting.surround_enable "vim-surround快速添加引号等{{{
-    Plug 'tpope/vim-surround'
-    " invoke when you select words and press 's'
-    " ---------------------------------------------------
-    " cs修改已经有的符号 ds删除已有的复活啊 ys添加符号
-endif "}}}
-
 Plug 'scrooloose/nerdcommenter' " 快速注释{{{
 " Invoke by <leader>c<space>, <leader>cl, <leader>cu, <F11> or <C-F11>
 " ---------------------------------------------------
@@ -682,8 +678,9 @@ nnoremap <Leader>df :DoxFile<CR>
 "}}}
 "}}}
 
-" 内容快速移动{{{
+" 内容快速移动 {{{
 Plug 'matze/vim-move'
+" alt + j : 下移; alt+k: 上移;
 "}}}
 
 "  代码静态分析{{{
@@ -702,22 +699,22 @@ endif "}}}
 
 " c++, qml, ndk等相关的语法扩展 {{{
 if 'yes' ==? g:setting.cpp_syntax_extent "c++语法扩展{{{
-    " Plug 'octol/vim-cpp-enhanced-highlight'
+    Plug 'octol/vim-cpp-enhanced-highlight'
     " -----------------------------------------------------------------------------
-    " let g:cpp_class_scope_highlight=1
-    " let g:cpp_experimental_template_highlight = 1
+    let g:cpp_class_scope_highlight=1
+    let g:cpp_experimental_template_highlight = 1
 
-    Plug 'justinmk/vim-syntax-extra'
-
-    Plug 'DaSea/vim-syntax'
-    let g:ndk_syntax_enable = 1
 endif "}}}
+
+Plug 'DaSea/vim-syntax' " 杂7杂8的, 有qml, 有cpp文件中的doxygen, ndk高亮等{{{
+let g:ndk_syntax_enable = 1
+let g:doxygen_syntax_enable = 1
+"}}}
 "}}}
 
 " 界面显示相关{{{
 if g:setting.starty_screen ==? 'yes'
     Plug 'mhinz/vim-startify' " 开始界面,可以显示MRU, Session等{{{
-    " TODO: 考虑将此进行改造, 只显示exvim工程的插件
     "开始欢迎界面
     nnoremap <F4> :Startify<CR>
     " set session path
@@ -756,126 +753,45 @@ let g:better_whitespace_filetypes_blacklist = ['unite', 'vimfiler']
 noremap CS :StripWhitespace<CR>
 "}}}
 
-" lightline 与 airline 都是状态栏, 根据个人喜好选择, lightline的tabline不出来(bug)
-if g:setting.status_line ==? "lightline"
-    Plug 'itchyny/lightline.vim'"{{{
-    " ---------------------------------------------------
-    let g:lightline ={
-                \ 'enable' :{
-                \ 'statusline': 1,
-                \ 'tabline': 0
-                \ },
-                \ 'component_expand': {
-                \ 'tabs': 'lighline#tabs'
-                \ },
-                \ 'colorscheme':g:setting.status_color,
-                \ 'component':{
-                \ 'readonly': '%{&readonly?"":""}',
-                \   'lineinfo': '%3l:%-2v',
-                \ },
-                \ 'active': {
-                \ 'left': [ ['mode', 'paste'], ['fugitive'], ['filename', 'modified' ] ],
-                \ 'right': [ [ 'lineinfo' ], [ 'fileformat', 'fileencoding', 'filetype' ] ]
-                \ },
-                \ 'inactive': {
-                \ 'left': [['filename', 'modified']],
-                \ 'right': [ [ 'lineinfo' ], [ 'fileformat', 'fileencoding', 'filetype' ] ]
-                \},
-                \ 'component_function': {
-                \   'modified': 'LightLineModified',
-                \   'fugitive': 'LightLineFugitive',
-                \   'filename': 'LightLineFilename',
-                \   'mode': 'LightLineMode',
-                \   'filetype': 'LightLineFiletype',
-                \   'fileencoding': 'LightLineFileencoding',
-                \   'fileformat': 'LightLineFileformat'
-                \ },
-                \ 'separator': {'left': '', 'right': ''},
-                \ 'subseparator': {'left': '', 'right': ''},
-                \ 'tabline_separator': {'left': '', 'right': ''},
-                \ 'tabline_subseparator': {'left': '', 'right': ''}
-                \ }
-
-    if g:islinux
-        let g:lightline.separator = { 'left': '', 'right': '' }
-        let g:lightline.subseparator = { 'left': '|', 'right': '|' }
-    elseif g:iswinunix
-        let g:lightline.separator = { 'left': '', 'right': '' }
-        let g:lightline.subseparator = { 'left': '|', 'right': '|' }
-    endif
-
-    function! LightLineFugitive()
-        if winwidth(0) > 70
-            if exists('*fugitive#head')
-                let githead = fugitive#head()
-                return strlen(githead) ? ''.'['.githead.']': ''
-            endif
-        endif
-            return ''
-    endfunction
-
-    function! LightLineFilename()
-        let fname = expand('%:t')
-        return '' != fname ? fname : '[No Name]'
-        " return &ft == 'vimfiler' ? vimfiler#get_status_string() :
-                    " \ &ft == 'unite' ? unite#get_status_string() :
-                    " \ &ft == 'vimshell' ? vimshell#get_status_string() :
-                    " \ ('' != fname ? fname : '[No Name]')
-    endfunction
-
-    function! LightLineMode()
-        return  winwidth(0) > 60 ? lightline#mode() : ''
-    endfunction
-
-    function! LightLineModified()
-        if winwidth(0) > 70
-            if &filetype == "help"
-                return ""
-            elseif &modified
-                return "*"
-            elseif &modifiable
-                return "+"
-            else
-                return "?"
-            endif
-        else
-            return ''
-        endif
-    endfunction
-
-    function! LightLineFileformat()
-        return winwidth(0) > 70 ? &fileformat : ''
-    endfunction
-    function! LightLineFiletype()
-        return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'Unkown') : ''
-    endfunction
-    function! LightLineFileencoding()
-        return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
-    endfunction
-    "}}}
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes' " airline状态栏{{{
+let g:airline_powerline_fonts = 1
+let g:airline_theme = g:setting.status_color
+" let g:airline_left_sep = ''
+" let g:airline_left_alt_sep = ''
+" let g:airline_right_sep = ''
+" let g:airline_right_alt_sep = ''
+let g:airline_left_sep = '▶'
+let g:airline_left_alt_sep = '❯'
+let g:airline_right_sep = '◀'
+let g:airline_right_alt_sep = '❮'
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
 endif
-if g:setting.status_line ==? 'airline'
-    Plug 'bling/vim-airline'
-    Plug 'vim-airline/vim-airline-themes' "{{{
-    " airline 设置
-    let g:airline_extensions = ['unite', 'quickfix']
-    let g:airline_powerline_fonts = 1
-    if !exists('g:ariline_symbols')
-        let g:airline_symbols = {}
-    endif
-    let g:airline_left_sep = ''
-    let g:airline_left_alt_sep = ''
-    let g:airline_right_sep = ''
-    let g:airline_right_alt_sep = ''
-    let g:airline_symbols.branch = ''
-    let g:airline_symbols.readonly = ''
-    let g:airline_symbols.linenr = ''
-    " tabline设置
-    " let g:airline#extensions#tabline#formatter = 'unique_tail'
-    " let g:airline#extensions#tabline#enabled = 1
-    let g:airline_theme = g:setting.status_color
-    "}}}
-endif
+let g:airline_symbols.branch = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.linenr = ''
+let g:airline_detect_crypt=0
+let g:airline_detect_spell=0
+let g:airline_detect_iminsert=0
+let g:airline_extensions = ['unite', 'tagbar', 'quickfix']
+" 各个部分的设置简化
+let g:airline_section_c = '%t'
+let g:airline_section_z = '%l%{g:airline_symbols.linenr}%L'
+let g:airline_mode_map = {
+            \ '__' : '-',
+            \ 'n'  : 'N',
+            \ 'i'  : 'I',
+            \ 'R'  : 'R',
+            \ 'c'  : 'C',
+            \ 'v'  : 'V',
+            \ 'V'  : 'V',
+            \ '' : 'V',
+            \ 's'  : 'S',
+            \ 'S'  : 'S',
+            \ '' : 'S',
+            \ }
+" }}}
 
 Plug 'Yggdroot/indentLine' "对齐线{{{
 " ---------------------------------------------------
@@ -890,20 +806,8 @@ let g:solaried_bold = 1
 let g:solaried_underline = 1
 let g:solaried_italic = 0
 
-" Plug 'morhetz/gruvbox'
-
-" Plug 'nanotech/jellybeans.vim'
-" let g:jellybeans_use_lowcolor_black = 0
-" let g:jellybeans_use_term_italics = 1
-
-Plug 'w0ng/vim-hybrid'
-let g:hybrid_custom_term_colors = 1
-let g:hybrid_reduced_contrast = 1
-
 Plug 'joshdick/onedark.vim'
 let g:onedark_termcolors=256
-
-Plug 'mhartington/oceanic-next'
 
 " 个人收集的一些主题
 " Plug 'DaSea/vim-personcolors'
@@ -911,6 +815,7 @@ Plug 'mhartington/oceanic-next'
 
 Plug 'ujihisa/unite-colorscheme' "快速浏览已有的颜色主题并选择{{{
 "}}}
+
 "}}}
 
 "VIM关闭问题{{{
@@ -921,7 +826,7 @@ vnoremap <leader>mq <ESC>:Bdelete<CR>
 "}}}
 ""}}}
 
-" vim文档及WIKI{{{
+" vim文档及WIKI, org{{{
 Plug 'asins/vimcdoc' "{{{
 " < VIM中文帮助文档:>
 " 设定doc文档目录
@@ -929,56 +834,28 @@ let helptags=$VIM."/vimfiles/doc"
 set helplang=cn
 "}}}
 
-Plug 'vimwiki/vimwiki' "{{{
-" wiki 配置
-" let vimwiki_path = 'E:/Self/dasea/wiki/'
-" let vimwiki_html_path = 'E:/Self/dasea/wiki/html/'
-let wiki_1 = {}
-" wiki_1
-let wiki_1.path = g:setting.vimwiki_path
-let wiki_1.path_html = g:setting.vimwiki_html_path
-let wiki_1.auto_toc = 1
-let wiki_1.template_path = g:setting.vimwiki_html_path.'vimwiki_assets/'
-let wiki_1.template_default = 'default'
-let wiki_1.template_ext = '.tpl'
-let wiki_1.auto_export = 0
-let wiki_1.nested_syntaxes = {'python': 'python', 'c++': 'cpp', 'c': 'c', 'vim': 'vim'}
-" dinary 设置
-let g:vimwiki_list = [wiki_1]
-" 全局变量配置
-let g:vimwiki_folding = 1
-let g:vimwiki_fold_lists = 1
-let g:vimwiki_hl_headers = 1
-let g:vimwiki_hl_cb_checked = 1
-let g:vimwiki_global_ext = 0
-let g:vimwiki_menu = ''
-let g:vimwiki_use_mouse = 0
-let g:vimwiki_listsyms = '✗○◐●✓'
-let g:vimwiki_w32_dir_enc = 'utf-8'
-let g:vimwiki_dir_link = 'index'
-let g:vimwiki_CJK_length = 1
-let g:vimwiki_valid_html_tags='b,i,s,u,sub,sup,kbd,del,br,hr,div,code,h1'
-let g:vimwiki_html_header_numbering = 1
-let g:vimwiki_map_prefix = '<leader>;'
-nnoremap <Leader>wp :VimwikiPrevLink<CR>
-nnoremap <leader>tt :VimwikiToggleListItem<CR>
-"}}}
+Plug 'jceb/vim-orgmode'
+Plug 'vim-scripts/utl.vim' " org{{{
+" 快捷键记录:
+" <leader>hn <leader>hh, <leader>hN:插入标题
+" yah , dah : 复制和删除heading, yar, dar: 复制和删除subtree
+" >> << 可以升降heading的等级; >ar <ar : 可以升降subtree的等级
+" <leader>cl , <leader>CL 插入plainlist, \cn,\cc,\cN:切换,插入checkbox
+" \si, \sa : 插入时间;  \ct: TODO 之间切换状态; \st,\ft: tag
 
-Plug 'itchyny/calendar.vim', {'on': 'Calender'} "日历插件{{{
-let g:calendar_frame = 'default'
-"}}}
+" 配置
+" let g:org_todo_keywords=['TODO', 'VERIFY', '|', 'DONE', 'DELEGATED']
+let g:org_agenda_files = ['E:\\Self\\01_mywiki\\gtd\\gtd.org']
+" 打开todo文件 
+nnoremap <leader>oo :call OpenOrgToDoFile()<CR>
+function! OpenOrgToDoFile() abort "{{{
+    let gtdFile = 'E:\Self\01_mywiki\gtd\gtd.org'
+    silent! execute 'edit! ' . gtdFile
+endfunction " }}}
+" }}}
 "}}}
 
 " 代码格式化{{{
-if g:setting.source_format ==? 'yes'
-    Plug 'rhysd/vim-clang-format'
-    let g:clang_format#code_style='mozilla'
-    let g:clang_format#style_options = {
-                \ 'AccessModifierOffset': '0',
-                \ 'AlignConsecutiveDeclarations': 'true',
-                \ 'IndentWidth': '4'
-                \ }
-endif
 "}}}
 
 " markdown支持 {{{
@@ -1007,28 +884,20 @@ if 'yes' ==? g:setting.golang_enable
 endif
 "}}}
 
-" exvim工程插件{{{
-if g:setting.exprj_list ==? 'unite' "{{{
-    Plug 'DaSea/unite-exprj'
-    " let g:exprj_list_cache_directory = 'D:/Develop/cache'
-    " let g:exprj_list_win_pos = "botright"
-    " let g:exprj_list_win_szie = 30
-endif "}}}
+" exvim工程插件 {{{
+Plug 'DaSea/GeneratePrj.vim'
+nnoremap <leader>GS :GSimplePrj<CR>
+nnoremap <leader>GE :GExvimPrj<CR>
 
-if g:setting.exprj_list ==? 'ex' "{{{
-    Plug  'DaSea/ex-prjlist'
-endif "}}}
+Plug 'DaSea/ex-prjlist'
+" let g:exprj_list_cache_directory = 'D:/Develop/cache'
+" let g:exprj_list_win_pos = "botright"
+" let g:exprj_list_win_szie = 30
 "}}}
 
 " Encoding check{{{
 Plug 'mbbill/fencview'
 let g:fencview_autodetect = 1
-"}}}
-
-" 一些简短vim脚本的合集{{{
-Plug 'DaSea/vim-myUtilities'
-" 定义运行qml文件的脚本
-nnoremap <leader>mr :call system("qmlscene.exe ". expand("%"))<CR>
 "}}}
 
 " TEST {{{
