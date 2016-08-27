@@ -703,8 +703,8 @@ nnoremap <leader>ds :put =''<cr>
 " nnoremap <leader><space>  a<C-R>=" "<CR><ESC>
 " nnoremap <leader><space>  i<C-R>=" "<CR><ESC>
 " 字体大小
-command! Bigger  :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)+1', '')
-command! Smaller :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)-1', ''
+" command! Bigger  :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)+1', '')
+" command! Smaller :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)-1', ''
 
 "===================================================
 " 快速切换窗口
@@ -730,9 +730,10 @@ nnoremap <leader>ll :lw<CR>
 nnoremap <leader>ln :lne<CR>
 nnoremap <leader>lp :lp<CR>
 " quickfix快捷键设置
-nnoremap <leader>qw :cw 10<CR>
+nnoremap <leader>qw :cl<CR>
 nnoremap <leader>qp :cp<CR>
 nnoremap <leader>qn :cn<CR>
+nnoremap <Leader>qm :ccN<CR>
 " quickfix 定义快速关闭快捷键
 autocmd FileType qf noremap <buffer> q :close<CR>
 

@@ -189,6 +189,13 @@ if 'yes' ==? g:setting.cpp_enable "{{{
     endif
 endif "}}}
 
+"  Php自动补全{{{
+
+Plug 'shawncplus/phpcomplete.vim',{'for': 'php'}
+Plug '2072/PHP-Indenting-for-VIm',{'for': 'php'}
+Plug 'StanAngeloff/php.vim',{'for': 'php'}
+" }}}
+
 if g:setting.complete_method ==? 'neocomplete'
     Plug 'Shougo/neocomplete.vim' "{{{
 
@@ -207,6 +214,9 @@ if g:setting.complete_method ==? 'neocomplete'
     let g:neocomplete#sources#dictionary#dictionaries = {
                 \ 'default' : ''
                 \ }
+                "  'java' : '~/.vim/dict/java.dict',
+                " \ 'ruby' : '~/.vim/dict/ruby.dict',
+                " \ 'scala' : '~/.vim/dict/scala.dict',
     " Define keyword.
     if !exists('g:neocomplete#keyword_patterns')
         let g:neocomplete#keyword_patterns = {}
@@ -244,14 +254,22 @@ if g:setting.complete_method ==? 'neocomplete'
     " Enable omni completion.
     autocmd FileType c,cpp setlocal omnifunc=omni#cpp#complete#Main
     autocmd FileType go setlocal omnifunc=gocode#Complete
+    autocmd FileType php set omnifunc=phpcomplete#CompletePHP
 
     " Enable heavy omni completion.
-    if !exists('g:neocomplete#sources#omni#input_patterns')
-        let g:neocomplete#sources#omni#input_patterns = {}
+    if !exists('g:neocomplete#force_omni_input_patterns')
+        let g:neocomplete#force_omni_input_patterns = {}
     endif
     " for c and c++
-    let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
-    let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
+    let g:neocomplete#force_omni_input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
+    let g:neocomplete#force_omni_input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
+    let g:neocomplete#force_omni_input_patterns.php =  '\h\w*\|[^. \t]->\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?'
+    " if !exists('g:neocomplete#sources#omni#input_patterns')
+        " let g:neocomplete#sources#omni#input_patterns = {}
+    " endif
+    " for c and c++
+    " let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
+    " let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
     "}}}
 endif
 
@@ -392,12 +410,21 @@ Plug 'tpope/vim-endwise'
 Plug 'aceofall/gtags.vim'
 " set cscopetag " 使用cscope作为tags命令
 " set cscopeprg='gtags-cscope' "使用gtags-cscope 替代自带的ctags和cscope
-let GtagsCscope_Auto_Load = 1
-let GtagsCscope_Auto_Map = 1
-let GtagsCscope_Quiet = 1
+let g:GtagsCscope_Auto_Load = 1
+let g:GtagsCscope_Auto_Map = 1
+let g:GtagsCscope_Quiet = 1
+" gtags.vim设置
+let g:Gtags_OpenQuickfixWindow = 0
+let g:Gtags_No_Auto_Jump = 1
 " 快捷键设置
-" 添加到当前目录
-nnoremap ,gg :GtagsCursor<CR>
+" 搜索当前光标下单词
+nnoremap ,gd :GtagsCursor<CR>
+" 查找光标下引用
+nnoremap ,gg :call FindReferenceTag(expand("<cword>"))<CR>
+function! FindReferenceTag(fTag) abort
+    execute "Gtags -r " . a:fTag
+    " TODO :goto quickfix 窗口
+endfunction
 "}}}
 
 " 文件导航(unite, a.vim) {{{
@@ -638,9 +665,6 @@ endif
 "}}}
 
 "  内容注释及选择{{{
-Plug 'terryma/vim-expand-region' "快速选择{{{
-"}}}
-
 Plug 'scrooloose/nerdcommenter' " 快速注释{{{
 " Invoke by <leader>c<space>, <leader>cl, <leader>cu, <F11> or <C-F11>
 " ---------------------------------------------------
@@ -796,7 +820,9 @@ let g:airline_mode_map = {
 Plug 'Yggdroot/indentLine' "对齐线{{{
 " ---------------------------------------------------
 let g:indentLine_color_gui = '#FF4040'
-let g:indentLine_char = '|'
+" let g:indentLine_char = '|'
+let g:indentLine_char = '┊'
+let g:indentLine_faster = 1
 "}}}
 
 " colorscheme 插件 {{{
@@ -808,6 +834,10 @@ let g:solaried_italic = 0
 
 Plug 'joshdick/onedark.vim'
 let g:onedark_termcolors=256
+
+Plug 'NLKNguyen/papercolor-theme'
+" let g:PaperColor_Dark_Override = { 'background' : '#1c1c1c', 'cursorline' : '#abcdef', 'matchparen' : '#3a3a3a', 'comment' : '#5f875f' }
+" let g:PaperColor_Light_Override = { 'background' : '#abcdef', 'cursorline' : '#dfdfff', 'matchparen' : '#d6d6d6' , 'comment' : '#8e908c' }
 
 " 个人收集的一些主题
 " Plug 'DaSea/vim-personcolors'
@@ -883,9 +913,20 @@ endif
 "}}}
 
 " exvim工程插件 {{{
-Plug 'DaSea/GeneratePrj.vim'
-nnoremap <leader>GS :GSimplePrj<CR>
-nnoremap <leader>GE :GExvimPrj<CR>
+nnoremap <leader>GS :call GSimplePrj()<CR>
+" 切换至工程目录 {{{
+function! GSimplePrj() abort
+    let curPath = expand("%:p:h")
+    let prjRoot = ex#path#root(curPath)
+    if ("" == prjRoot)
+        let prjRoot == curPath
+    endif
+
+    let prjRoot = ex#path#auto_translate(prjRoot)
+    execute 'cd! ' . prjRoot
+
+    silent! execute 'cs add GTAGS'
+endfunction " }}}
 
 Plug 'DaSea/ex-prjlist'
 " let g:exprj_list_cache_directory = 'D:/Develop/cache'
