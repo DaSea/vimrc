@@ -1,5 +1,19 @@
 include c.snip
 
+snippet     hpp_template
+abbr        hpp_file_template
+    /*
+     * Copyright (C) 2016-08-29 Dasea
+     *
+     * Description: ${2}
+     */
+    #ifndef ${1}
+    #define $1
+
+    ${0}
+
+    #endif // $1
+
 snippet     pub_func_group
 abbr        comment
     /*****************************************************************************************
@@ -13,7 +27,7 @@ abbr        comment
      * private function group
     *****************************************************************************************/
     ${0}
-    
+
 snippet     extern_c
 abbr        extern_c
     #ifdef __cplusplus

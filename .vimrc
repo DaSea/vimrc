@@ -758,6 +758,7 @@ vnoremap <leader>wa <ESC>:w<CR>
 noremap  <leader>ws :wa<CR>
 inoremap <leader>ws <ESC>:wa<CR>
 vnoremap <leader>ws <ESC>:wa<CR>
+" 重命名文件
 " 关闭当前窗口, 详细请看:help Close
 noremap <leader>mc :close<CR>
 

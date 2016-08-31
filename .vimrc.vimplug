@@ -613,7 +613,7 @@ let g:ctrlsf_auto_close = 0
 " 大小写敏感
 let g:ctrlsf_case_sensitive = 'yes'
 " 默认搜索路径, 设置为project则从本文件的工程目录搜索
-let g:ctrlsf_default_root = 'project'
+let g:ctrlsf_default_root = 'project+fw'
 " 工程目录的顶级文件夹
 let g:ctrlsf_vcs_folder = ['.exvim', '.git', '.hg', '.svn', '.bzr', '_darcs']
 " make result windows compact
@@ -835,10 +835,6 @@ let g:solaried_italic = 0
 Plug 'joshdick/onedark.vim'
 let g:onedark_termcolors=256
 
-Plug 'NLKNguyen/papercolor-theme'
-" let g:PaperColor_Dark_Override = { 'background' : '#1c1c1c', 'cursorline' : '#abcdef', 'matchparen' : '#3a3a3a', 'comment' : '#5f875f' }
-" let g:PaperColor_Light_Override = { 'background' : '#abcdef', 'cursorline' : '#dfdfff', 'matchparen' : '#d6d6d6' , 'comment' : '#8e908c' }
-
 " 个人收集的一些主题
 " Plug 'DaSea/vim-personcolors'
 "}}}
@@ -846,6 +842,41 @@ Plug 'NLKNguyen/papercolor-theme'
 Plug 'ujihisa/unite-colorscheme' "快速浏览已有的颜色主题并选择{{{
 "}}}
 
+" buffer窗口的大小的改变{{{
+" 宽度与高度相等
+nnoremap W= <C-W>=
+" 宽度的变化
+nnoremap WA :call WinWidthChange(10, 0)<CR>
+nnoremap WS :call WinWidthChange(10, 1)<CR>
+" 高度的变化
+nnoremap HA :call WinHeightChange(10, 0)<CR>
+nnoremap HS :call WinHeightChange(10, 1)<CR>
+
+" 宽度改变->(increment: 要增加或减少的宽度, add_sub: 0, 增加, 1, 减少){{{
+function! WinWidthChange(increment, add_sub) abort
+    let cur_width = winwidth(0)
+    if 0 == a:add_sub
+        let cur_width = cur_width + a:increment
+    else
+        let cur_width = cur_width - a:increment
+    endif
+    " 如果小于最小宽度, 大于最大宽度, 就不会有什么变化了
+    silent exe "normal " . cur_width ."\<C-W>|"
+endfunction " }}}
+
+" 高度改变->(increment: 要增加或减少的高度; add_sub: 0, 增加, 1, 减少) {{{
+function! WinHeightChange(increment, add_sub) abort
+    let cur_height = winheight(0)
+    if 0 == a:add_sub
+        let cur_height = cur_height + a:increment
+    else
+        let cur_height = cur_height - a:increment
+    endif
+
+    " 如果小于最小高度, 或大于最大高度, 就不会有反应了
+    silent exe "normal " . cur_height ."\<C-W>_"
+endfunction " }}}
+" }}}
 "}}}
 
 "VIM关闭问题{{{
