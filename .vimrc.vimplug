@@ -190,7 +190,6 @@ if 'yes' ==? g:setting.cpp_enable "{{{
 endif "}}}
 
 "  Php自动补全{{{
-
 Plug 'shawncplus/phpcomplete.vim',{'for': 'php'}
 Plug '2072/PHP-Indenting-for-VIm',{'for': 'php'}
 Plug 'StanAngeloff/php.vim',{'for': 'php'}
@@ -603,7 +602,8 @@ map <leader><leader>. <Plug>(easymotion-repeat)
 "}}}
 
 "文件内容搜索和替换, undotree{{{
-Plug 'DaSea/ctrlsf.vim',{'on': 'CtrlSF'} "搜索工程下文件{{{
+" Plug 'DaSea/ctrlsf.vim',{'on': 'CtrlSF'}
+Plug 'dyng/ctrlsf.vim',{'on': 'CtrlSF'} "搜索工程下文件{{{
 " Fork'dyng/ctrlsf.vim', and add g:ctrlsf_vcs_folder;
 "---------------------------------------------------------------------
 " 设置CtrlSF使用的搜索工具,默认使用ag,如果没有ag,则考虑使用ack
@@ -615,7 +615,7 @@ let g:ctrlsf_case_sensitive = 'yes'
 " 默认搜索路径, 设置为project则从本文件的工程目录搜索
 let g:ctrlsf_default_root = 'project+fw'
 " 工程目录的顶级文件夹
-let g:ctrlsf_vcs_folder = ['.exvim', '.git', '.hg', '.svn', '.bzr', '_darcs']
+" let g:ctrlsf_vcs_folder = ['.exvim', '.git', '.hg', '.svn', '.bzr', '_darcs']
 " make result windows compact
 let g:ctrlsf_indent = 2
 " width or height
@@ -628,7 +628,11 @@ nnoremap <leader>sw :call CtrlsfCurWord(expand("<cword>"))<CR>
 function! CtrlsfCurWord(word) abort
     " TODO: 需要修改为根据exvim工程文件类型进行搜索
     let s:type = &filetype
+    if "c" == s:type
+        let s:type = "cc"
+    endif
     let s:filetype = '-filetype '.s:type
+    " -w whole word;
     execute "CtrlSF ".s:filetype.' '. a:word
 endfunction
 "}}}
@@ -734,6 +738,8 @@ Plug 'DaSea/vim-syntax' " 杂7杂8的, 有qml, 有cpp文件中的doxygen, ndk高
 let g:ndk_syntax_enable = 1
 let g:doxygen_syntax_enable = 1
 "}}}
+
+Plug 'dzeban/vim-log-syntax'
 "}}}
 
 " 界面显示相关{{{
