@@ -115,6 +115,9 @@ alias ll='ls -l'                              # long list
 alias la='ls -A'                              # all but . and ..
 alias l='ls -CF'                              #
 
+# sudo -S
+alias sudo='sudo -S'
+
 # Umask
 #
 # /etc/profile sets 022, removing write perms to group + others.

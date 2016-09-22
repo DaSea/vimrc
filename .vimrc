@@ -35,9 +35,6 @@ if !exists('g:exvim_custom_path')
     endif
 endif
 
-if g:islinux
-    let mapleader=','
-endif
 " }}}
 
 "/////////////////////////////////////////////////////////////////////////////
@@ -90,12 +87,7 @@ scriptencoding utf-8
 
 " 全局配置变量(Dictionnary){{{
 let g:setting = {}
-" Plugin manager plug(vim-plug, Vundle)
-let g:setting.plug_manager = 'vim-plug'
-let g:plugins_file = '.vimrc.vundle'
-if 'vim-plug' ==? g:setting.plug_manager
-    let g:plugins_file = '.vimrc.vimplug'
-endif
+let g:plugins_file = '.vimrc.vimplug'
 " 全局设置
 let g:setting.color_scheme = 'solarized'
 " 关于更改行的设置(git(vim-gitgutter), git_svn(vim-signify), no)
@@ -103,7 +95,7 @@ let g:setting.version_status = 'no'
 " 是否要开始欢迎界面(yes, no)
 let g:setting.starty_screen = 'no'
 " 状态栏(ariline)
-let g:setting.status_color = 'light'
+let g:setting.status_color = 'molokai'
 " 是否需要开启代码的静态语法检查(syntastic插件)
 let g:setting.syntastic_need = 'no'
 " 是否需要开启cppcheck功能
@@ -133,9 +125,6 @@ let g:setting.vimcomplete_need = 'yes'
 let g:setting.cpp_syntax_extent = 'yes'
 let g:setting.cpp_enable = 'yes'
 " }}}
-" 是否开启go语言开发功能 "{{{
-let g:setting.golang_enable = 'yes'
-"}}}
 
 " }}}
 
@@ -153,53 +142,28 @@ else
     let g:ex_tools_path = '~/.vim/tools/'
 endif
 
-if 'Vundle' ==# g:setting.plug_manager
-    filetype off
-    " Vundle.vim设置{{{
-    " set the runtime path to include Vundle
-    if exists('g:exvim_custom_path')
-        let g:vim_plugin_path = g:exvim_custom_path.'/.vimrc.vundle'
-        exec 'set rtp+='.fnameescape(g:exvim_custom_path.'/vimfiles/bundle/Vundle.vim')
-        call vundle#rc(g:exvim_custom_path.'/vimfiles/bundle')
-    else
-        let g:vim_plugin_path = '~/.vimrc.vundle'
-        set rtp+=~/.vim/bundle/Vundle.vim
-        call vundle#rc('~/.vim/bundle')
-    endif
-    " source $VIMRUNTIME/ftplugin/man.vim
-    Plugin 'gmarik/Vundle.vim'
-
-    " 读取插件配置信息
-    if filereadable(expand(g:vim_plugin_path))
-        exec 'source ' . fnameescape(g:vim_plugin_path)
-    endif
-    call vundle#end()
-    "}}}
-    filetype plugin indent on " required
+if has("python") || has("python3")
+    let g:plug_threads = 15
 else
-    if has("python") || has("python3")
-        let g:plug_threads = 10
-    else
-        let g:plug_threads = 1
-    endif
-    " Vim-plug setting {{{
-    " set the runtime path to include Vundle
-    if exists('g:exvim_custom_path')
-        let g:vim_plugin_path = g:exvim_custom_path.'/.vimrc.vimplug'
-        call plug#begin(g:exvim_custom_path.'/vimfiles/plugged/')
-    else
-        let g:vim_plugin_path = '~/.vimrc.vimplug'
-        call plug#begin('~/.vim/plugged')
-    endif
-
-    " 读取插件配置信息
-    if filereadable(expand(g:vim_plugin_path))
-        exec 'source ' . fnameescape(g:vim_plugin_path)
-    endif
-
-    call plug#end()
-    "}}}
+    let g:plug_threads = 1
 endif
+
+" Vim-plug setting {{{
+if exists('g:exvim_custom_path')
+    let g:vim_plugin_path = g:exvim_custom_path.'/.vimrc.vimplug'
+    call plug#begin(g:exvim_custom_path.'/vimfiles/plugged/')
+else
+    let g:vim_plugin_path = '~/.vimrc.vimplug'
+    call plug#begin('~/.vim/plugged')
+endif
+
+" 读取插件配置信息
+if filereadable(expand(g:vim_plugin_path))
+    exec 'source ' . fnameescape(g:vim_plugin_path)
+endif
+
+call plug#end()
+"}}}
 " 插件加载完成后调用一些初始化函数
 call PluginLoadFinished()
 
@@ -401,14 +365,16 @@ if g:isGUI
     else
         set background=light
     endif
-    exec 'colorscheme ' . g:setting.color_scheme
 else
     if !g:iswindows
         set background=dark
     endif
+    if has('nvim')
+        let g:setting.color_scheme='monokai'
+    endif
     set t_Co=256 " make sure our terminal use 256 color
-    exec 'colorscheme desert'
 endif
+exec 'colorscheme ' . g:setting.color_scheme
 " }}}
 
 " ==============================================================================
