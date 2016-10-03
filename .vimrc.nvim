@@ -1,3 +1,4 @@
+" 主要定义neovim与vim差异的插件, 如补全插件
 if 'yes' ==? g:setting.cpp_enable " {{{
     Plug 'zchee/deoplete-clang'
     let g:deoplete#sources#clang#libclang_path='/usr/lib/llvm-3.8/lib/libclang.so.1'
@@ -47,4 +48,3 @@ endfunction " }}}
 call add(g:init_func_list, function('DeopleteInit'))
 "}}}
 
-Plug 'sickill/vim-monokai'

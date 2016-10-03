@@ -1,0 +1,121 @@
+" 因为unit.vim和ctrlp有许多相同的功能, 所以分开, 可以让大家自由选择
+" 这里主要记录ctrlp的主要内容
+
+Plug 'ctrlpvim/ctrlp.vim' "{{{
+let g:ctrlp_map = '<c-p>'
+let g:ctrlp_cmd = 'CtrlP'
+let g:ctrlp_switch_buffer = 'Et'
+let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_root_markers = ['.git', '.svn', '.exvim']
+let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:30,results:15'
+let g:ctrlp_show_hidden = 1
+let g:ctrlp_use_caching = 1
+let g:ctrlp_clear_cache_on_exit = 0
+" let g:ctrlp_cache_dir = $HOME.'/.cache/ctrlp'
+"let g:ctrlp_open_multiple_files = 'v'
+let g:ctrlp_reuse_window = 'netrw\|help\|quickfix'
+" Set delay to prevent extra search
+let g:ctrlp_lazy_update = 350
+let g:ctrlp_max_files = 0
+let g:ctrlp_mruf_relative = 0
+let g:ctrlp_mruf_save_on_update = 1
+let g:ctrlp_mruf_default_order = 0
+let g:ctrlp_custom_ignore = {
+            \ 'dir':  '\v[\/]\.(git|svn|exvim)$|target',
+            \ 'file': '\v\.(exe|so|dll|ttf|png)$|\-rplugin\~',
+            \ 'link': 'some_bad_symbolic_links',
+            \ }
+" 如果ag可用, 可以用ag取代find(If ag is available use it as filename list generator instead of 'find')
+if exists('ag')
+    set grepprg=ag\ --nogroup\ --nocolor
+    let g:ctrlp_user_command = ['ag %s -i --nocolor --nogroup --hidden
+                \ --ignore out
+                \ --ignore .exvim
+                \ --ignore .git
+                \ --ignore .svn
+                \ --ignore "**/*.pyc"
+                \ -g ""'
+                \ ]
+endif
+let g:ctrlp_extensions = ['tag', 'quickfix', 'line', 'changes', 'bookmarkdir']
+nnoremap <Leader>fl :CtrlPBuffer<CR>
+nnoremap <Leader>jf :CtrlPMRU<CR>
+" }}}
+
+Plug 'FelikZ/ctrlp-py-matcher'  " 匹配{{{
+let g:ctrlp_match_func = {'match': 'pymatcher#PyMatch'}
+"}}}
+
+Plug 'tacahiroy/ctrlp-funky' " outline功能, 文件内函数的快速跳转{{{
+nnoremap <Leader>fm :CtrlPFunky<Cr>
+" narrow the list down with a word under cursor
+nnoremap <Leader>fn :execute 'CtrlPFunky ' . expand('<cword>')<Cr>
+let g:ctrlp_funky_syntax_highlight = 1
+" }}}
+
+" for ctrlp-cmatcher {{{
+"let g:ctrlp_max_files = 0
+"let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
+""}}}
+
+Plug 'scrooloose/nerdtree' " file explorer{{{
+let NERDTreeSortHiddenFirst=1
+let NERDTreeQuitOnOpen=1
+let NERDTreeShowHidden=1
+let NERDTreeWinSize=35
+" let NERDTreeWinPos = 'left'
+let NERDTreeMinimalUI=0
+let NERDTreeDirArrows=0
+let NERDTreeAutoDeleteBuffer=1
+let NERDTreeHijackNetrw=1
+" let NERDTreeBookmarksFile=$HOME.'/.vim_cache/.NERDTreeBookmarks'
+" let g:NERDTreeRemoveDirCmd='rm -rf '
+" let g:NERDTreeMapActivateNode="o"
+" let g:NERDTreeMapChangeRoot="z?CD"
+" let g:NERDTreeMapChdir="z?cd"
+" let g:NERDTreeMapCloseChildren="z?X"
+" let g:NERDTreeMapCloseDir="x"
+" let g:NERDTreeMapDeleteBookmark=""
+" let g:NERDTreeMapMenu="m"
+" let g:NERDTreeMapHelp="?"
+" let g:NERDTreeMapJumpFirstChild="zh"
+" let g:NERDTreeMapJumpLastChild="zl"
+" let g:NERDTreeMapJumpNextSibling="zj"
+" let g:NERDTreeMapJumpParent="zu"
+" let g:NERDTreeMapJumpPrevSibling="zk"
+" let g:NERDTreeMapJumpRoot=""
+" let g:NERDTreeMapOpenExpl=""
+" let g:NERDTreeMapOpenInTab=""
+" let g:NERDTreeMapOpenInTabSilent=""
+" let g:NERDTreeMapOpenRecursively="O"
+" let g:NERDTreeMapOpenSplit=""
+" let g:NERDTreeMapOpenVSplit=""
+" let g:NERDTreeMapPreview=""
+" let g:NERDTreeMapPreviewSplit=""
+" let g:NERDTreeMapPreviewVSplit=""
+let g:NERDTreeMapQuit="q"
+let g:NERDTreeMapRefresh="r"
+let g:NERDTreeMapRefreshRoot="R"
+" let g:NERDTreeMapToggleBookmarks=""
+" let g:NERDTreeMapToggleFiles=""
+" let g:NERDTreeMapToggleFilters=""
+" let g:NERDTreeMapToggleHidden="ch"
+" let g:NERDTreeMapToggleZoom=""
+" let g:NERDTreeMapUpdir="z?u"
+" let g:NERDTreeMapUpdirKeepOpen=""
+" let g:NERDTreeMapCWD=""
+let g:NERDTreeDirArrowExpandable = '▾'
+let g:NERDTreeDirArrowCollapsible = '▸'
+let NERDTreeIgnore=['.exvim$[[dir]]','.svn$[[dir]]','.git$[[dir]]', '.o$[[file]]']
+nnoremap <F2> :NERDTreeToggle<CR>
+nnoremap <silent> <leader>fb :NERDTreeFind<cr>
+" }}}
+
+if g:setting.dev_icon_enable ==? 'yes'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+let g:NERDTreeFileExtensionHighlightFullName = 1
+let g:NERDTreeExactMatchHighlightFullName = 1
+let g:NERDTreePatternMatchHighlightFullName = 1
+let g:NERDTreeHighlightFolders = 1
+let g:NERDTreeHighlightFoldersFullName = 1
+endif

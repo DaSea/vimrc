@@ -92,10 +92,10 @@ let g:plugins_file = '.vimrc.vimplug'
 let g:setting.color_scheme = 'solarized'
 " 关于更改行的设置(git(vim-gitgutter), git_svn(vim-signify), no)
 let g:setting.version_status = 'no'
-" 是否要开始欢迎界面(yes, no)
-let g:setting.starty_screen = 'no'
 " 状态栏(ariline)
 let g:setting.status_color = 'molokai'
+" 使用ctrlp还是使用unit.vim
+let g:setting.ctrlp_or_unite = 'ctrlp'
 " 是否需要开启代码的静态语法检查(syntastic插件)
 let g:setting.syntastic_need = 'no'
 " 是否需要开启cppcheck功能
@@ -117,15 +117,12 @@ else
     let g:setting.vimwiki_path = '~/dasea.github.io/'
     let g:setting.private_snippets = '~/snippets'
 endif
-" 是否需要markdown插件支持
-let g:setting.markdown_need = 'yes'
-" 是否需要vim补全(neco-vim)
-let g:setting.vimcomplete_need = 'yes'
 " 是否需要c++语言的一些支持{{{
 let g:setting.cpp_syntax_extent = 'yes'
 let g:setting.cpp_enable = 'yes'
 " }}}
-
+" 是否需要icon支持
+let g:setting.dev_icon_enable = 'no'
 " }}}
 
 "/////////////////////////////////////////////////////////////////////////////
@@ -244,20 +241,27 @@ if has('gui_running')
                 set guifont=DejaVu\ Sans\ Mono:h15
             endif
         elseif g:iswindows
-            if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
-                set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h11:cANSI
-            elseif getfontname('Inconsolata-g for Powerline') != ''
-                set guifont=Inconsolata-g\ for\ Powerline:h12:cANSI
-            elseif getfontname( 'Microsoft YaHei Mono' ) != ''
-                set guifont=Microsoft\ YaHei\ Mono:h12:cANSI
-            elseif getfontname( 'DejaVu Sans Mono' ) != ''
-                set guifont=DejaVu\ Sans\ Mono:h12:cANSI
-            elseif getfontname( 'Consolas' ) != ''
-                set guifont=Consolas:h12:cANSI " this is the default visual studio font
+            if g:setting.dev_icon_enable ==? 'yes'
+                if getfontname('DejaVuSansMonoForPowerline NF') != ''
+                    set guifont=DejaVuSansMonoForPowerline\ NF:h11:cANSI
+                elseif getfontname( 'DroidSansMonoForPowerline NF' ) != ''
+                    set guifont=DroidSansMonoForPowerline\ NF:h11:cANSI
+                elseif getfontname( 'InconsolataForPowerline NF' ) != ''
+                    set guifont=InconsolataForPowerline\ NF:h11:cANSI
+                endif
             else
-                set guifont=Lucida_Console:h12:cANSI
+                if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
+                    set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h11:cANSI
+                elseif getfontname('Inconsolata-g for Powerline') != ''
+                    set guifont=Inconsolata-g\ for\ Powerline:h12:cANSI
+                elseif getfontname( 'Microsoft YaHei Mono' ) != ''
+                    set guifont=Microsoft\ YaHei\ Mono:h12:cANSI
+                elseif getfontname( 'Consolas' ) != ''
+                    set guifont=Consolas:h12:cANSI " this is the default visual studio font
+                else
+                    set guifont=Lucida_Console:h12:cANSI
+                endif
             endif
-            " set guifontwide=Microsoft\ Yahei:h12
         endif
     endfunction
 endif
@@ -360,7 +364,7 @@ endif
 " g:statuscheme 状态栏配色
 "/////////////////////////////////////////////////////////////////////////////
 if g:isGUI
-    if strftime("%H") >= 17
+    if strftime("%H") >= 17 || strftime("%H") <= 8
         set background=dark
     else
         set background=light
@@ -489,11 +493,9 @@ set ignorecase " set search/replace pattern to ignore case
 set smartcase " set smartcase mode on, If there is upper case character in the search patern, the 'ignorecase' option will be override.
 
 " set this to use id-utils for global search
-set grepprg=lid\ -Rgrep\ -s
-set grepformat=%f:%l:%m
-" gtags 搜索
-set cscopetag " 使用cscope作为tags命令
-set cscopeprg=gtags-cscope "使用gtags-cscope 替代自带的ctags和cscope
+" set grepprg=ag\ --nogroup\ --nocolor
+" set grepformat=%f:%l:%m
+
 "}}}
 
 " ==============================================================================
