@@ -68,8 +68,8 @@ function! Exsymbol() abort "{{{
     call exsymbol#register_hotkey( 101, 0, '<leader>sq', ":EXSymbolOpen<CR>", 'Open symbols window.' )
     call exsymbol#register_hotkey( 102, 0, '<leader>sg', ":EXSymbolCWord<CR>", 'List symbols contains current word.' )
 
-    if has('gui_running')
-        if has ('mac')
+    if g:isGUI
+        if g:ismac
             call exsymbol#register_hotkey( 102, 0, 'Ò', ":EXSymbolList<CR>:redraw<CR>/", 'List all symbols and stay in search mode.' )
         else
             call exsymbol#register_hotkey( 102, 0, '<M-L>', ":EXSymbolList<CR>:redraw<CR>/", 'List all symbols and stay in search mode.' )
@@ -162,7 +162,7 @@ endif
 "}}}
 
 " Vim or neovim 加载不同的文件, 主要是补全相关{{{
-if !has('nvim')
+if !g:isNvim
     if exists('g:exvim_custom_path')
         let g:vim_version_path = g:exvim_custom_path.'/.vimrc.ovim'
     else
@@ -182,16 +182,20 @@ endif
 
 "  内容完成(括号补全, vim补全) {{{
 "  Php自动补全{{{
-Plug 'shawncplus/phpcomplete.vim',{'for': 'php'}
-Plug '2072/PHP-Indenting-for-VIm',{'for': 'php'}
-Plug 'StanAngeloff/php.vim',{'for': 'php'}
+" Plug 'shawncplus/phpcomplete.vim',{'for': 'php'}
+" Plug '2072/PHP-Indenting-for-VIm',{'for': 'php'}
+" Plug 'StanAngeloff/php.vim',{'for': 'php'}
 " }}}
 
 Plug 'Shougo/neoinclude.vim' "{{{
 " disable ctags
-let g:neoinclude#ctags_command = ""
+" let g:neoinclude#ctags_command = ""
 " 字典,设置路径
 " let g:neoinclude#paths = {'cpp': 'path'}
+if !exists('g:neoinclude#exts')
+  let g:neoinclude#exts = {}
+endif
+let g:neoinclude#exts.cpp = ['', 'h', 'hpp', 'hxx']
 "}}}
 
 Plug 'Shougo/neosnippet.vim' "{{{
@@ -211,10 +215,10 @@ nnoremap <leader>ns :execute ":NeoSnippetEdit ".&filetype<CR>
 "}}}
 
 " vim 补全{{{
-Plug 'Shougo/neco-vim'
+Plug 'Shougo/neco-vim', {'for': 'vim'}
 "}}}
 
-"括号补全{{{
+"括号补全, endif等补全{{{
 Plug 'jiangmiao/auto-pairs'
 let g:AutoPairsFlyMode = 0
 let g:AutoPairsShortcutBackInsert = '<leader>pb'
@@ -228,24 +232,26 @@ Plug 'tpope/vim-endwise'
 "}}}
 
 " gtags设置{{{
-Plug 'aceofall/gtags.vim'
-set cscopetag " 使用cscope作为tags命令
-set cscopeprg=gtags-cscope "使用gtags-cscope 替代自带的ctags和cscope
-let g:GtagsCscope_Auto_Load = 1
-let g:GtagsCscope_Auto_Map = 1
-let g:GtagsCscope_Quiet = 1
-" gtags.vim设置
-let g:Gtags_OpenQuickfixWindow = 0
-let g:Gtags_No_Auto_Jump = 1
-" 快捷键设置
-" 搜索当前光标下单词
-nnoremap ,gd :GtagsCursor<CR>
-" 查找光标下引用
-nnoremap ,gg :call FindReferenceTag(expand("<cword>"))<CR>
-function! FindReferenceTag(fTag) abort
-    execute "Gtags -r " . a:fTag
-    " TODO :goto quickfix 窗口
-endfunction
+if 0
+    Plug 'aceofall/gtags.vim'
+    set cscopetag " 使用cscope作为tags命令
+    set cscopeprg=gtags-cscope "使用gtags-cscope 替代自带的ctags和cscope
+    let g:GtagsCscope_Auto_Load = 1
+    let g:GtagsCscope_Auto_Map = 1
+    let g:GtagsCscope_Quiet = 1
+    " gtags.vim设置
+    let g:Gtags_OpenQuickfixWindow = 0
+    let g:Gtags_No_Auto_Jump = 1
+    " 快捷键设置
+    " 搜索当前光标下单词
+    nnoremap ,gd :GtagsCursor<CR>
+    " 查找光标下引用
+    nnoremap ,gg :call FindReferenceTag(expand("<cword>"))<CR>
+    function! FindReferenceTag(fTag) abort
+        execute "Gtags -r " . a:fTag
+        " TODO :goto quickfix 窗口
+    endfunction
+endif
 "}}}
 
 " 选择unit.vim 或者 ctrlp: 文件, buffer, mru, outline等跳转{{{
@@ -306,13 +312,13 @@ Plug 'dyng/ctrlsf.vim',{'on': 'CtrlSF'} "搜索工程下文件{{{
 " Fork'dyng/ctrlsf.vim', and add g:ctrlsf_vcs_folder;
 "---------------------------------------------------------------------
 " 设置CtrlSF使用的搜索工具,默认使用ag,如果没有ag,则考虑使用ack
-" let g:ctrlsf_ackprg = 'pt'
+let g:ctrlsf_ackprg = 'rg'
 " 是否在ctrlsf搜索结果打开其他窗口时,关闭搜索结果窗口
 let g:ctrlsf_auto_close = 0
 " 大小写敏感
 let g:ctrlsf_case_sensitive = 'yes'
 " 默认搜索路径, 设置为project则从本文件的工程目录搜索
-let g:ctrlsf_default_root = 'project+fw'
+let g:ctrlsf_default_root = 'project+cwd'
 " 工程目录的顶级文件夹
 " let g:ctrlsf_vcs_folder = ['.exvim', '.git', '.hg', '.svn', '.bzr', '_darcs']
 " make result windows compact
@@ -404,17 +410,28 @@ nnoremap <Leader>df :DoxFile<CR>
 "}}}
 "}}}
 
-" 内容快速移动 {{{
+" 快速移动,  {{{
 Plug 'matze/vim-move'
 " alt + j : 下移; alt+k: 上移;
+
+Plug 'Lokaltog/vim-easymotion' " {{{
+let g:EasyMotion_smartcase = 1
+let g:EasyMotion_startofline=0
+" map <leader> <Plug>(easymotion-prefix)
+map <leader><leader>/ <Plug>(easymotion-sn)
+omap <Leader><Leader>/ <Plug>(easymotion-tn)
+map <Leader><Leader>j <Plug>(easymotion-j)
+map <Leader><Leader>k <Plug>(easymotion-k)
+map <Leader><Leader>l <Plug>(easymotion-lineforward)
+map <Leader><Leader>h <Plug>(easymotion-linebackward)
+map <Leader><Leader>. <Plug>(easymotion-repeat)
+"}}}
 "}}}
 
 if 'yes' ==? g:setting.syntastic_need "代码语法等检查{{{
-    Plug 'scrooloose/syntastic'
-    " Invoke when you save file and have syntac-checker
-    " ---------------------------------------------------
-    " this will make html file by Angular.js ignore errors
-    let g:syntastic_html_tidy_ignore_errors=[" proprietary attribute \"ng-"]
+    Plug 'maralla/validator.vim'
+    " let g:validator_error_msg_format = "[ ● %d/%d issues ]"
+    " let g:validator_auto_open_quickfix = 1
 endif "}}}
 
 " c++, qml, ndk, log等相关的语法扩展 {{{
@@ -652,9 +669,18 @@ Plug 'plasticboy/vim-markdown', {'for': 'md'}
 "}}}
 
 " 好玩的东西, Plantuml{{{
-Plug 'aklt/plantuml-syntax', {'for': 'uml'}
-Plug 'scrooloose/vim-slumlord',{'for': 'uml'}
+Plug 'aklt/plantuml-syntax',{'for': 'plantuml'}
+let g:plantuml_executable_script = 'D:/Develop/Tools/plantuml.jar'
+function! UmlToImage() abort " 由uml等生成图片 {{{
+    let cur_uml = expand('%:p')
+    let cmd = 'java -jar ' . g:plantuml_executable_script . ' ' . cur_uml
+    call system(cmd)
+endfunction " }}}
+nnoremap <silent> <Leader>utp :call UmlToImage()<CR>
+Plug 'scrooloose/vim-slumlord',{'for': 'plantuml'}
 " 详细的可以参考http://plantuml.com/
+let g:slumlord_au_created = 0
+nnoremap <silent> <Leader>um :call slumlord#updatePreview({'write': 1})<CR>
 "}}}
 
 Plug 'iamcco/dict.vim' " 有道翻译{{{
@@ -671,7 +697,6 @@ nnoremap <silent> <Leader>yr  viw:<C-U>call dict#VSearch("replace")<CR>
 " 可视化模式下，<Leader><Leader>r 即可翻译光标下的单词，并替换为翻译的结果
 vnoremap <silent> <Leader>yr :<C-U>call dict#VSearch("replace")<CR>
 " }}}
-
 
 " exvim工程插件 {{{
 nnoremap <leader>GS :call GSimplePrj()<CR>

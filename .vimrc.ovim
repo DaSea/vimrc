@@ -1,28 +1,38 @@
+
+
 if 'yes' ==? g:setting.cpp_enable "{{{
     Plug 'FromtonRouge/OmniCppComplete'
-    Plug 'osyo-manga/vim-marching'
-    Plug 'Shougo/vimproc.vim' " {{{
-    let g:marching_clang_command = "D:/Develop/LLVM/bin/clang.exe"
+    Plug 'Shougo/vimproc.vim'
+    if 0
+      Plug 'osyo-manga/vim-marching' " {{{
+      let g:marching_clang_command = "D:/Develop/LLVM/bin/clang.exe"
 
-    " let g:marching#clang_command#options = {
-    "             \   "cpp" : "-std=gnu++1y"
-    "             \}
+      " let g:marching#clang_command#options = {
+      "             \   "cpp" : "-std=gnu++1y"
+      "             \}
 
-    let g:marching_include_paths = [
-                \   "D:/Develop/msys64/mingw64/include/c++/5.4.0"
-                \]
+      let g:marching_include_paths = [
+                  \   "D:/Develop/msys64/mingw64/include/c++/5.4.0"
+                  \]
 
-    let g:marching_enable_neocomplete = 1
+      let g:marching_enable_neocomplete = 1
 
-    set updatetime=200
-    let g:marching_enable_refresh_always=1
+      set updatetime=200
+      let g:marching_enable_refresh_always=1
 
-    imap <buffer> <C-x><C-o> <Plug>(marching_start_omni_complete)
-    imap <buffer> <C-x><C-x><C-o> <Plug>(marching_force_start_omni_complete)
+      imap <buffer> <C-x><C-o> <Plug>(marching_start_omni_complete)
+      imap <buffer> <C-x><C-x><C-o> <Plug>(marching_force_start_omni_complete)
 
-    let g:marching_backend = "sync_clang_command"
-    " }}}
+      let g:marching_backend = "sync_clang_command"
+      " }}}
+    endif
 endif "}}}
+
+if g:setting.complete_method ==? 'completor'
+    Plug 'maralla/completor.vim'
+    " 直接卡死了
+    let g:completor_clang_binary = 'clang'
+endif
 
 if g:setting.complete_method ==? 'neocomplete'
     Plug 'Shougo/neocomplete.vim' "{{{
@@ -200,3 +210,5 @@ let helptags=$VIM."/vimfiles/doc"
 set helplang=cn
 "}}}
 "}}}
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:

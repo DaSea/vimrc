@@ -53,6 +53,10 @@ nnoremap <Leader>fn :execute 'CtrlPFunky ' . expand('<cword>')<Cr>
 let g:ctrlp_funky_syntax_highlight = 1
 " }}}
 
+Plug 'mattn/ctrlp-mark' " 文件内mark的跳转{{{
+nnoremap <Leader>vm :execute 'CtrlPMark'<CR>
+"}}}
+
 " for ctrlp-cmatcher {{{
 "let g:ctrlp_max_files = 0
 "let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
@@ -62,7 +66,7 @@ Plug 'scrooloose/nerdtree' " file explorer{{{
 let NERDTreeSortHiddenFirst=1
 let NERDTreeQuitOnOpen=1
 let NERDTreeShowHidden=1
-let NERDTreeWinSize=35
+" let NERDTreeWinSize=35
 " let NERDTreeWinPos = 'left'
 let NERDTreeMinimalUI=0
 let NERDTreeDirArrows=0

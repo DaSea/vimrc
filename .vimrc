@@ -1,9 +1,9 @@
+scriptencoding utf-8
 "/////////////////////////////////////////////////////////////////////////////
 " 系统及gui判断{{{
 "/////////////////////////////////////////////////////////////////////////////
 " -----------------------------------------------------------------------------
 "  判断操作系统:1, windows; 2, cygwin,msys; 3. linux; 4, mac;
-" -----------------------------------------------------------------------------
 let g:iswindows = 0
 let g:iswinunix = 0
 let g:islinux = 0
@@ -20,11 +20,17 @@ endif
 
 " -----------------------------------------------------------------------------
 "  < 判断是终端还是 Gvim >
-" -----------------------------------------------------------------------------
 if has("gui_running")
     let g:isGUI = 1
 else
     let g:isGUI = 0
+endif
+
+" -----------------------------------------------------------------------------
+" 判断是vim还是nvim
+let g:isNvim = 0
+if has("nvim")
+  let g:isNvim = 1
 endif
 
 " On Windows, also use '.vim' instead of 'vimfiles'; this makes synchronization
@@ -34,11 +40,10 @@ if !exists('g:exvim_custom_path')
         set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
     endif
 endif
-
 " }}}
 
 "/////////////////////////////////////////////////////////////////////////////
-" language and encoding setup  编码设置{{{
+" language and encoding setup  语言及编码设置{{{
 "/////////////////////////////////////////////////////////////////////////////
 " always use English menu一般使用英文菜单
 " NOTE: this must before filetype off, otherwise it won't work
@@ -82,7 +87,6 @@ else
     set encoding=utf-8
     set termencoding=utf-8
 endif
-scriptencoding utf-8
 "}}}
 
 " 全局配置变量(Dictionnary){{{
@@ -93,10 +97,10 @@ let g:setting.color_scheme = 'solarized'
 " 关于更改行的设置(git(vim-gitgutter), git_svn(vim-signify), no)
 let g:setting.version_status = 'no'
 " 状态栏(ariline)
-let g:setting.status_color = 'molokai'
+let g:setting.status_color = 'light'
 " 使用ctrlp还是使用unit.vim
-let g:setting.ctrlp_or_unite = 'ctrlp'
-" 是否需要开启代码的静态语法检查(syntastic插件)
+let g:setting.ctrlp_or_unite = 'unitvim'
+" 是否需要开启代码的静态语法检查(validator.vim插件)
 let g:setting.syntastic_need = 'no'
 " 是否需要开启cppcheck功能
 let g:setting.cppcheck_need = 'no'
@@ -118,7 +122,7 @@ else
     let g:setting.private_snippets = '~/snippets'
 endif
 " 是否需要c++语言的一些支持{{{
-let g:setting.cpp_syntax_extent = 'yes'
+let g:setting.cpp_syntax_extent = 'no'
 let g:setting.cpp_enable = 'yes'
 " }}}
 " 是否需要icon支持
@@ -213,7 +217,7 @@ endif
 " }}}
 
 " 字体设置(font set){{{
-if has('gui_running')
+if g:isGUI
     augroup ex_gui_font
         " check and determine the gui font after GUIEnter.
         " NOTE: getfontname function only works after GUIEnter.
@@ -379,6 +383,17 @@ else
     set t_Co=256 " make sure our terminal use 256 color
 endif
 exec 'colorscheme ' . g:setting.color_scheme
+" 切换背景色 {{{
+function! ToggleBackground() abort
+    let curr_back = &background
+    if curr_back ==# 'dark'
+        let curr_back = 'light'
+    else
+        let curr_back = 'dark'
+    endif
+    exec 'set background=' . curr_back
+endfunction " }}}
+nnoremap <leader>bc :call ToggleBackground()<CR>
 " }}}
 
 " ==============================================================================
@@ -685,6 +700,14 @@ nnoremap <leader>kw :<C-u>split<CR><C-W><Up>
 nnoremap <leader>jw :<C-u>split<CR>
 nnoremap <leader>hw :<C-u>vsplit<CR><C-W><Left>
 nnoremap <leader>lw :<C-u>vsplit<CR>
+" 插入模式下的字符移动
+inoremap <M-j> <Down>
+inoremap <M-k> <Up>
+inoremap <M-n> <Left>
+inoremap <M-m> <Right>
+" 快速在行尾插入;
+nnoremap <M-;>  A<C-R>=";"<CR><ESC>
+" 在等号俩边快速插入空格
 
 "===================================================
 " 修改光标的快速上移或下移

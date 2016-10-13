@@ -48,3 +48,4 @@ endfunction " }}}
 call add(g:init_func_list, function('DeopleteInit'))
 "}}}
 
+" vim:ts=4:sw=4:sts=4 et fdm=marker:
