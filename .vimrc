@@ -94,6 +94,9 @@ let g:setting = {}
 let g:plugins_file = '.vimrc.vimplug'
 " 全局设置
 let g:setting.color_scheme = 'solarized'
+if has('nvim')
+    let g:setting.color_scheme='onedark'
+endif
 " 关于更改行的设置(git(vim-gitgutter), git_svn(vim-signify), no)
 let g:setting.version_status = 'no'
 " 状态栏(ariline)
@@ -377,9 +380,6 @@ if g:isGUI
 else
     if !g:iswindows
         set background=dark
-    endif
-    if has('nvim')
-        let g:setting.color_scheme='monokai'
     endif
     set t_Co=256 " make sure our terminal use 256 color
 endif
