@@ -127,6 +127,7 @@ let g:setting.cpp_enable = 'yes'
 " }}}
 " 是否需要icon支持
 let g:setting.dev_icon_enable = 'no'
+let g:setting.undodir = '~/.cache/undodir'
 " }}}
 
 "/////////////////////////////////////////////////////////////////////////////
