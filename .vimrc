@@ -94,12 +94,13 @@ let g:setting = {}
 let g:plugins_file = '.vimrc.vimplug'
 " 全局设置
 let g:setting.color_scheme = 'solarized'
-if has('nvim')
+if has('nvim') || g:islinux
     let g:setting.color_scheme='onedark'
 endif
 " 关于更改行的设置(git(vim-gitgutter), git_svn(vim-signify), no)
 let g:setting.version_status = 'no'
 " 状态栏(ariline)
+let g:setting.status_line = 'ariline'
 let g:setting.status_color = 'light'
 " 使用ctrlp还是使用unit.vim
 let g:setting.ctrlp_or_unite = 'unitvim'
@@ -109,13 +110,6 @@ let g:setting.syntastic_need = 'no'
 let g:setting.cppcheck_need = 'no'
 " name
 let g:setting.author_name = 'DaSea'
-" 自动补全 {{{
-if has('lua')
-    let g:setting.complete_method = 'neocomplete'
-else
-    let g:setting.complete_method = 'neocomplcache'
-endif
-"}}}
 " windows与linux使用不同的目录
 if g:iswindows
     let g:setting.vimwiki_path = 'E:/Self/01_mywiki/dasea.github.io/'
@@ -130,7 +124,6 @@ let g:setting.cpp_enable = 'yes'
 " }}}
 " 是否需要icon支持
 let g:setting.dev_icon_enable = 'no'
-let g:setting.undodir = '~/.cache/undodir'
 " }}}
 
 "/////////////////////////////////////////////////////////////////////////////
@@ -272,6 +265,10 @@ if g:isGUI
             endif
         endif
     endfunction
+else
+    if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
+        set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ 12
+    endif
 endif
 "}}}
 

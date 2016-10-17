@@ -1,4 +1,4 @@
-" Vundle {{{
+" vim-plug插件管理器使用的配置文件 {{{
 " man.vim: invoked by :Man {name}
 source $VIMRUNTIME/ftplugin/man.vim
 
@@ -9,7 +9,7 @@ let g:init_func_list = []
 "========================================================================================
 " 使用到的插件的配置(The setting of the used plugin)
 "========================================================================================
-" ex系列插件 {{{
+" ex系列插件, 工程管理 {{{
 
 Plug 'DaSea/ex-config'
 " Fork 'exvim/ex-config', change '.exvim.project_name' to '.exvim'
@@ -128,6 +128,12 @@ Plug 'exvim/ex-easyhl'
 Plug 'exvim/ex-searchcompl'
 " invoke by /
 " ---------------------------------------------------
+
+Plug 'DaSea/ex-prjlist'
+" ---------------------------------------------------
+" let g:exprj_list_cache_directory = 'D:/Develop/cache'
+" let g:exprj_list_win_pos = "botright"
+" let g:exprj_list_win_szie = 30
 " }}}
 
 " 版本控制(git,svn)及修改状态显示{{{
@@ -161,100 +167,7 @@ if g:setting.version_status ==? 'git_svn'
 endif
 "}}}
 
-" Vim or neovim 加载不同的文件, 主要是补全相关{{{
-if !g:isNvim
-    if exists('g:exvim_custom_path')
-        let g:vim_version_path = g:exvim_custom_path.'/.vimrc.ovim'
-    else
-        let g:vim_version_path = '~/.vimrc.ovim'
-    endif
-else
-    if exists('g:exvim_custom_path')
-        let g:vim_version_path = g:exvim_custom_path.'/.vimrc.nvim'
-    else
-        let g:vim_version_path = '~/.vimrc.nvim'
-    endif
-endif
-if filereadable(expand(g:vim_version_path))
-    exec 'source ' . fnameescape(g:vim_version_path)
-endif
-"}}}
-
-"  内容完成(括号补全, vim补全) {{{
-"  Php自动补全{{{
-" Plug 'shawncplus/phpcomplete.vim',{'for': 'php'}
-" Plug '2072/PHP-Indenting-for-VIm',{'for': 'php'}
-" Plug 'StanAngeloff/php.vim',{'for': 'php'}
-" }}}
-
-Plug 'Shougo/neoinclude.vim' "{{{
-" disable ctags
-" let g:neoinclude#ctags_command = ""
-" 字典,设置路径
-" let g:neoinclude#paths = {'cpp': 'path'}
-if !exists('g:neoinclude#exts')
-  let g:neoinclude#exts = {}
-endif
-let g:neoinclude#exts.cpp = ['', 'h', 'hpp', 'hxx']
-"}}}
-
-Plug 'Shougo/neosnippet.vim' "{{{
-let g:neosnippet#disable_runtime_snippets = {
-            \   '_' : 1,
-            \ }
-let g:neosnippet#snippets_directory=g:setting.private_snippets
-let g:neosnippet#enable_complete_done = 1
-let g:neosnippet#enable_conceal_markers = 0
-" let g:neosnippet#enable_snipmate_compatibility=1
-" Plug key-mappings.
-imap <C-k> <Plug>(neosnippet_expand_or_jump)
-smap <C-k> <Plug>(neosnippet_expand_or_jump)
-xmap <C-k> <Plug>(neosnippet_expand_target)
-" 编辑snippet
-nnoremap <leader>ns :execute ":NeoSnippetEdit ".&filetype<CR>
-"}}}
-
-" vim 补全{{{
-Plug 'Shougo/neco-vim', {'for': 'vim'}
-"}}}
-
-"括号补全, endif等补全{{{
-Plug 'jiangmiao/auto-pairs'
-let g:AutoPairsFlyMode = 0
-let g:AutoPairsShortcutBackInsert = '<leader>pb'
-" 上面俩项为flyMode下使用
-let g:AutoPairsShortcutToggle = '<leader>pp'
-let g:AutoPairsShortcutFastWrap = '<leader>pe'
-let g:AutoPairsShortcutJump = '<leader>pn'
-
-Plug 'tpope/vim-endwise'
-"}}}
-"}}}
-
-" gtags设置{{{
-if 0
-    Plug 'aceofall/gtags.vim'
-    set cscopetag " 使用cscope作为tags命令
-    set cscopeprg=gtags-cscope "使用gtags-cscope 替代自带的ctags和cscope
-    let g:GtagsCscope_Auto_Load = 1
-    let g:GtagsCscope_Auto_Map = 1
-    let g:GtagsCscope_Quiet = 1
-    " gtags.vim设置
-    let g:Gtags_OpenQuickfixWindow = 0
-    let g:Gtags_No_Auto_Jump = 1
-    " 快捷键设置
-    " 搜索当前光标下单词
-    nnoremap ,gd :GtagsCursor<CR>
-    " 查找光标下引用
-    nnoremap ,gg :call FindReferenceTag(expand("<cword>"))<CR>
-    function! FindReferenceTag(fTag) abort
-        execute "Gtags -r " . a:fTag
-        " TODO :goto quickfix 窗口
-    endfunction
-endif
-"}}}
-
-" 选择unit.vim 或者 ctrlp: 文件, buffer, mru, outline等跳转{{{
+" unit.vim 或者 ctrlp相关插件, 及文件管理器{{{
 if g:setting.ctrlp_or_unite ==? 'ctrlp'
     if exists('g:exvim_custom_path')
         let g:vim_ctrlp_or_unite = g:exvim_custom_path.'/.vimrc.ctrlp'
@@ -271,18 +184,6 @@ endif
 if filereadable(expand(g:vim_ctrlp_or_unite))
     exec 'source ' . fnameescape(g:vim_ctrlp_or_unite)
 endif
-"}}}
-
-Plug 'DaSea/ex-avim',{'for': ['cpp', 'c']} " h与cpp文件的交换{{{
-" 用于切换C/C++头文件
-" :A     ---切换头文件并独占整个窗口
-" :AV    ---切换头文件并垂直分割窗口
-" :AS    ---切换头文件并水平分割窗口
-" let g:alternateSearchPath = "D:\\Develop\\msys64\\mingw64\\include\\c++\\5.4.0"
-let g:alternateSearchPath = "D:\\Develop\\Java\\android-ndk-r11b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include"
-nnoremap <silent> <leader>ah :A<CR>
-nnoremap <silent> <leader>av :AV<CR>
-nnoremap <silent> <leader>as :AS<CR>
 "}}}
 
 " 由于ctrlp或者unit.vim速度可能有时较慢, 所以用LeaderF替换 {{{
@@ -367,13 +268,13 @@ endfunction
 
 Plug 'mbbill/undotree',{'on': 'UndotreeToggle'} " undo 历史树,直观显示,快速选择恢复{{{
 if has("persistent_undo")
-    set undodir=g:setting.undodir
+    set undodir=~/.undodir
     set undofile
 endif
 "}}}
 "}}}
 
-"  内容注释及选择{{{
+"  快速注释, 及生成函数及文件注释{{{
 Plug 'scrooloose/nerdcommenter' " 快速注释{{{
 " Invoke by <leader>c<space>, <leader>cl, <leader>cu, <F11> or <C-F11>
 " ---------------------------------------------------
@@ -428,32 +329,9 @@ map <Leader><Leader>. <Plug>(easymotion-repeat)
 "}}}
 "}}}
 
-if 'yes' ==? g:setting.syntastic_need "代码语法等检查{{{
-    Plug 'maralla/validator.vim'
-    " let g:validator_error_msg_format = "[ ● %d/%d issues ]"
-    " let g:validator_auto_open_quickfix = 1
-endif "}}}
-
-" c++, qml, ndk, log等相关的语法扩展 {{{
-if 'yes' ==? g:setting.cpp_syntax_extent "c++语法扩展{{{
-    Plug 'octol/vim-cpp-enhanced-highlight'
-    " -----------------------------------------------------------------------------
-    let g:cpp_class_scope_highlight=1
-    let g:cpp_experimental_template_highlight = 1
-
-endif "}}}
-
-Plug 'DaSea/vim-syntax' " 杂7杂8的, 有qml, 有cpp文件中的doxygen, ndk高亮等{{{
-let g:ndk_syntax_enable = 1
-let g:doxygen_syntax_enable = 1
-"}}}
-
-Plug 'dzeban/vim-log-syntax'
-"}}}
-
 " 界面显示相关{{{
 if g:setting.dev_icon_enable ==? 'yes'
-    Plug 'ryanoasis/vim-devicons' "图片支持{{{
+    Plug 'ryanoasis/vim-devicons' "图片支持, 没多大卵用, {{{
     " loading the plugin
     let g:webdevicons_enable = 1
     " adding the flags to NERDTree
@@ -488,6 +366,7 @@ if g:setting.dev_icon_enable ==? 'yes'
     let g:WebDevIconsNerdTreeGitPluginForceVAlign = 0
     " }}}
 endif
+
 Plug 'mhinz/vim-startify',{'on': 'Startify'} " 开始界面,可以显示MRU, Session等{{{
 "开始欢迎界面
 nnoremap <F4> :Startify<CR>
@@ -526,49 +405,139 @@ let g:better_whitespace_filetypes_blacklist = ['unite', 'vimfiler', 'ctrlp']
 noremap CS :StripWhitespace<CR>
 "}}}
 
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes' " airline状态栏{{{
-let g:airline_powerline_fonts = 1
-let g:airline_theme = g:setting.status_color
-" let g:airline_left_sep = ''
-" let g:airline_left_alt_sep = ''
-" let g:airline_right_sep = ''
-" let g:airline_right_alt_sep = ''
-let g:airline_left_sep = '▶'
-let g:airline_left_alt_sep = '❯'
-let g:airline_right_sep = '◀'
-let g:airline_right_alt_sep = '❮'
-if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
-endif
-let g:airline_symbols.branch = ''
-let g:airline_symbols.readonly = ''
-let g:airline_symbols.linenr = ''
-let g:airline_detect_crypt=0
-let g:airline_detect_spell=0
-let g:airline_detect_iminsert=0
-if g:setting.ctrlp_or_unite ==? 'ctrlp'
-    let g:airline_extensions = ['tagbar', 'quickfix', 'ctrlp']
+if g:setting.status_line ==? "lightline"
+    Plugin 'itchyny/lightline.vim'"{{{
+    " ---------------------------------------------------
+    let g:lightline ={
+                \ 'enable' :{
+                \ 'statusline': 1,
+                \ 'tabline': 0
+                \ },
+                \ 'colorscheme':g:setting.status_color,
+                \ 'component':{
+                \ 'readonly': '%{&readonly?"":""}',
+                \   'lineinfo': '%3l:%-2v',
+                \ },
+                \ 'active': {
+                \ 'left': [ ['mode', 'paste'], ['fugitive'], ['filename', 'modified' ] ],
+                \ 'right': [ [ 'lineinfo' ], [ 'fileformat', 'fileencoding', 'filetype' ] ]
+                \ },
+                \ 'inactive': {
+                \ 'left': [['filename']],
+                \ 'right': [['lineinfo']]
+                \},
+                \ 'component_function': {
+                \   'modified': 'LightLineModified',
+                \   'fugitive': 'LightLineFugitive',
+                \   'filename': 'LightLineFilename',
+                \   'mode': 'LightLineMode',
+                \   'filetype': 'LightLineFiletype',
+                \   'fileencoding': 'LightLineFileencoding',
+                \   'fileformat': 'LightLineFileformat'
+                \ },
+                \ 'separator': {'left': '', 'right': ''},
+                \ 'subseparator': {'left': '', 'right': ''}
+                \ }
+
+    if g:islinux
+        let g:lightline.separator = { 'left': '', 'right': '' }
+        let g:lightline.subseparator = { 'left': '|', 'right': '|' }
+    endif
+
+    function! LightLineFugitive()
+        if winwidth(0) > 70
+            if exists('*fugitive#head')
+                let githead = fugitive#head()
+                return strlen(githead) ? ''.'['.githead.']': ''
+            endif
+        endif
+            return ''
+    endfunction
+
+    function! LightLineFilename()
+        let fname = expand('%:t')
+        return '' != fname ? fname : '[No Name]'
+        " return &ft == 'vimfiler' ? vimfiler#get_status_string() :
+                    " \ &ft == 'unite' ? unite#get_status_string() :
+                    " \ &ft == 'vimshell' ? vimshell#get_status_string() :
+                    " \ ('' != fname ? fname : '[No Name]')
+    endfunction
+
+    function! LightLineMode()
+        return  winwidth(0) > 60 ? lightline#mode() : ''
+    endfunction
+
+    function! LightLineModified()
+        if winwidth(0) > 70
+            if &filetype == "help"
+                return ""
+            elseif &modified
+                return "*"
+            elseif &modifiable
+                return "+"
+            else
+                return "?"
+            endif
+        else
+            return ''
+        endif
+    endfunction
+
+    function! LightLineFileformat()
+        return winwidth(0) > 70 ? &fileformat : ''
+    endfunction
+    function! LightLineFiletype()
+        return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'Unkown') : ''
+    endfunction
+    function! LightLineFileencoding()
+        return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
+    endfunction
+    "}}}
 else
-    let g:airline_extensions = ['unite', 'tagbar', 'quickfix']
+    Plug 'vim-airline/vim-airline'
+    Plug 'vim-airline/vim-airline-themes' " airline状态栏{{{
+    let g:airline_powerline_fonts = 1
+    let g:airline_theme = g:setting.status_color
+    " let g:airline_left_sep = ''
+    " let g:airline_left_alt_sep = ''
+    " let g:airline_right_sep = ''
+    " let g:airline_right_alt_sep = ''
+    let g:airline_left_sep = '▶'
+    let g:airline_left_alt_sep = '❯'
+    let g:airline_right_sep = '◀'
+    let g:airline_right_alt_sep = '❮'
+    if !exists('g:airline_symbols')
+        let g:airline_symbols = {}
+    endif
+    let g:airline_symbols.branch = ''
+    let g:airline_symbols.readonly = ''
+    let g:airline_symbols.linenr = ''
+    let g:airline_detect_crypt=0
+    let g:airline_detect_spell=0
+    let g:airline_detect_iminsert=0
+    if g:setting.ctrlp_or_unite ==? 'ctrlp'
+        let g:airline_extensions = ['tagbar', 'quickfix', 'ctrlp']
+    else
+        let g:airline_extensions = ['unite', 'tagbar', 'quickfix']
+    endif
+    " 各个部分的设置简化
+    let g:airline_section_c = '%t'
+    let g:airline_section_z = '%l%{g:airline_symbols.linenr}%L'
+    let g:airline_mode_map = {
+                \ '__' : '-',
+                \ 'n'  : 'N',
+                \ 'i'  : 'I',
+                \ 'R'  : 'R',
+                \ 'c'  : 'C',
+                \ 'v'  : 'V',
+                \ 'V'  : 'V',
+                \ '' : 'V',
+                \ 's'  : 'S',
+                \ 'S'  : 'S',
+                \ '' : 'S',
+                \ }
+    " }}}
 endif
-" 各个部分的设置简化
-let g:airline_section_c = '%t'
-let g:airline_section_z = '%l%{g:airline_symbols.linenr}%L'
-let g:airline_mode_map = {
-            \ '__' : '-',
-            \ 'n'  : 'N',
-            \ 'i'  : 'I',
-            \ 'R'  : 'R',
-            \ 'c'  : 'C',
-            \ 'v'  : 'V',
-            \ 'V'  : 'V',
-            \ '' : 'V',
-            \ 's'  : 'S',
-            \ 'S'  : 'S',
-            \ '' : 'S',
-            \ }
-" }}}
 
 Plug 'Yggdroot/indentLine' "对齐线{{{
 " ---------------------------------------------------
@@ -635,52 +604,10 @@ inoremap <leader>mq <ESC>:Bdelete<CR>
 vnoremap <leader>mq <ESC>:Bdelete<CR>
 "}}}
 
-" WIKI, org{{{
-Plug 'jceb/vim-orgmode'
-" Plug 'vim-scripts/utl.vim' " org{{{
-" 快捷键记录:
-" <leader>hn <leader>hh, <leader>hN:插入标题
-" yah , dah : 复制和删除heading, yar, dar: 复制和删除subtree
-" >> << 可以升降heading的等级; >ar <ar : 可以升降subtree的等级
-" <leader>cl , <leader>CL 插入plainlist, \cn,\cc,\cN:切换,插入checkbox
-" \si, \sa : 插入时间;  \ct: TODO 之间切换状态; \st,\ft: tag
-
-" 配置
-" let g:org_todo_keywords=['TODO', 'VERIFY', '|', 'DONE', 'DELEGATED']
-let g:org_agenda_files = ['E:\\Self\\01_mywiki\\gtd\\gtd.org']
-" 打开todo文件
-nnoremap <leader>oo :call OpenOrgToDoFile()<CR>
-function! OpenOrgToDoFile() abort "{{{
-    let gtdFile = 'E:\Self\01_mywiki\gtd\gtd.org'
-    silent! execute 'edit! ' . gtdFile
-endfunction " }}}
-" }}}
-"}}}
-
 " 代码格式化:{{{
 Plug 'DaSea/uncrustify.vim'
 nnoremap <Leader>ff :Uncrustify<CR>
 nnoremap <Leader>fr :'<,'>Uncrustify<CR>
-"}}}
-
-" markdown支持 {{{
-Plug 'godlygeek/tabular', {'for': 'md'}
-Plug 'plasticboy/vim-markdown', {'for': 'md'}
-"}}}
-
-" 好玩的东西, Plantuml{{{
-Plug 'aklt/plantuml-syntax',{'for': 'plantuml'}
-let g:plantuml_executable_script = 'D:/Develop/Tools/plantuml.jar'
-function! UmlToImage() abort " 由uml等生成图片 {{{
-    let cur_uml = expand('%:p')
-    let cmd = 'java -jar ' . g:plantuml_executable_script . ' ' . cur_uml
-    call system(cmd)
-endfunction " }}}
-nnoremap <silent> <Leader>utp :call UmlToImage()<CR>
-Plug 'scrooloose/vim-slumlord',{'for': 'plantuml'}
-" 详细的可以参考http://plantuml.com/
-let g:slumlord_au_created = 0
-nnoremap <silent> <Leader>um :call slumlord#updatePreview({'write': 1})<CR>
 "}}}
 
 Plug 'iamcco/dict.vim' " 有道翻译{{{
@@ -698,30 +625,53 @@ nnoremap <silent> <Leader>yr  viw:<C-U>call dict#VSearch("replace")<CR>
 vnoremap <silent> <Leader>yr :<C-U>call dict#VSearch("replace")<CR>
 " }}}
 
-" exvim工程插件 {{{
-nnoremap <leader>GS :call GSimplePrj()<CR>
-" 切换至工程目录 {{{
-function! GSimplePrj() abort
-    let curPath = expand("%:p:h")
-    let prjRoot = ex#path#root(curPath)
-    if ("" == prjRoot)
-        let prjRoot == curPath
-    endif
-
-    let prjRoot = ex#path#auto_translate(prjRoot)
-    execute 'cd! ' . prjRoot
-
-    silent! execute 'cs add GTAGS'
-endfunction " }}}
-
-Plug 'DaSea/ex-prjlist'
-" let g:exprj_list_cache_directory = 'D:/Develop/cache'
-" let g:exprj_list_win_pos = "botright"
-" let g:exprj_list_win_szie = 30
+Plug 'mbbill/fencview' " (编码检查)auto check Encoding{{{
+let g:fencview_autodetect = 1
 "}}}
 
-Plug 'mbbill/fencview' " auto check Encoding{{{
-let g:fencview_autodetect = 1
+" 加载语言相关插件{{{
+if exists('g:exvim_custom_path')
+    let g:vim_language_path = g:exvim_custom_path.'/.vimrc.language'
+else
+    let g:vim_language_path = '~/.vimrc.language'
+endif
+if filereadable(expand(g:vim_language_path))
+    exec 'source ' . fnameescape(g:vim_language_path)
+endif
+" }}}
+
+" 补全相关插件, 语言无关 {{{
+if exists('g:exvim_custom_path')
+    let g:vim_complete_path = g:exvim_custom_path.'/.vimrc.complete'
+else
+    let g:vim_complete_path = '~/.vimrc.complete'
+endif
+if filereadable(expand(g:vim_complete_path))
+    exec 'source ' . fnameescape(g:vim_complete_path)
+endif
+"}}}
+
+"括号补全, endif等补全{{{
+Plug 'jiangmiao/auto-pairs'
+let g:AutoPairsFlyMode = 0
+let g:AutoPairsShortcutBackInsert = '<leader>pb'
+" 上面俩项为flyMode下使用
+let g:AutoPairsShortcutToggle = '<leader>pp'
+let g:AutoPairsShortcutFastWrap = '<leader>pe'
+let g:AutoPairsShortcutJump = '<leader>pn'
+
+Plug 'tpope/vim-endwise'
+"}}}
+
+" vim documentation {{{
+if 0 == g:isNvim
+    Plug 'asins/vimcdoc' "{{{
+    " < VIM中文帮助文档:>
+    " 设定doc文档目录
+    let helptags=$VIM."/vimfiles/doc"
+    set helplang=cn
+    "}}}
+endif
 "}}}
 
 " TEST {{{

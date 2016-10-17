@@ -1,0 +1,111 @@
+" 存放于语言相关的配置, 如果为语法高亮和相关的补全等
+
+" markdown支持 {{{
+Plug 'godlygeek/tabular', {'for': 'md'}
+Plug 'plasticboy/vim-markdown', {'for': 'md'}
+"}}}
+
+" 好玩的东西, Plantuml{{{
+Plug 'aklt/plantuml-syntax',{'for': 'plantuml'}
+let g:plantuml_executable_script = 'D:/Develop/Tools/plantuml.jar'
+function! UmlToImage() abort " 由uml等生成图片 {{{
+    let cur_uml = expand('%:p')
+    let cmd = 'java -jar ' . g:plantuml_executable_script . ' ' . cur_uml
+    call system(cmd)
+endfunction " }}}
+nnoremap <silent> <Leader>utp :call UmlToImage()<CR>
+Plug 'scrooloose/vim-slumlord',{'for': 'plantuml'}
+" 详细的可以参考http://plantuml.com/
+let g:slumlord_au_created = 0
+nnoremap <silent> <Leader>um :call slumlord#updatePreview({'write': 1})<CR>
+"}}}
+
+" cpp/c等{{{
+Plug 'DaSea/vim-syntax' " 杂7杂8的, 有qml, 有cpp文件中的doxygen, ndk高亮等{{{
+let g:ndk_syntax_enable = 1
+let g:doxygen_syntax_enable = 1
+"}}}
+
+Plug 'DaSea/ex-avim',{'for': ['cpp', 'c']} " h与cpp文件的交换{{{
+" 用于切换C/C++头文件
+" :A     ---切换头文件并独占整个窗口
+" :AV    ---切换头文件并垂直分割窗口
+" :AS    ---切换头文件并水平分割窗口
+" let g:alternateSearchPath = "D:\\Develop\\msys64\\mingw64\\include\\c++\\5.4.0"
+if g:iswindows
+    let g:alternateSearchPath =
+                \ "D:\\Develop\\Java\\android-ndk-r11b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include"
+else
+    let g:alternateSearchPath = "/usr/include/c++/5"
+endif
+nnoremap <silent> <leader>ah :A<CR>
+nnoremap <silent> <leader>av :AV<CR>
+nnoremap <silent> <leader>as :AS<CR>
+"}}}
+
+if g:isNvim
+    " Plug 'Rip-Rip/clang_complete'
+    " let g:clang_complete_auto=0
+    " let g:clang_auto_select=0
+    " let g:clang_use_library=1
+    " let g:clang_omnicppcomplete_compliance=0
+    " let g:clang_make_default_keymappings=0
+    " let g:clang_library_path='/usr/lib/llvm-3.8/lib'
+    " autocmd FileType c,cpp setlocal omnifunc=clang_complete#ClangComplete
+    Plug 'FromtonRouge/OmniCppComplete'
+    autocmd FileType c,cpp setlocal omnifunc=omni#cpp#complete#Main
+else
+    Plug 'FromtonRouge/OmniCppComplete'
+    autocmd FileType c,cpp setlocal omnifunc=omni#cpp#complete#Main
+endif
+    "}}}
+
+" python{{{
+if g:isNvim
+    Plug 'zchee/deoplete-jedi'
+    let g:deoplete#sources#jedi#short_types=1
+    let g:deoplete#sources#jedi#statement_length=80
+    let g:deoplete#sources#jedi#python_path='/usr/bin/python3'
+else
+    " Plug 'davidhalter/jedi-vim'
+endif
+"}}}
+
+"  Php自动补全{{{
+" Plug 'shawncplus/phpcomplete.vim',{'for': 'php'}
+" Plug '2072/PHP-Indenting-for-VIm',{'for': 'php'}
+" Plug 'StanAngeloff/php.vim',{'for': 'php'}
+" autocmd FileType php set omnifunc=phpcomplete#CompletePHP
+" }}}
+
+" vim 补全{{{
+Plug 'Shougo/neco-vim'
+"}}}
+
+" WIKI, org{{{
+Plug 'jceb/vim-orgmode', {'for': 'org'}
+" Plug 'vim-scripts/utl.vim' " org{{{
+" 快捷键记录:
+" <leader>hn <leader>hh, <leader>hN:插入标题
+" yah , dah : 复制和删除heading, yar, dar: 复制和删除subtree
+" >> << 可以升降heading的等级; >ar <ar : 可以升降subtree的等级
+" <leader>cl , <leader>CL 插入plainlist, \cn,\cc,\cN:切换,插入checkbox
+" \si, \sa : 插入时间;  \ct: TODO 之间切换状态; \st,\ft: tag
+
+" 配置
+" let g:org_todo_keywords=['TODO', 'VERIFY', '|', 'DONE', 'DELEGATED']
+let g:org_agenda_files = ['E:\\Self\\01_mywiki\\gtd\\gtd.org']
+" 打开todo文件
+nnoremap <leader>oo :call OpenOrgToDoFile()<CR>
+function! OpenOrgToDoFile() abort "{{{
+    let gtdFile = 'E:\Self\01_mywiki\gtd\gtd.org'
+    silent! execute 'edit! ' . gtdFile
+endfunction " }}}
+"}}}
+"}}}
+
+" log高亮语法{{{
+Plug 'dzeban/vim-log-syntax', {'for': 'log'}
+"}}}
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:

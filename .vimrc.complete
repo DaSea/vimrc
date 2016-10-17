@@ -1,0 +1,158 @@
+Plug 'Shougo/neoinclude.vim' "{{{
+" disable ctags
+" let g:neoinclude#ctags_command = ""
+" 字典,设置路径
+" let g:neoinclude#paths = {'cpp': 'path'}
+if !exists('g:neoinclude#exts')
+  let g:neoinclude#exts = {}
+endif
+let g:neoinclude#exts.cpp = ['', 'h', 'hpp', 'hxx']
+"}}}
+
+Plug 'Shougo/neosnippet.vim' "{{{
+let g:neosnippet#disable_runtime_snippets = {
+            \   '_' : 1,
+            \ }
+let g:neosnippet#snippets_directory=g:setting.private_snippets
+let g:neosnippet#enable_complete_done = 1
+let g:neosnippet#enable_conceal_markers = 0
+" let g:neosnippet#enable_snipmate_compatibility=1
+" Plug key-mappings.
+imap <C-k> <Plug>(neosnippet_expand_or_jump)
+smap <C-k> <Plug>(neosnippet_expand_or_jump)
+xmap <C-k> <Plug>(neosnippet_expand_target)
+" 编辑snippet
+nnoremap <leader>ns :execute ":NeoSnippetEdit ".&filetype<CR>
+"}}}
+
+if g:isNvim
+    Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'} " {{{
+    let g:deoplete#enable_at_startup = 1
+    let g:deoplete#enable_smart_case=1
+    let g:deoplete#max_list=20
+    let g:deoplete#auto_completion_start_length=2
+    let g:deoplete#sources = {}
+    let g:deoplete#sources._ = ['buffer']
+    let g:deoplete#sources.cpp = ['buffer', 'tag']
+    let g:deoplete#sources.c = ['buffer', 'tag']
+    " debug
+    let g:deoplete#enable_profile=1
+    " omni function
+    " omni input
+    let g:deoplete#omni#input_patterns={}
+    let g:deoplete#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
+    let g:deoplete#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
+    let g:deoplete#omni#input_patterns.java = '[^. *\t]\.\w*'
+    let g:deoplete#omni#input_patterns.php =  '\h\w*\|[^. \t]->\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?'
+    " keymap
+    inoremap <silent><expr> <TAB>
+                \ pumvisible() ? "\<C-n>" :
+                \ <SID>check_back_space() ? "\<TAB>" :
+                \ deoplete#mappings#manual_complete()
+    inoremap <expr><C-h>
+                \ deoplete#smart_close_popup()."\<C-h>"
+    inoremap <expr><BS>
+                \ deoplete#smart_close_popup()."\<C-h>"
+    inoremap <expr><C-g>    deoplete#undo_completion()
+    inoremap <expr><C-l>    deoplete#refresh()
+    " <CR>: close popup and save indent.
+    inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+    function! s:my_cr_function() abort
+        return deoplete#close_popup() . "\<CR>"
+    endfunction
+    function! s:check_back_space() abort "{{{
+        let col = col('.') - 1
+        return !col || getline('.')[col - 1]  =~ '\s'
+    endfunction"}}}
+
+    " Initial {{{
+    function! DeopleteInit() abort
+        " Use head matcher instead of fuzzy matcher
+        call deoplete#custom#set('_', 'matchers', ['matcher_head'])
+        " debug
+        call deoplete#enable_logging('DEBUG', 'deoplete.log')
+        call deoplete#custom#set('jdei', 'debug_enabled', 1)
+    endfunction " }}}
+    call add(g:init_func_list, function('DeopleteInit'))
+    "}}}
+else
+    " Plug 'Shougo/vimproc.vim'
+    if has('lua')
+        Plug 'Shougo/neocomplete.vim' "{{{
+
+        " Disable AutoComplPop.
+        let g:acp_enableAtStartup = 0
+        " Use neocomplete.
+        let g:neocomplete#enable_at_startup = 1
+        " Use smartcase.
+        let g:neocomplete#enable_smart_case = 1
+        let g:neocomplete#enable_camel_case = 1
+        let g:neocomplete#max_list = 20
+        " Set minimum syntax keyword length.
+        let g:neocomplete#sources#syntax#min_keyword_length = 3
+        let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+        " Define dictionary.
+        let g:neocomplete#sources#dictionary#dictionaries = {
+                    \ 'default' : ''
+                    \ }
+        "  'java' : '~/.vim/dict/java.dict',
+        " \ 'ruby' : '~/.vim/dict/ruby.dict',
+        " \ 'scala' : '~/.vim/dict/scala.dict',
+        " Define keyword.
+        if !exists('g:neocomplete#keyword_patterns')
+            let g:neocomplete#keyword_patterns = {}
+        endif
+        let g:neocomplete#keyword_patterns['default'] = '\h\w*'
+        " Plug key-mappings.
+        inoremap <expr><C-g>     neocomplete#undo_completion()
+        inoremap <expr><C-l>     neocomplete#complete_common_string()
+
+        " Recommended key-mappings.
+        " <CR>: close popup and save indent.
+        inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+        function! s:my_cr_function()
+            return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+            " For no inserting <CR> key.
+            " return pumvisible() ? "\<C-y>" : "\<CR>"
+        endfunction
+
+        " <TAB>: completion.
+        " SuperTab like snippets behavior.
+        inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+        " <S-TAB>: completion back.
+        inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<C-h>"
+        smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+                    \ "\<Plug>(neosnippet_expand_or_jump)" :
+                    \ "\<TAB>"
+
+        " <C-h>, <BS>: close popup and delete backword char.
+        inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+        inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+        " Close popup by <Space>.
+        "inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
+
+        " let g:neocomplete#force_overwrite_completefunc = 1
+        " Enable omni completion.
+        " autocmd FileType c,cpp setlocal omnifunc=omni#cpp#complete#Main
+        " autocmd FileType go setlocal omnifunc=gocode#Complete
+        " autocmd FileType php set omnifunc=phpcomplete#CompletePHP
+
+        " Enable heavy omni completion.
+        if !exists('g:neocomplete#force_omni_input_patterns')
+            let g:neocomplete#force_omni_input_patterns = {}
+        endif
+        " for c and c++
+        let g:neocomplete#force_omni_input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
+        let g:neocomplete#force_omni_input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
+        let g:neocomplete#force_omni_input_patterns.php =  '\h\w*\|[^. \t]->\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?'
+        " if !exists('g:neocomplete#sources#omni#input_patterns')
+        " let g:neocomplete#sources#omni#input_patterns = {}
+        " endif
+        " for c and c++
+        " let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
+        " let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
+        "}}}
+    endif
+endif
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:
