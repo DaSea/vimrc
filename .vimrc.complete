@@ -3,10 +3,10 @@ Plug 'Shougo/neoinclude.vim' "{{{
 " let g:neoinclude#ctags_command = ""
 " 字典,设置路径
 " let g:neoinclude#paths = {'cpp': 'path'}
-if !exists('g:neoinclude#exts')
-  let g:neoinclude#exts = {}
-endif
-let g:neoinclude#exts.cpp = ['', 'h', 'hpp', 'hxx']
+" if !exists('g:neoinclude#exts')
+  " let g:neoinclude#exts = {}
+" endif
+" let g:neoinclude#exts.cpp = ['', 'h', 'hpp', 'hxx']
 "}}}
 
 Plug 'Shougo/neosnippet.vim' "{{{

@@ -625,8 +625,19 @@ nnoremap <silent> <Leader>yr  viw:<C-U>call dict#VSearch("replace")<CR>
 vnoremap <silent> <Leader>yr :<C-U>call dict#VSearch("replace")<CR>
 " }}}
 
-Plug 'mbbill/fencview' " (编码检查)auto check Encoding{{{
-let g:fencview_autodetect = 1
+" Plug 'mbbill/fencview' " (编码检查)auto check Encoding{{{
+" let g:fencview_autodetect = 1
+"}}}
+
+" 补全相关插件, 语言无关 {{{
+if exists('g:exvim_custom_path')
+    let g:vim_complete_path = g:exvim_custom_path.'/.vimrc.complete'
+else
+    let g:vim_complete_path = '~/.vimrc.complete'
+endif
+if filereadable(expand(g:vim_complete_path))
+    exec 'source ' . fnameescape(g:vim_complete_path)
+endif
 "}}}
 
 " 加载语言相关插件{{{
@@ -639,17 +650,6 @@ if filereadable(expand(g:vim_language_path))
     exec 'source ' . fnameescape(g:vim_language_path)
 endif
 " }}}
-
-" 补全相关插件, 语言无关 {{{
-if exists('g:exvim_custom_path')
-    let g:vim_complete_path = g:exvim_custom_path.'/.vimrc.complete'
-else
-    let g:vim_complete_path = '~/.vimrc.complete'
-endif
-if filereadable(expand(g:vim_complete_path))
-    exec 'source ' . fnameescape(g:vim_complete_path)
-endif
-"}}}
 
 "括号补全, endif等补全{{{
 Plug 'jiangmiao/auto-pairs'
