@@ -1,13 +1,9 @@
 [user]
-	email = dhf0214@16.com
 	name = DaSea
-[branch]
-	autosetuprebase = always
+	email = dhf0214@126.com
 [color]
 	ui = true
-	status = auto
-	branch = auto
-[core]
-	editor = nano
 [merge]
 	tool = vimdiff
+[bash-it]
+	hide-status = 1

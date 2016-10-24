@@ -186,7 +186,7 @@ if filereadable(expand(g:vim_ctrlp_or_unite))
 endif
 "}}}
 
-" 由于ctrlp或者unit.vim速度可能有时较慢, 所以用LeaderF替换 {{{
+" 由于ctrlp或者unit.vim速度可能有时较慢, 所以用LeaderF替换, neovim好像有问题 {{{
 Plug 'Yggdroot/LeaderF'
 let g:Lf_ShowRelativePath = 1
 let g:Lf_WindowPosition = 0
@@ -538,6 +538,10 @@ else
                 \ }
     " }}}
 endif
+
+Plug 'Konfekt/FastFold' "{{{
+
+" }}}
 
 Plug 'Yggdroot/indentLine' "对齐线{{{
 " ---------------------------------------------------

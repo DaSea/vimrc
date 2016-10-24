@@ -54,45 +54,43 @@ if g:isNvim
     " autocmd FileType c,cpp setlocal omnifunc=clang_complete#ClangComplete
     "}}}
 
-    if 0
-    " deoplete_clang  {{{
-    " let g:deoplete#sources#clang#libclang_path = '/usr/local/lib/libclang.dylib'
-    " let g:deoplete#sources#clang#clang_header = '/usr/local/lib/clang'
-    " let g:deoplete#sources#clang#sort_algo = 'priority'
+    Plug 'zchee/deoplete-clang' " {{{
+    let g:deoplete#sources#clang#libclang_path = '/usr/lib/llvm-3.8/lib/libclang.so.1'
+    let g:deoplete#sources#clang#clang_header = '/usr/lib/llvm-3.8/lib/clang'
+    let g:deoplete#sources#clang#sort_algo = 'priority'
     " let g:deoplete#sources#clang#clang_complete_database =
-    "       \ $HOME . '/src/github.com/neovim/neovim/build'
+                " \ $HOME . '/src/github.com/neovim/neovim/build'
     " echo | clang -v -E -x c -
-    " let g:deoplete#sources#clang#flags = [
-                " \ "-O3",
-                " \ "-cc1",
-                " \ "-triple", "x86_64-apple-macosx10.11.0",
-                " \ "-emit-obj",
-                " \ "-mrelax-all",
-                " \ "-disable-free",
-                " \ "-disable-llvm-verifier",
-                " \ "-mrelocation-model", "pic",
-                " \ "-pic-level", "2",
-                " \ "-mthread-model", "posix",
-                " \ "-mdisable-fp-elim",
-                " \ "-munwind-tables",
-                " \ "-target-cpu", "core2",
-                " \ "-target-linker-version", "264.3",
-                " \ "-dwarf-column-info",
-                " \ "-debugger-tuning=lldb",
-                " \ "-resource-dir", "/opt/llvm/lib/clang/3.8.0",
-                " \ "-ferror-limit", "19",
-                " \ "-fmessage-length", "213",
-                " \ "-stack-protector", "1",
-                " \ "-fblocks",
-                " \ "-fobjc-runtime=macosx-10.11.0",
-                " \ "-fencode-extended-block-signature",
-                " \ "-fmax-type-align=16",
-                " \ ]
-                "}}}
-    endif
+    let g:deoplete#sources#clang#flags = [
+                \ "-O3",
+                \ "-cc1",
+                \ "-triple", "x86_64-apple-macosx10.11.0",
+                \ "-emit-obj",
+                \ "-mrelax-all",
+                \ "-disable-free",
+                \ "-disable-llvm-verifier",
+                \ "-mrelocation-model", "pic",
+                \ "-pic-level", "2",
+                \ "-mthread-model", "posix",
+                \ "-mdisable-fp-elim",
+                \ "-munwind-tables",
+                \ "-target-cpu", "core2",
+                \ "-target-linker-version", "264.3",
+                \ "-dwarf-column-info",
+                \ "-debugger-tuning=lldb",
+                \ "-resource-dir", "/opt/llvm/lib/clang/3.8.0",
+                \ "-ferror-limit", "19",
+                \ "-fmessage-length", "213",
+                \ "-stack-protector", "1",
+                \ "-fblocks",
+                \ "-fobjc-runtime=macosx-10.11.0",
+                \ "-fencode-extended-block-signature",
+                \ "-fmax-type-align=16",
+                \ ]
+                " }}}
 
-    Plug 'FromtonRouge/OmniCppComplete'
-    autocmd FileType c,cpp setlocal omnifunc=omni#cpp#complete#Main
+    " Plug 'FromtonRouge/OmniCppComplete'
+    " autocmd FileType c,cpp setlocal omnifunc=omni#cpp#complete#Main
 else
     Plug 'FromtonRouge/OmniCppComplete'
     autocmd FileType c,cpp setlocal omnifunc=omni#cpp#complete#Main
@@ -101,16 +99,21 @@ endif
 
 " python{{{
 if g:isNvim
-    Plug 'zchee/deoplete-jedi'
-    let g:deoplete#ignore_sources.python =
-                \ ['buffer', 'dictionary', 'tag', 'syntax', 'neosnippet']
-    let g:deoplete#sources#jedi#statement_length = 0
-    let g:deoplete#sources#jedi#enable_cache = 1
-    let g:deoplete#sources#jedi#short_types = 1
-    let g:deoplete#sources#jedi#show_docstring = 0
-    let g:deoplete#sources#jedi#debug_enabled = 0
+    " Plug 'zchee/deoplete-jedi'
+    " let g:deoplete#sources#jedi#python_path='~/.pyenv/versions/3.4.5/envs/neovim/bin/python'
+    " let g:python3_host_prog = '/home/Feng/.pyenv/versions/3.4.5/envs/neovim/bin/python'
+    " let g:deoplete#ignore_sources = {}
+    " let g:deoplete#ignore_sources.python =
+                " \ ['buffer', 'dictionary', 'tag', 'syntax', 'neosnippet']
+    " let g:deoplete#sources#jedi#statement_length = 0
+    " let g:deoplete#sources#jedi#enable_cache = 1
+    " let g:deoplete#sources#jedi#short_types = 1
+    " let g:deoplete#sources#jedi#show_docstring = 0
+    " let g:deoplete#sources#jedi#debug_enabled = 0
 else
-    " Plug 'davidhalter/jedi-vim'
+    Plug 'davidhalter/jedi-vim',{'for': 'python'}
+    let g:jedi#auto_vim_configuration=0
+    let g:jedi#popup_select_first=0
 endif
 "}}}
 

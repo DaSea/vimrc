@@ -1,30 +1,3 @@
-Plug 'Shougo/neoinclude.vim' "{{{
-" disable ctags
-" let g:neoinclude#ctags_command = ""
-" 字典,设置路径
-" let g:neoinclude#paths = {'cpp': 'path'}
-" if !exists('g:neoinclude#exts')
-  " let g:neoinclude#exts = {}
-" endif
-" let g:neoinclude#exts.cpp = ['', 'h', 'hpp', 'hxx']
-"}}}
-
-Plug 'Shougo/neosnippet.vim' "{{{
-let g:neosnippet#disable_runtime_snippets = {
-            \   '_' : 1,
-            \ }
-let g:neosnippet#snippets_directory=g:setting.private_snippets
-let g:neosnippet#enable_complete_done = 1
-let g:neosnippet#enable_conceal_markers = 0
-" let g:neosnippet#enable_snipmate_compatibility=1
-" Plug key-mappings.
-imap <C-k> <Plug>(neosnippet_expand_or_jump)
-smap <C-k> <Plug>(neosnippet_expand_or_jump)
-xmap <C-k> <Plug>(neosnippet_expand_target)
-" 编辑snippet
-nnoremap <leader>ns :execute ":NeoSnippetEdit ".&filetype<CR>
-"}}}
-
 if g:isNvim
     Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'} " {{{
     let g:deoplete#enable_at_startup = 1
@@ -36,7 +9,7 @@ if g:isNvim
     let g:deoplete#sources.cpp = ['buffer', 'tag']
     let g:deoplete#sources.c = ['buffer', 'tag']
     " debug
-    let g:deoplete#enable_profile=1
+    " let g:deoplete#enable_profile=1
     " omni function
     " omni input
     let g:deoplete#omni#input_patterns={}
@@ -70,8 +43,8 @@ if g:isNvim
         " Use head matcher instead of fuzzy matcher
         call deoplete#custom#set('_', 'matchers', ['matcher_head'])
         " debug
-        call deoplete#enable_logging('DEBUG', 'deoplete.log')
-        call deoplete#custom#set('jdei', 'debug_enabled', 1)
+        " call deoplete#enable_logging('DEBUG', 'deoplete.log')
+        " call deoplete#custom#set('jdei', 'debug_enabled', 1)
     endfunction " }}}
     call add(g:init_func_list, function('DeopleteInit'))
     "}}}
@@ -154,5 +127,38 @@ else
         "}}}
     endif
 endif
+
+Plug 'Shougo/neoinclude.vim' "{{{
+" disable ctags
+" let g:neoinclude#ctags_command = ""
+" 字典,设置路径
+" let g:neoinclude#paths = {'cpp': 'path'}
+" if !exists('g:neoinclude#exts')
+  " let g:neoinclude#exts = {}
+" endif
+" let g:neoinclude#exts.cpp = ['', 'h', 'hpp', 'hxx']
+"}}}
+
+Plug 'Shougo/neopairs.vim' " {{{
+
+" }}}
+
+Plug 'Shougo/neosnippet.vim' "{{{
+let g:neosnippet#disable_runtime_snippets = {
+            \   '_' : 1,
+            \ }
+let g:neosnippet#snippets_directory=g:setting.private_snippets
+let g:neosnippet#enable_complete_done = 1
+let g:neosnippet#enable_conceal_markers = 0
+let g:neosnippet#disable_select_mode_mappings=0
+let g:neosnippet#enable_completed_snippet=1
+" let g:neosnippet#enable_snipmate_compatibility=1
+" Plug key-mappings.
+imap <C-k> <Plug>(neosnippet_expand_or_jump)
+smap <C-k> <Plug>(neosnippet_expand_or_jump)
+xmap <C-k> <Plug>(neosnippet_expand_target)
+" 编辑snippet
+nnoremap <leader>ns :execute ":NeoSnippetEdit ".&filetype<CR>
+"}}}
 
 " vim:ts=4:sw=4:sts=4 et fdm=marker:
