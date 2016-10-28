@@ -1,0 +1,90 @@
+" ==============================================
+" 主要放一些暂时不想用的插件， 未来某天可能会用
+" ==============================================
+Plug 'itchyny/lightline.vim'"{{{
+" ---------------------------------------------------
+let g:lightline ={
+            \ 'enable' :{
+            \ 'statusline': 1,
+            \ 'tabline': 0
+            \ },
+            \ 'colorscheme': 'PaperColor_light',
+            \ 'component':{
+            \ 'readonly': '%{&readonly?"":""}',
+            \   'lineinfo': '%3l:%-2v',
+            \ },
+            \ 'active': {
+            \ 'left': [ ['mode', 'paste'], ['fugitive'], ['filename', 'modified' ] ],
+            \ 'right': [ [ 'lineinfo' ], [ 'fileformat', 'fileencoding', 'filetype' ] ]
+            \ },
+            \ 'inactive': {
+            \ 'left': [['filename']],
+            \ 'right': [['lineinfo']]
+            \},
+            \ 'component_function': {
+            \   'modified': 'LightLineModified',
+            \   'fugitive': 'LightLineFugitive',
+            \   'filename': 'LightLineFilename',
+            \   'mode': 'LightLineMode',
+            \   'filetype': 'LightLineFiletype',
+            \   'fileencoding': 'LightLineFileencoding',
+            \   'fileformat': 'LightLineFileformat'
+            \ },
+            \ 'separator': {'left': '▶', 'right': '◀'},
+            \ 'subseparator': {'left': '', 'right': ''}
+            \ }
+
+if g:islinux
+    let g:lightline.separator = { 'left': '', 'right': '' }
+    let g:lightline.subseparator = { 'left': '|', 'right': '|' }
+endif
+
+function! LightLineFugitive()
+    if winwidth(0) > 70
+        if exists('*fugitive#head')
+            let githead = fugitive#head()
+            return strlen(githead) ? ''.'['.githead.']': ''
+        endif
+    endif
+    return ''
+endfunction
+
+function! LightLineFilename()
+    let fname = expand('%:t')
+    return '' != fname ? fname : '[No Name]'
+    " return &ft == 'vimfiler' ? vimfiler#get_status_string() :
+    " \ &ft == 'unite' ? unite#get_status_string() :
+    " \ &ft == 'vimshell' ? vimshell#get_status_string() :
+    " \ ('' != fname ? fname : '[No Name]')
+endfunction
+
+function! LightLineMode()
+    return  winwidth(0) > 60 ? lightline#mode() : ''
+endfunction
+
+function! LightLineModified()
+    if winwidth(0) > 70
+        if &filetype == "help"
+            return ""
+        elseif &modified
+            return "*"
+        elseif &modifiable
+            return "+"
+        else
+            return "?"
+        endif
+    else
+        return ''
+    endif
+endfunction
+
+function! LightLineFileformat()
+    return winwidth(0) > 70 ? &fileformat : ''
+endfunction
+function! LightLineFiletype()
+    return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'Unkown') : ''
+endfunction
+function! LightLineFileencoding()
+    return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
+endfunction
+"}}}

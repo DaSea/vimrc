@@ -1,4 +1,5 @@
 if g:isNvim
+    let g:hasNeocomplete = 1
     Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'} " {{{
     let g:deoplete#enable_at_startup = 1
     let g:deoplete#enable_smart_case=1
@@ -49,10 +50,16 @@ if g:isNvim
     call add(g:init_func_list, function('DeopleteInit'))
     "}}}
 else
+    let g:hasNeocomplete = 0
+    if 0 " has('python3')
+        Plug 'maralla/completor.vim' "{{{
+        let g:completor_clang_binary = 'D:/Develop/LLVM/bin'
+        " }}}
+    endif
     " Plug 'Shougo/vimproc.vim'
     if has('lua')
         Plug 'Shougo/neocomplete.vim' "{{{
-
+        let g:hasNeocomplete = 1
         " Disable AutoComplPop.
         let g:acp_enableAtStartup = 0
         " Use neocomplete.
@@ -128,37 +135,38 @@ else
     endif
 endif
 
-Plug 'Shougo/neoinclude.vim' "{{{
-" disable ctags
-" let g:neoinclude#ctags_command = ""
-" 字典,设置路径
-" let g:neoinclude#paths = {'cpp': 'path'}
-" if !exists('g:neoinclude#exts')
-  " let g:neoinclude#exts = {}
-" endif
-" let g:neoinclude#exts.cpp = ['', 'h', 'hpp', 'hxx']
-"}}}
+if g:hasNeocomplete
+    Plug 'Shougo/neoinclude.vim' "{{{
+    " disable ctags
+    " let g:neoinclude#ctags_command = ""
+    " 字典,设置路径
+    " let g:neoinclude#paths = {'cpp': 'path'}
+    " if !exists('g:neoinclude#exts')
+    " let g:neoinclude#exts = {}
+    " endif
+    " let g:neoinclude#exts.cpp = ['', 'h', 'hpp', 'hxx']
+    "}}}
 
-Plug 'Shougo/neopairs.vim' " {{{
+    Plug 'Shougo/neopairs.vim' " {{{
 
-" }}}
+    " }}}
 
-Plug 'Shougo/neosnippet.vim' "{{{
-let g:neosnippet#disable_runtime_snippets = {
-            \   '_' : 1,
-            \ }
-let g:neosnippet#snippets_directory=g:setting.private_snippets
-let g:neosnippet#enable_complete_done = 1
-let g:neosnippet#enable_conceal_markers = 0
-let g:neosnippet#disable_select_mode_mappings=0
-let g:neosnippet#enable_completed_snippet=1
-" let g:neosnippet#enable_snipmate_compatibility=1
-" Plug key-mappings.
-imap <C-k> <Plug>(neosnippet_expand_or_jump)
-smap <C-k> <Plug>(neosnippet_expand_or_jump)
-xmap <C-k> <Plug>(neosnippet_expand_target)
-" 编辑snippet
-nnoremap <leader>ns :execute ":NeoSnippetEdit ".&filetype<CR>
-"}}}
-
+    Plug 'Shougo/neosnippet.vim' "{{{
+    let g:neosnippet#disable_runtime_snippets = {
+                \   '_' : 1,
+                \ }
+    let g:neosnippet#snippets_directory=g:setting.private_snippets
+    let g:neosnippet#enable_complete_done = 1
+    let g:neosnippet#enable_conceal_markers = 0
+    let g:neosnippet#disable_select_mode_mappings=0
+    let g:neosnippet#enable_completed_snippet=1
+    " let g:neosnippet#enable_snipmate_compatibility=1
+    " Plug key-mappings.
+    imap <C-k> <Plug>(neosnippet_expand_or_jump)
+    smap <C-k> <Plug>(neosnippet_expand_or_jump)
+    xmap <C-k> <Plug>(neosnippet_expand_target)
+    " 编辑snippet
+    nnoremap <leader>ns :execute ":NeoSnippetEdit ".&filetype<CR>
+    "}}}
+endif
 " vim:ts=4:sw=4:sts=4 et fdm=marker:

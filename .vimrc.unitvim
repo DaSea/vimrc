@@ -1,8 +1,59 @@
 " 因为unit.vim和ctrlp有许多相同的功能, 所以分开, 可以让大家自由选择
 " 这个主要是unite.vim的相关插件
+if 0 " 有点问题
+Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins'}" {{{
+    function! DeniteInit() abort
+      " Change file_rec command.
+  		call denite#custom#var('file_rec', 'command',
+  		\ ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
 
-" 文件导航(unite, a.vim) {{{
-Plug 'Shougo/unite.vim'
+  		" Change mappings.
+  		call denite#custom#map('_', "\<C-j>", 'move_to_next_line')
+  		call denite#custom#map('_', "\<C-k>", 'move_to_prev_line')
+
+  		" Change matchers.
+  		call denite#custom#source(
+  		\ 'file_mru', 'matchers', ['matcher_fuzzy', 'matcher_project_files'])
+  		call denite#custom#source(
+  		\ 'file_rec', 'matchers', ['matcher_cpsm'])
+
+  		" Add custom menus
+  		let s:menus = {}
+
+  		let s:menus.zsh = {
+  			\ 'description': 'Edit your import zsh configuration'
+  			\ }
+  		let s:menus.zsh.file_candidates = [
+  			\ ['zshrc', '~/.config/zsh/.zshrc'],
+  			\ ['zshenv', '~/.zshenv'],
+  			\ ]
+
+  		let s:menus.my_commands = {
+  			\ 'description': 'Example commands'
+  			\ }
+  		let s:menus.my_commands.command_candidates = [
+  			\ ['Split the window', 'vnew'],
+  			\ ['Open zsh menu', 'Denite menu:zsh'],
+  			\ ]
+
+  		call denite#custom#var('menu', 'menus', s:menus)
+
+  		" Ripgrep command on grep source
+  		call denite#custom#var('grep', 'command', ['rg'])
+  		call denite#custom#var('grep', 'recursive_opts', [])
+  		call denite#custom#var('grep', 'final_opts', [])
+  		call denite#custom#var('grep', 'separator', ['--'])
+  		call denite#custom#var('grep', 'default_opts',
+  				\ ['--vimgrep', '--no-heading']
+
+  		call denite#custom#source('file_mru', 'converters',
+  		      \ ['converter_relative_word'])
+    endfunction
+    call add(g:init_func_list, function('DeniteInit'))
+" }}}
+endif
+
+Plug 'Shougo/unite.vim' "  {{{
 " 基本设置
 let g:unite_force_overwrite_statusline = 0
 " 设置匹配模式
@@ -17,25 +68,36 @@ let g:unite_enable_smart_case = 1
 let g:unite_source_history_yank_enable=1
 let g:unite_prompt='▷'
 let g:unite_winheight=25
+let g:unite_source_grep_default_opts = '-iRHn'
+             \ . " --exclude='tags'"
+             \ . " --exclude='cscope*'"
+             \ . " --exclude='*.svn*'"
+             \ . " --exclude='*.log*'"
+             \ . " --exclude='*tmp*'"
+             \ . " --exclude-dir='**/tmp'"
+             \ . " --exclude-dir='CVS'"
+             \ . " --exclude-dir='.svn'"
+             \ . " --exclude-dir='.git'"
+             \ . " --exclude-dir='.exvim'"
+             \ . " --exclude-dir='node_modules'"
 " Using ag or pt as recursive command.
 if executable('ag')
     " https://github.com/ggreer/the_silver_searcher
     let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', '']
     let g:unite_source_grep_command = 'ag'
     let g:unite_source_grep_default_opts =
-                \ '-i --line-numbers --nocolor --nogroup --hidden --ignore ' .
-                \  '''.hg'' --ignore ''.svn'' --ignore ''.git'''
-    let g:unite_source_grep_recursive_opt = '-r'
-    let g:unite_source_grep_encoding = 'utf-8'
+               \ '-i --line-numbers --nocolor --nogroup --hidden --ignore ' .
+               \  '''.exvim'' --ignore ''.svn'' --ignore ''.git'' --ignore ''.bzr'''
+    let g:unite_source_grep_recursive_opt = ''
+    " let g:unite_source_grep_encoding = 'utf-8'
 elseif executable('pt')
     " https://github.com/monochromegane/the_platinum_searcher
     let g:unite_source_rec_async_command = ['pt', '--follow', '--nogroup', '--nocolor', '-S', '-g']
     let g:unite_source_grep_command = 'pt'
     let g:unite_source_grep_default_opts = '--nogroup --nocolor'
     let g:unite_source_grep_recursive_opt = ''
-    let g:unite_source_grep_encoding = 'utf-8'
+    " let g:unite_source_grep_encoding = 'utf-8'
 endif
-" 按键绑定{{{
 " 文件查找
 nnoremap <silent> <C-p> :<C-u>Unite -no-split -buffer-name=files -start-insert -update-time=100 file_rec<CR>
 nnoremap <silent> <leader>ft :<C-u>Unite -no-split -buffer-name=files -start-insert file_rec/async:!<CR>
@@ -46,7 +108,16 @@ nnoremap <silent> <leader>fk :<C-u>Unite -quick-match -buffer-name=buffer buffer
 " 文件内搜索
 " nnoremap <silent> <leader>gw :<C-u>Unite grep:%:expand("<cword>")<CR>
 nnoremap <silent> <leader>gw :<C-u>UniteWithCursorWord grep<CR>
-"}}}
+"" grep dictionay
+ """ For searching the word in the cursor in the current directory
+ nnoremap <silent> <leader>gv :Unite grep:.::<C-R><C-w><CR>
+ nnoremap <silent> <leader>ge :Unite grep:.<cr>
+ """ For searching the word handin
+ " nnoremap <silent> <leader>vs :Unite grep:.<CR>
+ """ For searching the word in the cursor in the current buffer
+ " noremap <silent> <leader>vf :Unite grep:%::<C-r><C-w><CR>
+ """ For searching the word in the cursor in all opened buffer
+ " noremap <silent> <leader>va :Unite grep:$buffers::<C-r><C-w><CR>
 "}}}
 
 Plug 'Shougo/neomru.vim' "{{{

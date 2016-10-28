@@ -187,15 +187,17 @@ endif
 "}}}
 
 " 由于ctrlp或者unit.vim速度可能有时较慢, 所以用LeaderF替换, neovim好像有问题 {{{
-Plug 'Yggdroot/LeaderF'
-let g:Lf_ShowRelativePath = 1
-let g:Lf_WindowPosition = 0
-let g:Lf_ShortcutF = '<Leader>lf'
-let g:Lf_WildIgnore = {
-            \ 'dir': ['.svn','.git', '.exvim', '.vscode', '.setting', '.imdone', 'bin', 'res'. 'obj'],
-            \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]', '*.png', "*.dll",
-            \ '*.exvim', '*.class', '*.o.d', '.setting', '.project']
-            \}
+if !g:isNvim
+    Plug 'Yggdroot/LeaderF'
+    let g:Lf_ShowRelativePath = 1
+    let g:Lf_WindowPosition = 0
+    let g:Lf_ShortcutF = '<Leader>lf'
+    let g:Lf_WildIgnore = {
+                \ 'dir': ['.svn','.git', '.exvim', '.vscode', '.setting', '.imdone', 'bin', 'res'. 'obj'],
+                \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]', '*.png', "*.dll",
+                \ '*.exvim', '*.class', '*.o.d', '.setting', '.project']
+                \}
+endif
 "}}}
 
 Plug 'rhysd/clever-f.vim' " 行内搜索{{{
@@ -203,7 +205,7 @@ let g:clever_f_across_no_line = 1
 let g:clever_f_smart_case = 1
 " }}}
 
-Plug 'majutsushi/tagbar' " 主要为了在状态栏显示当前行所在函数{{{
+Plug 'majutsushi/tagbar',{'on': 'TagbarToggle'} " 主要为了在状态栏显示当前行所在函数{{{
 nnoremap <Leader>tb :TagbarToggle<CR>
 " }}}
 
@@ -311,9 +313,15 @@ nnoremap <Leader>df :DoxFile<CR>
 "}}}
 "}}}
 
-" 快速移动,  {{{
+" 快速移动(行的移动， 行间移动， 窗口间移动)  {{{
 Plug 'matze/vim-move'
 " alt + j : 下移; alt+k: 上移;
+
+Plug 't9md/vim-choosewin' " 快速在窗口在跳转 {{{
+" let g:choosewin_statusline_replace=1
+" let g:choosewin_overlay_enable=1
+nmap - <Plug>(choosewin)
+" }}}
 
 Plug 'Lokaltog/vim-easymotion' " {{{
 let g:EasyMotion_smartcase = 1
@@ -405,142 +413,86 @@ let g:better_whitespace_filetypes_blacklist = ['unite', 'vimfiler', 'ctrlp']
 noremap CS :StripWhitespace<CR>
 "}}}
 
-if g:setting.status_line ==? "lightline"
-    Plugin 'itchyny/lightline.vim'"{{{
-    " ---------------------------------------------------
-    let g:lightline ={
-                \ 'enable' :{
-                \ 'statusline': 1,
-                \ 'tabline': 0
-                \ },
-                \ 'colorscheme':g:setting.status_color,
-                \ 'component':{
-                \ 'readonly': '%{&readonly?"":""}',
-                \   'lineinfo': '%3l:%-2v',
-                \ },
-                \ 'active': {
-                \ 'left': [ ['mode', 'paste'], ['fugitive'], ['filename', 'modified' ] ],
-                \ 'right': [ [ 'lineinfo' ], [ 'fileformat', 'fileencoding', 'filetype' ] ]
-                \ },
-                \ 'inactive': {
-                \ 'left': [['filename']],
-                \ 'right': [['lineinfo']]
-                \},
-                \ 'component_function': {
-                \   'modified': 'LightLineModified',
-                \   'fugitive': 'LightLineFugitive',
-                \   'filename': 'LightLineFilename',
-                \   'mode': 'LightLineMode',
-                \   'filetype': 'LightLineFiletype',
-                \   'fileencoding': 'LightLineFileencoding',
-                \   'fileformat': 'LightLineFileformat'
-                \ },
-                \ 'separator': {'left': '', 'right': ''},
-                \ 'subseparator': {'left': '', 'right': ''}
-                \ }
-
-    if g:islinux
-        let g:lightline.separator = { 'left': '', 'right': '' }
-        let g:lightline.subseparator = { 'left': '|', 'right': '|' }
-    endif
-
-    function! LightLineFugitive()
-        if winwidth(0) > 70
-            if exists('*fugitive#head')
-                let githead = fugitive#head()
-                return strlen(githead) ? ''.'['.githead.']': ''
-            endif
-        endif
-            return ''
-    endfunction
-
-    function! LightLineFilename()
-        let fname = expand('%:t')
-        return '' != fname ? fname : '[No Name]'
-        " return &ft == 'vimfiler' ? vimfiler#get_status_string() :
-                    " \ &ft == 'unite' ? unite#get_status_string() :
-                    " \ &ft == 'vimshell' ? vimshell#get_status_string() :
-                    " \ ('' != fname ? fname : '[No Name]')
-    endfunction
-
-    function! LightLineMode()
-        return  winwidth(0) > 60 ? lightline#mode() : ''
-    endfunction
-
-    function! LightLineModified()
-        if winwidth(0) > 70
-            if &filetype == "help"
-                return ""
-            elseif &modified
-                return "*"
-            elseif &modifiable
-                return "+"
-            else
-                return "?"
-            endif
-        else
-            return ''
-        endif
-    endfunction
-
-    function! LightLineFileformat()
-        return winwidth(0) > 70 ? &fileformat : ''
-    endfunction
-    function! LightLineFiletype()
-        return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'Unkown') : ''
-    endfunction
-    function! LightLineFileencoding()
-        return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
-    endfunction
-    "}}}
-else
-    Plug 'vim-airline/vim-airline'
-    Plug 'vim-airline/vim-airline-themes' " airline状态栏{{{
-    let g:airline_powerline_fonts = 1
-    let g:airline_theme = g:setting.status_color
-    " let g:airline_left_sep = ''
-    " let g:airline_left_alt_sep = ''
-    " let g:airline_right_sep = ''
-    " let g:airline_right_alt_sep = ''
-    let g:airline_left_sep = '▶'
-    let g:airline_left_alt_sep = '❯'
-    let g:airline_right_sep = '◀'
-    let g:airline_right_alt_sep = '❮'
-    if !exists('g:airline_symbols')
-        let g:airline_symbols = {}
-    endif
-    let g:airline_symbols.branch = ''
-    let g:airline_symbols.readonly = ''
-    let g:airline_symbols.linenr = ''
-    let g:airline_detect_crypt=0
-    let g:airline_detect_spell=0
-    let g:airline_detect_iminsert=0
-    if g:setting.ctrlp_or_unite ==? 'ctrlp'
-        let g:airline_extensions = ['tagbar', 'quickfix', 'ctrlp']
-    else
-        let g:airline_extensions = ['unite', 'tagbar', 'quickfix']
-    endif
-    " 各个部分的设置简化
-    let g:airline_section_c = '%t'
-    let g:airline_section_z = '%l%{g:airline_symbols.linenr}%L'
-    let g:airline_mode_map = {
-                \ '__' : '-',
-                \ 'n'  : 'N',
-                \ 'i'  : 'I',
-                \ 'R'  : 'R',
-                \ 'c'  : 'C',
-                \ 'v'  : 'V',
-                \ 'V'  : 'V',
-                \ '' : 'V',
-                \ 's'  : 'S',
-                \ 'S'  : 'S',
-                \ '' : 'S',
-                \ }
-    " }}}
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes' " airline状态栏{{{
+let g:airline_powerline_fonts = 1
+let g:airline_theme = g:setting.status_color
+" let g:airline_left_sep = ''
+" let g:airline_left_alt_sep = ''
+" let g:airline_right_sep = ''
+" let g:airline_right_alt_sep = ''
+let g:airline_left_sep = '▶'
+let g:airline_left_alt_sep = '❯'
+let g:airline_right_sep = '◀'
+let g:airline_right_alt_sep = '❮'
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
 endif
+let g:airline_symbols.branch = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.linenr = ''
+let g:airline_detect_modified=1
+let g:airline_detect_crypt=0
+let g:airline_detect_spell=0
+let g:airline_detect_iminsert=0
+let g:airline_inactive_collapse=0
+let g:airline_extensions = ['quickfix']
+if g:setting.ctrlp_or_unite ==? 'ctrlp'
+    call add(g:airline_extensions, 'ctrlp')
+else
+    call add(g:airline_extensions, 'unite')
+endif
+if g:setting.show_tabline ==? 'yes'
+    call add(g:airline_extensions, 'tabline')
+    let g:airline#extensions#tabline#enabled=1
+    let g:airline#extensions#tabline#show_splits = 1
+    let g:airline#extensions#tabline#switch_buffers_and_tabs = 0
+    let g:airline#extensions#tabline#show_buffers = 1
+    let g:airline#extensions#tabline#show_tabs = 0
+    let g:airline#extensions#tabline#buffers_label = 'B'
+    let g:airline#extensions#tabline#tabs_label = 'T'
+    let g:airline#extensions#tabline#buffer_idx_mode = 1
+    nmap ,1 <Plug>AirlineSelectTab1
+    nmap ,2 <Plug>AirlineSelectTab2
+    nmap ,3 <Plug>AirlineSelectTab3
+    nmap ,4 <Plug>AirlineSelectTab4
+    nmap ,5 <Plug>AirlineSelectTab5
+    nmap ,6 <Plug>AirlineSelectTab6
+    nmap ,7 <Plug>AirlineSelectTab7
+    nmap ,8 <Plug>AirlineSelectTab8
+    nmap ,9 <Plug>AirlineSelectTab9
+    nmap <leader>j <Plug>AirlineSelectPrevTab
+    nmap <leader>k <Plug>AirlineSelectNextTab
+    " let g:airline#extensions#tabline#formatter = 'unique_tail'
+    let g:airline#extensions#tabline#buffer_nr_format = '%s: '
+    let g:airline#extensions#tabline#fnamemod = ':t:.'
+    let g:airline#extensions#tabline#fnametruncate = 0
+    let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+endif
+" 各个部分的设置简化
+let g:airline_section_c = '%t'
+let g:airline_section_z = '%l%{g:airline_symbols.linenr}%L'
+let g:airline_mode_map = {
+            \ '__' : '-',
+            \ 'n'  : 'N',
+            \ 'i'  : 'I',
+            \ 'R'  : 'R',
+            \ 'c'  : 'C',
+            \ 'v'  : 'v',
+            \ 'V'  : 'VL',
+            \ '' : 'VB',
+            \ 's'  : 's',
+            \ 'S'  : 'S',
+            \ '' : 'S',
+            \ }
+" }}}
 
 Plug 'Konfekt/FastFold' "{{{
-
+let g:cpp_folding=1
+let g:php_folding=1
+let g:lua_folding=1
+let g:vimsyn_folding='af'
+let g:c_folding=1
 " }}}
 
 Plug 'Yggdroot/indentLine' "对齐线{{{
@@ -608,25 +560,24 @@ inoremap <leader>mq <ESC>:Bdelete<CR>
 vnoremap <leader>mq <ESC>:Bdelete<CR>
 "}}}
 
-" 代码格式化:{{{
-Plug 'DaSea/uncrustify.vim'
+Plug 'DaSea/uncrustify.vim' " 代码格式化:{{{
 nnoremap <Leader>ff :Uncrustify<CR>
-nnoremap <Leader>fr :'<,'>Uncrustify<CR>
+vnoremap <Leader>fr :'<,'>Uncrustify<CR>
 "}}}
 
 Plug 'iamcco/dict.vim' " 有道翻译{{{
 " 普通模式下，<Leader>d 即可翻译光标下的文本，并在命令行回显
-nnoremap <silent> <Leader>yd :call dict#Search(expand("<cword>"), "simple")<CR>
-" 可视化模式下，<Leader>d 即可翻译选中的文本，并在命令行回显
-vnoremap <silent> <Leader>yd  :<C-U>call dict#VSearch("simple")<CR>
-" 普通模式下，<Leader>w 即可翻译光标下的文本，并且在Dict新窗口显示
-nnoremap <silent> <Leader>yw  :call dict#Search(expand("<cword>"), "complex")<CR>
-" 可视化模式下，<Leader>w 即可翻译选中的文本，并且在Dict新窗口显示
-vnoremap <silent> <Leader>yw :<C-U>call dict#VSearch("complex")<CR>
-" 普通模式下，<Leader><Leader>r 即可翻译光标下的单词，并替换为翻译的结果
-nnoremap <silent> <Leader>yr  viw:<C-U>call dict#VSearch("replace")<CR>
-" 可视化模式下，<Leader><Leader>r 即可翻译光标下的单词，并替换为翻译的结果
-vnoremap <silent> <Leader>yr :<C-U>call dict#VSearch("replace")<CR>
+nnoremap <silent> <leader>yd :call dict#Search(expand("<cword>"), "simple")<CR>
+" 可视化模式下，<leader>d 即可翻译选中的文本，并在命令行回显
+vnoremap <silent> <leader>yd  :<C-U>call dict#VSearch("simple")<CR>
+" 普通模式下，<leader>w 即可翻译光标下的文本，并且在Dict新窗口显示
+nnoremap <silent> <leader>yw  :call dict#Search(expand("<cword>"), "complex")<CR>
+" 可视化模式下，<leader>w 即可翻译选中的文本，并且在Dict新窗口显示
+vnoremap <silent> <leader>yw :<C-U>call dict#VSearch("complex")<CR>
+" 普通模式下，<leader><leader>r 即可翻译光标下的单词，并替换为翻译的结果
+nnoremap <silent> <leader>yr  viw:<C-U>call dict#VSearch("replace")<CR>
+" 可视化模式下，<leader><leader>r 即可翻译光标下的单词，并替换为翻译的结果
+vnoremap <silent> <leader>yr :<C-U>call dict#VSearch("replace")<CR>
 " }}}
 
 " Plug 'mbbill/fencview' " (编码检查)auto check Encoding{{{

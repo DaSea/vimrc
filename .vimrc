@@ -100,8 +100,9 @@ endif
 " 关于更改行的设置(git(vim-gitgutter), git_svn(vim-signify), no)
 let g:setting.version_status = 'no'
 " 状态栏(ariline)
-let g:setting.status_line = 'ariline'
+let g:setting.status_line = 'airline'
 let g:setting.status_color = 'light'
+let g:setting.show_tabline = 'yes'
 " 使用ctrlp还是使用unit.vim
 let g:setting.ctrlp_or_unite = 'unitvim'
 " 是否需要开启代码的静态语法检查(validator.vim插件)
@@ -275,6 +276,7 @@ endif
 " ==============================================================================
 " 界面部分设置 {{{
 " ==============================================================================
+set novb
 set matchtime=0 " 0 second to show the matching paren ( much faster )
 " set nu " show line number
 set scrolloff=0 " minimal number of screen lines to keep above and below the cursor
@@ -397,6 +399,7 @@ nnoremap <leader>bc :call ToggleBackground()<CR>
 " ==============================================================================
 " 编辑相关设置(edit text setting, viminfo){{{
 " ==============================================================================
+set ttimeoutlen=50
 set mouse=a " Disable mouse
 set ai " autoindent
 set si " smartindent
@@ -499,6 +502,7 @@ set viminfo='300,f1,<100,:20,@20,/20,
 " ==============================================================================
 " 搜索(Search) {{{
 " ==============================================================================
+" There is a pause when leaving insert mode.
 set showmatch " show matching paren
 set incsearch " do incremental searching
 set hlsearch " highlight search terms
@@ -621,12 +625,17 @@ endif
 " Key Mappings 按键映射 {{{
 " ==============================================================================
 "===================================================
+" 取消的系统按键
+nnoremap q <ESC>
+xnoremap q <ESC>
+
+"===================================================
 " 重新映射leader键，default 为\
 " let mapleader = ","
 " 修改 :
 nnoremap ; :
 " 修改esc 键为jk
-inoremap jk <ESC>
+" inoremap jk <ESC>
 " 行首和行尾
 nnoremap <Home> ^
 nnoremap <End> $
