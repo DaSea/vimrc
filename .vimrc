@@ -278,7 +278,6 @@ endif
 " ==============================================================================
 set novb
 set matchtime=0 " 0 second to show the matching paren ( much faster )
-" set nu " show line number
 set scrolloff=0 " minimal number of screen lines to keep above and below the cursor
 set wrap " do not wrap text
 
@@ -312,7 +311,7 @@ if g:isGUI
     set guioptions-=T
     set guioptions-=r
     set guioptions-=L
-    nmap <silent> <c-F11> :if &guioptions =~# 'm' <Bar>
+    nnoremap <silent> <c-F11> :if &guioptions =~# 'm' <Bar>
         \set guioptions-=m <Bar>
         \set guioptions-=T <Bar>
         \set guioptions-=r <Bar>
@@ -325,6 +324,17 @@ if g:isGUI
     \endif<CR>
 endif
 
+set nonumber
+function! ToggleLineNumber() abort " 切换行号 {{{
+    if 0 == &number
+        exec 'set number'
+        exec 'set relativenumber'
+    else
+        exec 'set nonumber'
+        exec 'set norelativenumber'
+    endif
+endfunction " }}}
+nnoremap <silent> <leader>nc :call ToggleLineNumber()<CR>
 " ==============================================================================
 "  < vimtweak 工具配置 > 请确保以已装了工具
 " ==============================================================================
@@ -553,7 +563,7 @@ if has('autocmd')
         au FileType vim set comments=sO:\"\ -,mO:\"\ \ ,eO:\"\",f:\"
         au FileType vim set foldmethod=marker
         au FileType lua set comments=f:--
-        au FileType qml set foldmethod=indent
+        au FileType qml,python set foldmethod=indent
         au FileType c,cpp set foldmethod=indent
         au FileType help noremap <buffer> q :close<CR>
         au FileType dosbatch setlocal fileencoding=cp936
