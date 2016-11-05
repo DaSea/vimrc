@@ -126,7 +126,7 @@ endif
 " }}}
 
 " vim 补全{{{
-Plug 'Shougo/neco-vim'
+Plug 'Shougo/neco-vim', {'for': 'vim'}
 "}}}
 
 " WIKI, org{{{
@@ -141,11 +141,15 @@ Plug 'jceb/vim-orgmode', {'for': 'org'}
 
 " 配置
 " let g:org_todo_keywords=['TODO', 'VERIFY', '|', 'DONE', 'DELEGATED']
-let g:org_agenda_files = ['E:\\Self\\01_mywiki\\gtd\\gtd.org']
+if g:iswindows
+  let g:org_agenda_files = ['E:\\Self\\01_mywiki\\gtd\\gtd.org']
+elseif
+  let g:org_agenda_files = ['~/gtd/gtd.org']
+endif
 " 打开todo文件
 nnoremap <leader>oo :call OpenOrgToDoFile()<CR>
 function! OpenOrgToDoFile() abort "{{{
-    let gtdFile = 'E:\Self\01_mywiki\gtd\gtd.org'
+    let gtdFile = g:org_agenda_files
     silent! execute 'edit! ' . gtdFile
 endfunction " }}}
 "}}}

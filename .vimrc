@@ -289,12 +289,13 @@ set ruler " show the cursor position all the time
 set shortmess=aoOtTI " shortens messages to avoid 'press a key' prompt
 set lazyredraw " do not redraw while executing macros (much faster)
 set display+=lastline " for easy browse last line with wrap text
-set titlestring=%t\ [%{expand(\"%:p:.:h\")}]
+set titlestring=%t\[%{expand(\"%:p:h\")}]
 
 " set window size (if it's GUI)
 if g:isGUI
     if g:iswindows
         au GUIEnter * simalt ~x " Maximize window when enter vim
+        " set rop=type:directx
     endif
 endif
 
@@ -483,6 +484,10 @@ if has("conceal")
     " set concealcursor=c
 endif
 
+" =============================================================================
+" 行尾符设置
+set fileformats=unix,dos
+
 " ==============================================================================
 " 过滤设置
 "===============================================================================
@@ -501,7 +506,7 @@ set wildignore+=libs/**
 set wildignore+=res/**
 set wildignore+=*.png,*.jpg,*.gif
 set wildignore+=*.so,*.dll,*.a,*.swp,*.zip,*.pdf,*.dmg,*.bak,*.class,*.pyc
-set wildignore+=.exvim.*/**,.settings/**,.metadata/**
+set wildignore+=.exvim/**,.settings/**,.metadata/**
 
 " ==============================================================================
 " viminfo设置
@@ -666,6 +671,22 @@ function! FindWord() abort "{{{
     let curWord = expand("<cword>")
     execute "h " . curWord
 endfunction "}}}
+
+" 替换当前当前光标下单词 {{{
+nnoremap <leader>pw :call ReplaceCurrentWord()<CR>
+function! ReplaceCurrentWord() abort
+    let curWord = expand("<cword>")
+    call inputsave()
+    let replaceWord = input("Please input wanted word:", curWord)
+    call inputrestore()
+    if curWord ==# replaceWord
+        echo "They are same, no replace!"
+        return
+    endif
+
+    let replaceStr = '%s/\<' . curWord . '\>/' . replaceWord . '/gc'
+    execute replaceStr
+endfunction " }}}
 
 "===================================================
 " 常规模式下输入 cS 清除行尾空格

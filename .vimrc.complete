@@ -53,6 +53,8 @@ else
     let g:hasNeocomplete = 0
     if 0 " has('python3')
         Plug 'maralla/completor.vim' "{{{
+        let g:completor_auto_trigger=1
+        let g:completor_python_binary = 'D:/Develop/Python35'
         let g:completor_clang_binary = 'D:/Develop/LLVM/bin'
         " }}}
     endif

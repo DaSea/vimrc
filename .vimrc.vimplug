@@ -25,7 +25,7 @@ nnoremap <unique> <silent> <C-Tab> :EXbalt<CR>
 nnoremap <unique> <silent> <Leader><Tab> :EXsw<CR>
 nmap <unique> <silent> <Leader><Esc> :EXgp<CR><ESC>
 " 定义运行qml文件的脚本
-nnoremap <leader>mr :call system("qmlscene". expand("%"))<CR>
+" nnoremap <leader>mr :call system("qmlscene". expand("%"))<CR>
 
 Plug 'exvim/ex-aftercolors'
 " ---------------------------------------------------
@@ -40,6 +40,7 @@ let g:ex_project_winpos='left'
 let g:ex_project_winsize=28
 let g:ex_project_winsize_zoom=40
 nnoremap <unique> <silent> <F3> :EXProjectToggle<cr>
+nnoremap <unique> <silent> <Leader>pf :call EXProjectFind<CR>
 
 Plug 'exvim/ex-gsearch'
 " ---------------------------------------------------
@@ -135,6 +136,18 @@ Plug 'DaSea/ex-prjlist'
 " let g:exprj_list_win_pos = "botright"
 " let g:exprj_list_win_szie = 30
 " }}}
+
+" 代码查找插件{{{
+" Plug 'devjoe/vim-codequery'
+" Plug 'mileszs/ack.vim',{'on': 'ACK'}
+" if executable('ag')
+"  let g:ackprg = 'ag --vimgrep'
+" endif
+" }}}
+
+" 异步插件{{{
+" Plug 'skywind3000/asyncrun.vim'
+"}}}
 
 " 版本控制(git,svn)及修改状态显示{{{
 " 使用git
@@ -447,9 +460,9 @@ if g:setting.show_tabline ==? 'yes'
     call add(g:airline_extensions, 'tabline')
     let g:airline#extensions#tabline#enabled=1
     let g:airline#extensions#tabline#show_splits = 1
-    let g:airline#extensions#tabline#switch_buffers_and_tabs = 0
+    let g:airline#extensions#tabline#switch_buffers_and_tabs = 1
     let g:airline#extensions#tabline#show_buffers = 1
-    let g:airline#extensions#tabline#show_tabs = 0
+    let g:airline#extensions#tabline#show_tabs = 1
     let g:airline#extensions#tabline#buffers_label = 'B'
     let g:airline#extensions#tabline#tabs_label = 'T'
     let g:airline#extensions#tabline#buffer_idx_mode = 1

@@ -1,7 +1,7 @@
 " 因为unit.vim和ctrlp有许多相同的功能, 所以分开, 可以让大家自由选择
 " 这个主要是unite.vim的相关插件
 if 0 " 有点问题
-Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins'}" {{{
+Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins'} " {{{
     function! DeniteInit() abort
       " Change file_rec command.
   		call denite#custom#var('file_rec', 'command',
