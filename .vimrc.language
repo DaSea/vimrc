@@ -1,97 +1,100 @@
 " 存放于语言相关的配置, 如果为语法高亮和相关的补全等
 
 " markdown支持 {{{
-Plug 'godlygeek/tabular', {'for': 'md'}
-Plug 'plasticboy/vim-markdown', {'for': 'md'}
+if g:setting.markdown_enable ==? 'yes'
+    Plug 'godlygeek/tabular', {'for': 'md'}
+    Plug 'plasticboy/vim-markdown', {'for': 'md'}
+endif
 "}}}
 
 " 好玩的东西, Plantuml{{{
-Plug 'aklt/plantuml-syntax',{'for': 'plantuml'}
-let g:plantuml_executable_script = 'D:/Develop/Tools/plantuml.jar'
-function! UmlToImage() abort " 由uml等生成图片 {{{
-    let cur_uml = expand('%:p')
-    let cmd = 'java -jar ' . g:plantuml_executable_script . ' ' . cur_uml
-    call system(cmd)
-endfunction " }}}
-nnoremap <silent> <Leader>utp :call UmlToImage()<CR>
-Plug 'scrooloose/vim-slumlord',{'for': 'plantuml'}
-" 详细的可以参考http://plantuml.com/
-let g:slumlord_au_created = 0
-nnoremap <silent> <Leader>um :call slumlord#updatePreview({'write': 1})<CR>
-"}}}
+if (g:setting.plantuml_enable ==? 'yes') && (g:iswindows)
+    Plug 'aklt/plantuml-syntax',{'for': 'plantuml'}
+    let g:plantuml_executable_script = 'D:/Develop/Tools/plantuml.jar'
+    function! UmlToImage() abort " 由uml等生成图片 {{{
+        let cur_uml = expand('%:p')
+        let cmd = 'java -jar ' . g:plantuml_executable_script . ' ' . cur_uml
+        call system(cmd)
+    endfunction " }}}
+    nnoremap <silent> <Leader>utp :call UmlToImage()<CR>
+    Plug 'scrooloose/vim-slumlord',{'for': 'plantuml'}
+    " 详细的可以参考http://plantuml.com/
+    let g:slumlord_au_created = 0
+    nnoremap <silent> <Leader>um :call slumlord#updatePreview({'write': 1})<CR>
+endif
+" }}}
 
 " cpp/c等{{{
-Plug 'DaSea/vim-syntax' " 杂7杂8的, 有qml, 有cpp文件中的doxygen, ndk高亮等{{{
-let g:ndk_syntax_enable = 1
-let g:doxygen_syntax_enable = 1
-"}}}
+if 'yes' ==? g:setting.cpp_enable
+    Plug 'DaSea/vim-syntax' " 杂7杂8的, 有qml, 有cpp文件中的doxygen, ndk高亮等{{{
+    let g:ndk_syntax_enable = 1
+    let g:doxygen_syntax_enable = 1
+    "}}}
 
-Plug 'DaSea/ex-avim',{'for': ['cpp', 'c']} " h与cpp文件的交换{{{
-" 用于切换C/C++头文件
-" :A     ---切换头文件并独占整个窗口
-" :AV    ---切换头文件并垂直分割窗口
-" :AS    ---切换头文件并水平分割窗口
-" let g:alternateSearchPath = "D:\\Develop\\msys64\\mingw64\\include\\c++\\5.4.0"
-if g:iswindows
-    let g:alternateSearchPath =
-                \ "D:\\Develop\\Java\\android-ndk-r11b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include"
-else
-    let g:alternateSearchPath = "/usr/include/c++/5.4.0"
-endif
-nnoremap <silent> <leader>ah :A<CR>
-nnoremap <silent> <leader>av :AV<CR>
-nnoremap <silent> <leader>as :AS<CR>
-"}}}
-
-if g:isNvim
-    Plug 'zchee/deoplete-clang' " {{{
-    let g:deoplete#sources#clang#libclang_path = '/usr/lib/llvm-3.8/lib/libclang.so.1'
-    let g:deoplete#sources#clang#clang_header = '/usr/lib/llvm-3.8/lib/clang'
-    let g:deoplete#sources#clang#std={'c': 'c11', 'cpp': 'c++1z', 'objc': 'c11', 'objcpp': 'c++1z'}
-    " 补全列表的顺序(priority, alphabetical) 默认使用deoplete.nvim的算法
-    " let g:deoplete#sources#clang#sort_algo = 'priority'
-    " 
-    " let g:deoplete#sources#clang#clang_complete_database=$HOME.'/src/github.com/neovim/neovim/build'
-    if !exists('g:deoplete#sources')
-        let g:deoplete#sources = {}
+    Plug 'DaSea/ex-avim',{'for': ['cpp', 'c']} " h与cpp文件的交换{{{
+    " 用于切换C/C++头文件
+    " :A     ---切换头文件并独占整个窗口
+    " :AV    ---切换头文件并垂直分割窗口
+    " :AS    ---切换头文件并水平分割窗口
+    " let g:alternateSearchPath = "D:\\Develop\\msys64\\mingw64\\include\\c++\\5.4.0"
+    if g:iswindows
+        let g:alternateSearchPath =
+                    \ "D:\\Develop\\Java\\android-ndk-r11b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include"
+    else
+        let g:alternateSearchPath = "/usr/include/c++/5.4.0"
     endif
-    let g:deoplete#sources.c = ['clang']
-    let g:deoplete#sources.cpp = ['clang']
-    " echo | clang -v -E -x c -
-    let g:deoplete#sources#clang#flags = [
-                \ "-O3",
-                \ "-cc1",
-                \ "-triple", "x86_64-pc-linux-gnu",
-                \ "-disable-free",
-                \ "-disable-llvm-verifier",
-                \ "-main-file-name",
-                \ "-mrelocation-model", "static",
-                \ "-pic-level", "2",
-                \ "-mthread-model", "posix",
-                \ "-mdisable-fp-elim",
-                \ "-fmath-errno",
-                \ "-munwind-tables",
-                \ "-target-cpu", "x86_64",
-                \ "-dwarf-column-info",
-                \ "-debugger-tuning=lldb",
-                \ "-resource-dir", "/usr/lib/llvm-3.8/lib/clang/3.8.0",
-                \ "-ferror-limit", "19",
-                \ "-fmessage-length", "103",
-                \ "-fobjc-runtime=gcc",
-                \ ]
-                " }}}
+    nnoremap <silent> <leader>ah :A<CR>
+    nnoremap <silent> <leader>av :AV<CR>
+    nnoremap <silent> <leader>as :AS<CR>
+    "}}}
 
-    " Plug 'FromtonRouge/OmniCppComplete'
-    " autocmd FileType c,cpp setlocal omnifunc=omni#cpp#complete#Main
-else
-    Plug 'FromtonRouge/OmniCppComplete'
-    autocmd FileType c setlocal omnifunc=omni#c#complete#Main
-    autocmd FileType cpp setlocal omnifunc=omni#cpp#complete#Main
+    if g:isNvim
+        Plug 'zchee/deoplete-clang' " {{{
+        let g:deoplete#sources#clang#libclang_path = '/usr/lib/llvm-3.8/lib/libclang.so.1'
+        let g:deoplete#sources#clang#clang_header = '/usr/lib/llvm-3.8/lib/clang'
+        let g:deoplete#sources#clang#std={'c': 'c11', 'cpp': 'c++1z', 'objc': 'c11', 'objcpp': 'c++1z'}
+        " 补全列表的顺序(priority, alphabetical) 默认使用deoplete.nvim的算法
+        " let g:deoplete#sources#clang#sort_algo = 'priority'
+        " 
+        " let g:deoplete#sources#clang#clang_complete_database=$HOME.'/src/github.com/neovim/neovim/build'
+        if !exists('g:deoplete#sources')
+            let g:deoplete#sources = {}
+        endif
+        let g:deoplete#sources.c = ['clang']
+        let g:deoplete#sources.cpp = ['clang']
+        " echo | clang -v -E -x c -
+        let g:deoplete#sources#clang#flags = [
+                    \ "-O3",
+                    \ "-cc1",
+                    \ "-triple", "x86_64-pc-linux-gnu",
+                    \ "-disable-free",
+                    \ "-disable-llvm-verifier",
+                    \ "-main-file-name",
+                    \ "-mrelocation-model", "static",
+                    \ "-pic-level", "2",
+                    \ "-mthread-model", "posix",
+                    \ "-mdisable-fp-elim",
+                    \ "-fmath-errno",
+                    \ "-munwind-tables",
+                    \ "-target-cpu", "x86_64",
+                    \ "-dwarf-column-info",
+                    \ "-debugger-tuning=lldb",
+                    \ "-resource-dir", "/usr/lib/llvm-3.8/lib/clang/3.8.0",
+                    \ "-ferror-limit", "19",
+                    \ "-fmessage-length", "103",
+                    \ "-fobjc-runtime=gcc",
+                    \ ]
+        " }}}
+    else
+        Plug 'FromtonRouge/OmniCppComplete'
+        autocmd FileType c setlocal omnifunc=omni#c#complete#Main
+        autocmd FileType cpp setlocal omnifunc=omni#cpp#complete#Main
+    endif
 endif
 "}}}
 
 " python{{{
-if g:isNvim
+if ('yes' ==? g:setting.python_enable) && g:isNvim
     Plug 'zchee/deoplete-jedi',{'for': 'python'}
     let g:deoplete#sources#jedi#python_path='/usr/bin/python3'  "~/.pyenv/versions/3.4.5/envs/neovim/bin/python'
     " let g:python3_host_prog = '/home/Feng/.pyenv/versions/3.4.5/envs/neovim/bin/python'
@@ -107,7 +110,7 @@ if g:isNvim
     let g:deoplete#sources#jedi#short_types = 1
     let g:deoplete#sources#jedi#show_docstring = 0
     let g:deoplete#sources#jedi#debug_enabled = 0
-else
+elseif ('yes' ==? g:setting.python_enable)
     Plug 'davidhalter/jedi-vim',{'for': 'python'}
     let g:jedi#auto_vim_configuration=0
     let g:jedi#popup_select_first=0
@@ -115,44 +118,46 @@ endif
 "}}}
 
 "  Php自动补全{{{
+if 'yes' ==? g:setting.php_enbale
 " Plug 'shawncplus/phpcomplete.vim',{'for': 'php'}
 " Plug '2072/PHP-Indenting-for-VIm',{'for': 'php'}
 " Plug 'StanAngeloff/php.vim',{'for': 'php'}
 " autocmd FileType php set omnifunc=phpcomplete#CompletePHP
+endif
 " }}}
 
 " vim 补全{{{
-Plug 'Shougo/neco-vim'
+if g:setting.vim_enable ==? 'yes'
+    Plug 'Shougo/neco-vim'
+endif
 "}}}
 
 " WIKI, org{{{
-Plug 'jceb/vim-orgmode', {'for': 'org'}
-" Plug 'vim-scripts/utl.vim' " org{{{
-" 快捷键记录:
-" <leader>hn <leader>hh, <leader>hN:插入标题
-" yah , dah : 复制和删除heading, yar, dar: 复制和删除subtree
-" >> << 可以升降heading的等级; >ar <ar : 可以升降subtree的等级
-" <leader>cl , <leader>CL 插入plainlist, \cn,\cc,\cN:切换,插入checkbox
-" \si, \sa : 插入时间;  \ct: TODO 之间切换状态; \st,\ft: tag
+if 'yes' ==? g:setting.org_wiki_enable
+    Plug 'jceb/vim-orgmode', {'for': 'org'}
+    " Plug 'vim-scripts/utl.vim'  org{{{
+    " 快捷键记录:
+    " <leader>hn <leader>hh, <leader>hN:插入标题
+    " yah , dah : 复制和删除heading, yar, dar: 复制和删除subtree
+    " >> << 可以升降heading的等级; >ar <ar : 可以升降subtree的等级
+    " <leader>cl , <leader>CL 插入plainlist, \cn,\cc,\cN:切换,插入checkbox
+    " \si, \sa : 插入时间;  \ct: TODO 之间切换状态; \st,\ft: tag
 
-" 配置
-" let g:org_todo_keywords=['TODO', 'VERIFY', '|', 'DONE', 'DELEGATED']
-if g:iswindows
-  let g:org_agenda_files = ['E:\\Self\\01_mywiki\\gtd\\gtd.org']
-else
-  let g:org_agenda_files = ['~/gtd/gtd.org']
+    " 配置
+    " let g:org_todo_keywords=['TODO', 'VERIFY', '|', 'DONE', 'DELEGATED']
+    if g:iswindows
+        let g:org_agenda_files = ['E:\\Self\\01_mywiki\\gtd\\gtd.org']
+    else
+        let g:org_agenda_files = ['~/gtd/gtd.org']
+    endif
+    " 打开todo文件
+    nnoremap <leader>oo :call OpenOrgToDoFile()<CR>
+    function! OpenOrgToDoFile() abort "{{{
+        let gtdFile = g:org_agenda_files
+        silent! execute 'edit! ' . gtdFile
+    endfunction " }}}
+    " }}}
 endif
-" 打开todo文件
-nnoremap <leader>oo :call OpenOrgToDoFile()<CR>
-function! OpenOrgToDoFile() abort "{{{
-    let gtdFile = g:org_agenda_files
-    silent! execute 'edit! ' . gtdFile
-endfunction " }}}
-"}}}
-"}}}
-
-" log高亮语法{{{
-Plug 'dzeban/vim-log-syntax', {'for': 'log'}
 "}}}
 
 " vim:ts=4:sw=4:sts=4 et fdm=marker:

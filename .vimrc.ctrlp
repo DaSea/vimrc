@@ -121,11 +121,3 @@ nnoremap <F2> :NERDTreeToggle<CR>
 nnoremap <silent> <leader>fb :NERDTreeFind<cr>
 " }}}
 
-if g:setting.dev_icon_enable ==? 'yes'
-Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
-let g:NERDTreeFileExtensionHighlightFullName = 1
-let g:NERDTreeExactMatchHighlightFullName = 1
-let g:NERDTreePatternMatchHighlightFullName = 1
-let g:NERDTreeHighlightFolders = 1
-let g:NERDTreeHighlightFoldersFullName = 1
-endif

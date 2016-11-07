@@ -94,12 +94,9 @@ let g:setting = {}
 let g:plugins_file = '.vimrc.vimplug'
 " 全局设置
 let g:setting.color_scheme = 'solarized'
-if has('nvim') || g:islinux
-    let g:setting.color_scheme='onedark'
-endif
 " 关于更改行的设置(git(vim-gitgutter), git_svn(vim-signify), no)
 let g:setting.version_status = 'no'
-" 状态栏(ariline)
+" 状态栏(ariline or no), 如果为no, 自定义状态栏
 let g:setting.status_line = 'airline'
 let g:setting.status_color = 'light'
 let g:setting.show_tabline = 'yes'
@@ -119,12 +116,14 @@ else
     let g:setting.vimwiki_path = '~/dasea.github.io/'
     let g:setting.private_snippets = '~/snippets'
 endif
-" 是否需要c++语言的一些支持{{{
-let g:setting.cpp_syntax_extent = 'no'
+" 语言list{主要决定.vimrc.language文件里面语言选项}
 let g:setting.cpp_enable = 'yes'
-" }}}
-" 是否需要icon支持
-let g:setting.dev_icon_enable = 'no'
+let g:setting.markdown_enable = 'no'
+let g:setting.python_enable = 'no'
+let g:setting.plantuml_enable = 'no'
+let g:setting.vim_enable = 'yes'
+let g:setting.php_enbale = 'no'
+let g:setting.org_wiki_enable = 'yes'
 " }}}
 
 "/////////////////////////////////////////////////////////////////////////////
@@ -225,7 +224,17 @@ if g:isGUI
 
     " set guifont
     function! s:set_gui_font()
-        if has('gui_gtk2')
+        if g:iswindows
+            if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
+                set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h11:cANSI
+            elseif getfontname('Inconsolata-g for Powerline') != ''
+                set guifont=Inconsolata-g\ for\ Powerline:h12:cANSI
+            elseif getfontname( 'Microsoft YaHei Mono' ) != ''
+                set guifont=Microsoft\ YaHei\ Mono:h12:cANSI
+            elseif getfontname( 'Consolas' ) != ''
+                set guifont=Consolas:h12:cANSI " this is the default visual studio font
+            endif
+        elseif g:islinux
             if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
                 set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ 12
             elseif getfontname( 'DejaVu Sans Mono' ) != ''
@@ -233,36 +242,11 @@ if g:isGUI
             else
                 set guifont=Luxi\ Mono\ 12
             endif
-        elseif has('x11')
-            " Also for GTK 1
-            set guifont=*-lucidatypewriter-medium-r-normal-*-*-180-*-*-m-*-*
         elseif g:ismac
             if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
                 set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h15
             elseif getfontname( 'DejaVu Sans Mono' ) != ''
                 set guifont=DejaVu\ Sans\ Mono:h15
-            endif
-        elseif g:iswindows
-            if g:setting.dev_icon_enable ==? 'yes'
-                if getfontname('DejaVuSansMonoForPowerline NF') != ''
-                    set guifont=DejaVuSansMonoForPowerline\ NF:h11:cANSI
-                elseif getfontname( 'DroidSansMonoForPowerline NF' ) != ''
-                    set guifont=DroidSansMonoForPowerline\ NF:h11:cANSI
-                elseif getfontname( 'InconsolataForPowerline NF' ) != ''
-                    set guifont=InconsolataForPowerline\ NF:h11:cANSI
-                endif
-            else
-                if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
-                    set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h11:cANSI
-                elseif getfontname('Inconsolata-g for Powerline') != ''
-                    set guifont=Inconsolata-g\ for\ Powerline:h12:cANSI
-                elseif getfontname( 'Microsoft YaHei Mono' ) != ''
-                    set guifont=Microsoft\ YaHei\ Mono:h12:cANSI
-                elseif getfontname( 'Consolas' ) != ''
-                    set guifont=Consolas:h12:cANSI " this is the default visual studio font
-                else
-                    set guifont=Lucida_Console:h12:cANSI
-                endif
             endif
         endif
     endfunction
@@ -291,23 +275,23 @@ set lazyredraw " do not redraw while executing macros (much faster)
 set display+=lastline " for easy browse last line with wrap text
 set titlestring=%t\[%{expand(\"%:p:h\")}]
 
-" set window size (if it's GUI)
+set showfulltag " show tag with function protype.
+
+" 状态栏设置
+set laststatus=2 " always have status-line
+if g:setting.status_line ==? 'no'
+    set statusline=[%{mode()}]\ [%t:%{&ff}]\ [Type:%y]\ [Pos=%04l,%04v][%p%%:%L]
+endif
+
+" 显示/隐藏菜单栏、工具栏、滚动条，可用 Ctrl + F11 切换
 if g:isGUI
     if g:iswindows
         au GUIEnter * simalt ~x " Maximize window when enter vim
         " set rop=type:directx
     endif
-endif
 
-set showfulltag " show tag with function protype.
-set guioptions-=b "present the bottom scrollbar when the longest visible line exceed the window
-
-" 状态栏设置
-set laststatus=2 " always have status-line
-" set statusline=[%{mode()}]\ [%t:%{&ff}]\ [Type:%y]\ [Pos=%04l,%04v][%p%%:%L]
-
-" 显示/隐藏菜单栏、工具栏、滚动条，可用 Ctrl + F11 切换
-if g:isGUI
+    "present the bottom scrollbar when the longest visible line exceed the window
+    set guioptions-=b
     set guioptions-=m
     set guioptions-=T
     set guioptions-=r
@@ -388,9 +372,7 @@ if g:isGUI
         set background=light
     endif
 else
-    if !g:iswindows
-        set background=dark
-    endif
+    set background=dark
     set t_Co=256 " make sure our terminal use 256 color
 endif
 exec 'colorscheme ' . g:setting.color_scheme
@@ -459,8 +441,6 @@ set foldlevel=5
 " set foldmethod=marker foldmarker={,} foldlevel=9999
 " set foldmethod=syntax
 set diffopt=filler,context:9999
-" 用空格键来开关折叠
-nnoremap <space> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
 " ==============================================================================
 " 行列设置
@@ -553,11 +533,10 @@ if has('autocmd')
                     \   exe "normal g`\"" |
                     \ endif
         au BufNewFile,BufEnter * set cpoptions+=d " NOTE: ctags find the tags file from the current path instead of the path of currect file
-        au BufEnter * :syntax sync fromstart " ensure every file does syntax highlighting (full)
+        " ensure every file does syntax highlighting (full)
+        " au BufEnter * :syntax sync fromstart
         au BufNewFile,BufRead *.avs set syntax=avs " for avs syntax file.
 
-        " ------------------------------------------------------------------
-        " Desc: file types
         " ------------------------------------------------------------------
         au FileType * setlocal tabstop=4
         au FileType c,cpp,cs,swig set nomodeline " this will avoid bug in my project with namespace ex, the vim will tree ex:: as modeline.
@@ -581,8 +560,6 @@ if has('autocmd')
     function! s:check_if_expand_tab()
         let has_noexpandtab = search('^\t','wn')
         let has_expandtab = search('^    ','wn')
-
-        "
         if has_noexpandtab && has_expandtab
             let idx = inputlist ( ['ERROR: current file exists both expand and noexpand TAB, python can only use one of these two mode in one file.\nSelect Tab Expand Type:',
                         \ '1. expand (tab=space, recommended)',
@@ -616,23 +593,6 @@ if has('autocmd')
             " we use original vim setting
         endif
     endfunction
-endif
-"}}}
-
-" ==============================================================================
-" 修改字符的默认行为 {{{
-" 插入字符的行为
-if 0
-    autocmd InsertCharPre call s:insertcharpre()
-    function! s:insertCharPre() abort "{{{
-        if ';' == v:char
-            normal! <ESC>l
-            let word = expand('<cword>')
-            if '(' ==? word[0]
-                <End>
-            endif
-        endif
-    endfunction "}}}
 endif
 "}}}
 
@@ -683,6 +643,9 @@ nmap <Leader>pa %
 " ==================================================
 " redo
 nnoremap U <c-r>
+
+" 用空格键来开关折叠
+nnoremap <space> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
 "===================================================
 " 观看当前单词的帮助
@@ -735,9 +698,9 @@ autocmd CmdwinEnter * noremap <buffer> q o<Esc><CR>
 " 命令行下浏览历史
 cnoremap <c-n>  <down>
 cnoremap <c-p>  <up>
-" 移动行(lu:上移, ld下移)
-nnoremap <leader>ld  :<c-u>execute 'move +'. v:count1<cr>
-nnoremap <leader>lu  :<c-u>execute 'move -1-'. v:count1<cr>
+" 移动行(lu:上移, ld下移) (其他插件替代)
+" nnoremap <leader>ld  :<c-u>execute 'move +'. v:count1<cr>
+" nnoremap <leader>lu  :<c-u>execute 'move -1-'. v:count1<cr>
 " 快速增加空行
 nnoremap <leader>us :put! =''<cr>
 nnoremap <leader>ds :put =''<cr>

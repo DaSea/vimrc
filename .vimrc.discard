@@ -1,6 +1,15 @@
 " ==============================================
 " 主要放一些暂时不想用的插件， 未来某天可能会用
 " ==============================================
+
+if getfontname('DejaVuSansMonoForPowerline NF') != ''
+    set guifont=DejaVuSansMonoForPowerline\ NF:h11:cANSI
+elseif getfontname( 'DroidSansMonoForPowerline NF' ) != ''
+    set guifont=DroidSansMonoForPowerline\ NF:h11:cANSI
+elseif getfontname( 'InconsolataForPowerline NF' ) != ''
+    set guifont=InconsolataForPowerline\ NF:h11:cANSI
+endif
+
 Plug 'itchyny/lightline.vim'"{{{
 " ---------------------------------------------------
 let g:lightline ={
@@ -88,3 +97,81 @@ function! LightLineFileencoding()
     return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
 endfunction
 "}}}
+
+if g:setting.dev_icon_enable ==? 'yes'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+let g:NERDTreeFileExtensionHighlightFullName = 1
+let g:NERDTreeExactMatchHighlightFullName = 1
+let g:NERDTreePatternMatchHighlightFullName = 1
+let g:NERDTreeHighlightFolders = 1
+let g:NERDTreeHighlightFoldersFullName = 1
+endif
+
+if g:setting.dev_icon_enable ==? 'yes'
+    Plug 'ryanoasis/vim-devicons' "图片支持, 没多大卵用, {{{
+    " loading the plugin
+    let g:webdevicons_enable = 1
+    " adding the flags to NERDTree
+    let g:webdevicons_enable_nerdtree = 1
+    " adding the custom source to unite
+    if g:setting.ctrlp_or_unite ==? 'ctrlp'
+        let g:webdevicons_enable_ctrlp = 1
+        let g:webdevicons_enable_unite = 0
+    else
+        let g:webdevicons_enable_unite = 1
+        let g:webdevicons_enable_ctrlp = 0
+    endif
+    " adding the column to vimfiler
+    let g:webdevicons_enable_vimfiler = 0
+    " adding to vim-airline's tabline
+    let g:webdevicons_enable_airline_tabline = 0
+    " adding to vim-airline's statusline
+    let g:webdevicons_enable_airline_statusline = 1
+    " adding to flagship's statusline
+    let g:webdevicons_enable_flagship_statusline = 0
+    " turn on/off file node glyph decorations (not particularly useful)
+    let g:WebDevIconsUnicodeDecorateFileNodes = 0
+
+    " use double-width(1) or single-width(0) glyphs
+    " only manipulates padding, has no effect on terminal or set(guifont) font
+    let g:WebDevIconsUnicodeGlyphDoubleWidth = 0
+    " whether or not to show the nerdtree brackets around flags
+    let g:webdevicons_conceal_nerdtree_brackets = 0
+    " the amount of space to use after the glyph character (default ' ')
+    let g:WebDevIconsNerdTreeAfterGlyphPadding = '  '
+    " Force extra padding in NERDTree so that the filetype icons line up vertically
+    let g:WebDevIconsNerdTreeGitPluginForceVAlign = 0
+    " }}}
+endif
+
+Plug 'mhinz/vim-startify',{'on': 'Startify'} " 开始界面,可以显示MRU, Session等{{{
+"开始欢迎界面
+nnoremap <F4> :Startify<CR>
+" set session path
+let g:startify_session_dir = 'D:/Develop/exVim/vimfiles/session'
+let g:startify_list_order = [
+            \ ['   MRU:'],
+            \ 'files',
+            \ ['   MRU(Dir):'],
+            \ 'dir',
+            \ ['   Sessions:'],
+            \ 'sessions',
+            \ ['   Bookmarks:'],
+            \ 'bookmarks',
+            \ ]
+let g:startify_custom_header = [
+            \ '   -----------------------------------------------------------',
+            \ "   |     Vim是个慈善软件,如需了解,请阅读':help uganda'       |",
+            \ '   |                                                         |',
+            \ '   |                 o  ^--^                                 |',
+            \ '   |                  o (oo)\=======                         |',
+            \ '   |                    (__)\       )\/\                     |',
+            \ '   |                        ||----w |                        |',
+            \ '   |                        ||     ||                        |',
+            \ '   |                                                         |',
+            \ '   |                                                         |',
+            \ '   -----------------------------------------------------------',
+            \ ]
+let g:startify_custom_footer = ['', "   可以做到,相信自己! ", '']
+"}}}
+

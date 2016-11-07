@@ -352,74 +352,6 @@ map <Leader><Leader>. <Plug>(easymotion-repeat)
 "}}}
 
 " 界面显示相关{{{
-if g:setting.dev_icon_enable ==? 'yes'
-    Plug 'ryanoasis/vim-devicons' "图片支持, 没多大卵用, {{{
-    " loading the plugin
-    let g:webdevicons_enable = 1
-    " adding the flags to NERDTree
-    let g:webdevicons_enable_nerdtree = 1
-    " adding the custom source to unite
-    if g:setting.ctrlp_or_unite ==? 'ctrlp'
-        let g:webdevicons_enable_ctrlp = 1
-        let g:webdevicons_enable_unite = 0
-    else
-        let g:webdevicons_enable_unite = 1
-        let g:webdevicons_enable_ctrlp = 0
-    endif
-    " adding the column to vimfiler
-    let g:webdevicons_enable_vimfiler = 0
-    " adding to vim-airline's tabline
-    let g:webdevicons_enable_airline_tabline = 0
-    " adding to vim-airline's statusline
-    let g:webdevicons_enable_airline_statusline = 1
-    " adding to flagship's statusline
-    let g:webdevicons_enable_flagship_statusline = 0
-    " turn on/off file node glyph decorations (not particularly useful)
-    let g:WebDevIconsUnicodeDecorateFileNodes = 0
-
-    " use double-width(1) or single-width(0) glyphs
-    " only manipulates padding, has no effect on terminal or set(guifont) font
-    let g:WebDevIconsUnicodeGlyphDoubleWidth = 0
-    " whether or not to show the nerdtree brackets around flags
-    let g:webdevicons_conceal_nerdtree_brackets = 0
-    " the amount of space to use after the glyph character (default ' ')
-    let g:WebDevIconsNerdTreeAfterGlyphPadding = '  '
-    " Force extra padding in NERDTree so that the filetype icons line up vertically
-    let g:WebDevIconsNerdTreeGitPluginForceVAlign = 0
-    " }}}
-endif
-
-Plug 'mhinz/vim-startify',{'on': 'Startify'} " 开始界面,可以显示MRU, Session等{{{
-"开始欢迎界面
-nnoremap <F4> :Startify<CR>
-" set session path
-let g:startify_session_dir = 'D:/Develop/exVim/vimfiles/session'
-let g:startify_list_order = [
-            \ ['   MRU:'],
-            \ 'files',
-            \ ['   MRU(Dir):'],
-            \ 'dir',
-            \ ['   Sessions:'],
-            \ 'sessions',
-            \ ['   Bookmarks:'],
-            \ 'bookmarks',
-            \ ]
-let g:startify_custom_header = [
-            \ '   -----------------------------------------------------------',
-            \ "   |     Vim是个慈善软件,如需了解,请阅读':help uganda'       |",
-            \ '   |                                                         |',
-            \ '   |                 o  ^--^                                 |',
-            \ '   |                  o (oo)\=======                         |',
-            \ '   |                    (__)\       )\/\                     |',
-            \ '   |                        ||----w |                        |',
-            \ '   |                        ||     ||                        |',
-            \ '   |                                                         |',
-            \ '   |                                                         |',
-            \ '   -----------------------------------------------------------',
-            \ ]
-let g:startify_custom_footer = ['', "   可以做到,相信自己! ", '']
-"}}}
-
 Plug 'ntpeters/vim-better-whitespace' "显示行尾多余空格并快速删除{{{
 " 显示行尾空格(better)
 " ----------------------------------------------------
@@ -427,79 +359,81 @@ let g:better_whitespace_filetypes_blacklist = ['unite', 'vimfiler', 'ctrlp']
 noremap CS :StripWhitespace<CR>
 "}}}
 
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes' " airline状态栏{{{
-let g:airline_powerline_fonts = 1
-let g:airline_theme = g:setting.status_color
-" let g:airline_left_sep = ''
-" let g:airline_left_alt_sep = ''
-" let g:airline_right_sep = ''
-" let g:airline_right_alt_sep = ''
-let g:airline_left_sep = '▶'
-let g:airline_left_alt_sep = '❯'
-let g:airline_right_sep = '◀'
-let g:airline_right_alt_sep = '❮'
-if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
+if 'airline' ==? g:setting.status_line
+    Plug 'vim-airline/vim-airline'
+    Plug 'vim-airline/vim-airline-themes' " airline状态栏{{{
+    let g:airline_powerline_fonts = 1
+    let g:airline_theme = g:setting.status_color
+    " let g:airline_left_sep = ''
+    " let g:airline_left_alt_sep = ''
+    " let g:airline_right_sep = ''
+    " let g:airline_right_alt_sep = ''
+    let g:airline_left_sep = '▶'
+    let g:airline_left_alt_sep = '❯'
+    let g:airline_right_sep = '◀'
+    let g:airline_right_alt_sep = '❮'
+    if !exists('g:airline_symbols')
+        let g:airline_symbols = {}
+    endif
+    let g:airline_symbols.branch = ''
+    let g:airline_symbols.readonly = ''
+    let g:airline_symbols.linenr = ''
+    let g:airline_detect_modified=1
+    let g:airline_detect_crypt=0
+    let g:airline_detect_spell=0
+    let g:airline_detect_iminsert=0
+    let g:airline_inactive_collapse=0
+    let g:airline_extensions = ['quickfix']
+    if g:setting.ctrlp_or_unite ==? 'ctrlp'
+        call add(g:airline_extensions, 'ctrlp')
+    else
+        call add(g:airline_extensions, 'unite')
+    endif
+    if g:setting.show_tabline ==? 'yes'
+        call add(g:airline_extensions, 'tabline')
+        let g:airline#extensions#tabline#enabled=1
+        let g:airline#extensions#tabline#show_splits = 1
+        let g:airline#extensions#tabline#switch_buffers_and_tabs = 1
+        let g:airline#extensions#tabline#show_buffers = 1
+        let g:airline#extensions#tabline#show_tabs = 1
+        let g:airline#extensions#tabline#buffers_label = 'B'
+        let g:airline#extensions#tabline#tabs_label = 'T'
+        let g:airline#extensions#tabline#buffer_idx_mode = 1
+        nmap ,1 <Plug>AirlineSelectTab1
+        nmap ,2 <Plug>AirlineSelectTab2
+        nmap ,3 <Plug>AirlineSelectTab3
+        nmap ,4 <Plug>AirlineSelectTab4
+        nmap ,5 <Plug>AirlineSelectTab5
+        nmap ,6 <Plug>AirlineSelectTab6
+        nmap ,7 <Plug>AirlineSelectTab7
+        nmap ,8 <Plug>AirlineSelectTab8
+        nmap ,9 <Plug>AirlineSelectTab9
+        nmap <leader>j <Plug>AirlineSelectPrevTab
+        nmap <leader>k <Plug>AirlineSelectNextTab
+        " let g:airline#extensions#tabline#formatter = 'unique_tail'
+        let g:airline#extensions#tabline#buffer_nr_format = '%s: '
+        let g:airline#extensions#tabline#fnamemod = ':t:.'
+        let g:airline#extensions#tabline#fnametruncate = 0
+        let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+    endif
+    " 各个部分的设置简化
+    let g:airline_section_c = '%t'
+    let g:airline_section_z = '%l%{g:airline_symbols.linenr}%L'
+    let g:airline_mode_map = {
+                \ '__' : '-',
+                \ 'n'  : 'N',
+                \ 'i'  : 'I',
+                \ 'R'  : 'R',
+                \ 'c'  : 'C',
+                \ 'v'  : 'v',
+                \ 'V'  : 'VL',
+                \ '' : 'VB',
+                \ 's'  : 's',
+                \ 'S'  : 'S',
+                \ '' : 'S',
+                \ }
+    " }}}
 endif
-let g:airline_symbols.branch = ''
-let g:airline_symbols.readonly = ''
-let g:airline_symbols.linenr = ''
-let g:airline_detect_modified=1
-let g:airline_detect_crypt=0
-let g:airline_detect_spell=0
-let g:airline_detect_iminsert=0
-let g:airline_inactive_collapse=0
-let g:airline_extensions = ['quickfix']
-if g:setting.ctrlp_or_unite ==? 'ctrlp'
-    call add(g:airline_extensions, 'ctrlp')
-else
-    call add(g:airline_extensions, 'unite')
-endif
-if g:setting.show_tabline ==? 'yes'
-    call add(g:airline_extensions, 'tabline')
-    let g:airline#extensions#tabline#enabled=1
-    let g:airline#extensions#tabline#show_splits = 1
-    let g:airline#extensions#tabline#switch_buffers_and_tabs = 1
-    let g:airline#extensions#tabline#show_buffers = 1
-    let g:airline#extensions#tabline#show_tabs = 1
-    let g:airline#extensions#tabline#buffers_label = 'B'
-    let g:airline#extensions#tabline#tabs_label = 'T'
-    let g:airline#extensions#tabline#buffer_idx_mode = 1
-    nmap ,1 <Plug>AirlineSelectTab1
-    nmap ,2 <Plug>AirlineSelectTab2
-    nmap ,3 <Plug>AirlineSelectTab3
-    nmap ,4 <Plug>AirlineSelectTab4
-    nmap ,5 <Plug>AirlineSelectTab5
-    nmap ,6 <Plug>AirlineSelectTab6
-    nmap ,7 <Plug>AirlineSelectTab7
-    nmap ,8 <Plug>AirlineSelectTab8
-    nmap ,9 <Plug>AirlineSelectTab9
-    nmap <leader>j <Plug>AirlineSelectPrevTab
-    nmap <leader>k <Plug>AirlineSelectNextTab
-    " let g:airline#extensions#tabline#formatter = 'unique_tail'
-    let g:airline#extensions#tabline#buffer_nr_format = '%s: '
-    let g:airline#extensions#tabline#fnamemod = ':t:.'
-    let g:airline#extensions#tabline#fnametruncate = 0
-    let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
-endif
-" 各个部分的设置简化
-let g:airline_section_c = '%t'
-let g:airline_section_z = '%l%{g:airline_symbols.linenr}%L'
-let g:airline_mode_map = {
-            \ '__' : '-',
-            \ 'n'  : 'N',
-            \ 'i'  : 'I',
-            \ 'R'  : 'R',
-            \ 'c'  : 'C',
-            \ 'v'  : 'v',
-            \ 'V'  : 'VL',
-            \ '' : 'VB',
-            \ 's'  : 's',
-            \ 'S'  : 'S',
-            \ '' : 'S',
-            \ }
-" }}}
 
 Plug 'Konfekt/FastFold' "{{{
 let g:cpp_folding=1
@@ -523,6 +457,7 @@ Plug 'altercation/vim-colors-solarized'
 let g:solaried_bold = 1
 let g:solaried_underline = 1
 let g:solaried_italic = 0
+let g:solarized_termcolors=256
 
 Plug 'joshdick/onedark.vim'
 let g:onedark_termcolors=256
