@@ -5,10 +5,10 @@ if g:isNvim
     let g:deoplete#enable_smart_case=1
     let g:deoplete#max_list=20
     let g:deoplete#auto_completion_start_length=2
-    let g:deoplete#sources = {}
-    let g:deoplete#sources._ = ['buffer']
-    let g:deoplete#sources.cpp = ['buffer', 'tag']
-    let g:deoplete#sources.c = ['buffer', 'tag']
+    if !exists('g:deoplete#sources')
+        let g:deoplete#sources = {}
+    endif
+    let g:deoplete#sources._ = ['buffer', 'tag']
     " debug
     " let g:deoplete#enable_profile=1
     " omni function
@@ -46,6 +46,7 @@ if g:isNvim
         " debug
         " call deoplete#enable_logging('DEBUG', 'deoplete.log')
         " call deoplete#custom#set('jdei', 'debug_enabled', 1)
+        " call deoplete#custom#set('clang', 'debug_enabled', 1)
     endfunction " }}}
     call add(g:init_func_list, function('DeopleteInit'))
     "}}}
@@ -138,6 +139,11 @@ else
 endif
 
 if g:hasNeocomplete
+    Plug 'Shougo/echodoc.vim'
+    let g:echodoc_enable_at_startup=1
+    set noshowmode
+    " set cmdheight=2
+
     Plug 'Shougo/neoinclude.vim' "{{{
     " disable ctags
     " let g:neoinclude#ctags_command = ""

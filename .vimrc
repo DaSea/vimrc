@@ -637,6 +637,27 @@ endif
 "}}}
 
 " ==============================================================================
+" neovim 配置 {{{
+if g:isNvim
+    let g:terminal_scrollback_buffer_size = 500
+    " python设置
+    let g:python_host_prog = '/usr/bin/python'
+    " let g:loader_python_provider=0
+    " let g:python_host_skip_check=1
+    " python3 设置
+    let g:python3_host_prog = '/usr/bin/python3'
+    " let g:loaded_python3_provider = 1
+    " let g:python3_host_skip_check = 0
+    " 禁用ruby支持
+    " let g:loaded_ruby_provider = 0
+    tnoremap <ESC> <C-\><C-n>
+    augroup me_nvim
+        autocmd BufEnter term://* startinsert
+    augroup END
+endif
+"}}}
+
+" ==============================================================================
 " Key Mappings 按键映射 {{{
 " ==============================================================================
 "===================================================
@@ -805,8 +826,11 @@ nnoremap dc "_dw
 " 删除单个不放入寄存器
 nnoremap x "_x
 " define the copy/paste judged by clipboard
-set clipboard+=unnamed
-set clipboard+=unnamedplus
+" set clipboard+=unnamed
+set clipboard=unnamed
+" if has('unnamedplus')
+" set clipboard+=unnamedplus
+" endif
 if &clipboard ==# 'unnamed'
     " fix the visual paste bug in vim
     " vnoremap <silent>p :call g:()<CR>

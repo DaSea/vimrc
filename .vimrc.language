@@ -36,7 +36,7 @@ if g:iswindows
     let g:alternateSearchPath =
                 \ "D:\\Develop\\Java\\android-ndk-r11b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include"
 else
-    let g:alternateSearchPath = "/usr/include/c++/5"
+    let g:alternateSearchPath = "/usr/include/c++/5.4.0"
 endif
 nnoremap <silent> <leader>ah :A<CR>
 nnoremap <silent> <leader>av :AV<CR>
@@ -44,48 +44,40 @@ nnoremap <silent> <leader>as :AS<CR>
 "}}}
 
 if g:isNvim
-    " Plug 'Rip-Rip/clang_complete'  {{{
-    " let g:clang_complete_auto=0
-    " let g:clang_auto_select=0
-    " let g:clang_use_library=1
-    " let g:clang_omnicppcomplete_compliance=0
-    " let g:clang_make_default_keymappings=0
-    " let g:clang_library_path='/usr/lib/llvm-3.8/lib'
-    " autocmd FileType c,cpp setlocal omnifunc=clang_complete#ClangComplete
-    "}}}
-
     Plug 'zchee/deoplete-clang' " {{{
     let g:deoplete#sources#clang#libclang_path = '/usr/lib/llvm-3.8/lib/libclang.so.1'
     let g:deoplete#sources#clang#clang_header = '/usr/lib/llvm-3.8/lib/clang'
-    let g:deoplete#sources#clang#sort_algo = 'priority'
-    " let g:deoplete#sources#clang#clang_complete_database =
-                " \ $HOME . '/src/github.com/neovim/neovim/build'
+    let g:deoplete#sources#clang#std={'c': 'c11', 'cpp': 'c++1z', 'objc': 'c11', 'objcpp': 'c++1z'}
+    " 补全列表的顺序(priority, alphabetical) 默认使用deoplete.nvim的算法
+    " let g:deoplete#sources#clang#sort_algo = 'priority'
+    " 
+    " let g:deoplete#sources#clang#clang_complete_database=$HOME.'/src/github.com/neovim/neovim/build'
+    if !exists('g:deoplete#sources')
+        let g:deoplete#sources = {}
+    endif
+    let g:deoplete#sources.c = ['clang']
+    let g:deoplete#sources.cpp = ['clang']
     " echo | clang -v -E -x c -
     let g:deoplete#sources#clang#flags = [
                 \ "-O3",
                 \ "-cc1",
-                \ "-triple", "x86_64-apple-macosx10.11.0",
-                \ "-emit-obj",
-                \ "-mrelax-all",
+                \ "-triple", "x86_64-pc-linux-gnu",
                 \ "-disable-free",
                 \ "-disable-llvm-verifier",
-                \ "-mrelocation-model", "pic",
+                \ "-main-file-name",
+                \ "-mrelocation-model", "static",
                 \ "-pic-level", "2",
                 \ "-mthread-model", "posix",
                 \ "-mdisable-fp-elim",
+                \ "-fmath-errno",
                 \ "-munwind-tables",
-                \ "-target-cpu", "core2",
-                \ "-target-linker-version", "264.3",
+                \ "-target-cpu", "x86_64",
                 \ "-dwarf-column-info",
                 \ "-debugger-tuning=lldb",
-                \ "-resource-dir", "/opt/llvm/lib/clang/3.8.0",
+                \ "-resource-dir", "/usr/lib/llvm-3.8/lib/clang/3.8.0",
                 \ "-ferror-limit", "19",
-                \ "-fmessage-length", "213",
-                \ "-stack-protector", "1",
-                \ "-fblocks",
-                \ "-fobjc-runtime=macosx-10.11.0",
-                \ "-fencode-extended-block-signature",
-                \ "-fmax-type-align=16",
+                \ "-fmessage-length", "103",
+                \ "-fobjc-runtime=gcc",
                 \ ]
                 " }}}
 
@@ -100,17 +92,21 @@ endif
 
 " python{{{
 if g:isNvim
-    " Plug 'zchee/deoplete-jedi'
-    " let g:deoplete#sources#jedi#python_path='~/.pyenv/versions/3.4.5/envs/neovim/bin/python'
+    Plug 'zchee/deoplete-jedi',{'for': 'python'}
+    let g:deoplete#sources#jedi#python_path='/usr/bin/python3'  "~/.pyenv/versions/3.4.5/envs/neovim/bin/python'
     " let g:python3_host_prog = '/home/Feng/.pyenv/versions/3.4.5/envs/neovim/bin/python'
     " let g:deoplete#ignore_sources = {}
     " let g:deoplete#ignore_sources.python =
                 " \ ['buffer', 'dictionary', 'tag', 'syntax', 'neosnippet']
-    " let g:deoplete#sources#jedi#statement_length = 0
-    " let g:deoplete#sources#jedi#enable_cache = 1
-    " let g:deoplete#sources#jedi#short_types = 1
-    " let g:deoplete#sources#jedi#show_docstring = 0
-    " let g:deoplete#sources#jedi#debug_enabled = 0
+    if !exists('g:deoplete#sources')
+        let g:deoplete#sources = {}
+    endif
+    let g:deoplete#sources.python = ['jedi']
+    let g:deoplete#sources#jedi#statement_length = 0
+    let g:deoplete#sources#jedi#enable_cache = 1
+    let g:deoplete#sources#jedi#short_types = 1
+    let g:deoplete#sources#jedi#show_docstring = 0
+    let g:deoplete#sources#jedi#debug_enabled = 0
 else
     Plug 'davidhalter/jedi-vim',{'for': 'python'}
     let g:jedi#auto_vim_configuration=0
@@ -126,7 +122,7 @@ endif
 " }}}
 
 " vim 补全{{{
-Plug 'Shougo/neco-vim', {'for': 'vim'}
+Plug 'Shougo/neco-vim'
 "}}}
 
 " WIKI, org{{{
@@ -143,7 +139,7 @@ Plug 'jceb/vim-orgmode', {'for': 'org'}
 " let g:org_todo_keywords=['TODO', 'VERIFY', '|', 'DONE', 'DELEGATED']
 if g:iswindows
   let g:org_agenda_files = ['E:\\Self\\01_mywiki\\gtd\\gtd.org']
-elseif
+else
   let g:org_agenda_files = ['~/gtd/gtd.org']
 endif
 " 打开todo文件
@@ -160,3 +156,4 @@ Plug 'dzeban/vim-log-syntax', {'for': 'log'}
 "}}}
 
 " vim:ts=4:sw=4:sts=4 et fdm=marker:
+
