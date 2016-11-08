@@ -60,8 +60,8 @@ if 'yes' ==? g:setting.cpp_enable
         if !exists('g:deoplete#sources')
             let g:deoplete#sources = {}
         endif
-        let g:deoplete#sources.c = ['clang']
-        let g:deoplete#sources.cpp = ['clang']
+        let g:deoplete#sources.c = ['buffer', 'neosnippet', 'file/include', 'clang']
+        let g:deoplete#sources.cpp = ['buffer', 'neosnippet', 'file/include', 'clang']
         " echo | clang -v -E -x c -
         let g:deoplete#sources#clang#flags = [
                     \ "-O3",
@@ -104,7 +104,7 @@ if ('yes' ==? g:setting.python_enable) && g:isNvim
     if !exists('g:deoplete#sources')
         let g:deoplete#sources = {}
     endif
-    let g:deoplete#sources.python = ['jedi']
+    let g:deoplete#sources.python = ['buffer', 'neosnippet', 'file/include', 'jedi']
     let g:deoplete#sources#jedi#statement_length = 0
     let g:deoplete#sources#jedi#enable_cache = 1
     let g:deoplete#sources#jedi#short_types = 1
@@ -129,6 +129,10 @@ endif
 " vim 补全{{{
 if g:setting.vim_enable ==? 'yes'
     Plug 'Shougo/neco-vim'
+    if !exists('g:deoplete#sources')
+        let g:deoplete#sources = {}
+    endif
+    let g:deoplete#sources.c = ['buffer', 'neosnippet', 'vim']
 endif
 "}}}
 

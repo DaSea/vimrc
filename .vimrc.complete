@@ -3,12 +3,14 @@ if g:isNvim
     Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'} " {{{
     let g:deoplete#enable_at_startup = 1
     let g:deoplete#enable_smart_case=1
-    let g:deoplete#max_list=20
+    let g:deoplete#max_list=30
     let g:deoplete#auto_completion_start_length=2
+    let g:deoplete#delimiters = ['/', '.', '::', ':', '#', '->']
     if !exists('g:deoplete#sources')
         let g:deoplete#sources = {}
     endif
-    let g:deoplete#sources._ = ['buffer', 'tag']
+    let g:deoplete#sources._ = ['buffer', 'file/include']
+    let g:deoplete#ignore_sources = ['tag']
     " debug
     " let g:deoplete#enable_profile=1
     " omni function
@@ -146,7 +148,7 @@ if g:hasNeocomplete
 
     Plug 'Shougo/neoinclude.vim' "{{{
     " disable ctags
-    " let g:neoinclude#ctags_command = ""
+    " let g:neoinclude#ctags_command = ''
     " 字典,设置路径
     " let g:neoinclude#paths = {'cpp': 'path'}
     " if !exists('g:neoinclude#exts')
@@ -155,9 +157,7 @@ if g:hasNeocomplete
     " let g:neoinclude#exts.cpp = ['', 'h', 'hpp', 'hxx']
     "}}}
 
-    Plug 'Shougo/neopairs.vim' " {{{
-
-    " }}}
+    " Plug 'Shougo/neopairs.vim'
 
     Plug 'Shougo/neosnippet.vim' "{{{
     let g:neosnippet#disable_runtime_snippets = {

@@ -1,6 +1,6 @@
 " 因为unit.vim和ctrlp有许多相同的功能, 所以分开, 可以让大家自由选择
 " 这个主要是unite.vim的相关插件
-if 1 " 有点问题
+if g:isNvim " 有点问题
 Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins'} " {{{
 nnoremap <silent> <leader>lf :<C-u>Denite
             \ `finddir('.git', ';') != '' ? 'file_rec/git' : 'file_rec'`<CR>
@@ -12,45 +12,17 @@ function! DeniteInit() abort "{{{
                 \ ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
 
     " Change mappings.
-    call denite#custom#map('_', "\<C-j>", 'move_to_next_line')
-    call denite#custom#map('_', "\<C-k>", 'move_to_prev_line')
+    call denite#custom#map('_', '<Esc>', 'enter_mode:normal')
+    call denite#custom#map('insert', '<C-i>', 'input_command_line')
+    call denite#custom#map('insert', '<C-j>', 'move_to_next_line')
+    call denite#custom#map('insert', '<C-k>', 'move_to_prev_line')
+    call denite#custom#map('insert', '<Esc>', 'enter_mode:normal')
 
     " Change matchers.
     call denite#custom#source(
                 \ 'file_mru', 'matchers', ['matcher_fuzzy', 'matcher_project_files'])
-    call denite#custom#source(
-                \ 'file_rec', 'matchers', ['matcher_cpsm'])
-
-    " Add custom menus
-    let s:menus = {}
-
-    let s:menus.zsh = {
-                \ 'description': 'Edit Zsh configuration'
-                \ }
-    let s:menus.zsh.file_candidates = [
-                \ ['zshrc', '~/.zshrc'],
-                \ ]
-
-    let s:menus.vim = {
-                \ 'description': 'Edit vim configuration'
-                \ }
-    let s:menus.vim.file_candidates = [
-                \ ['.vimrc.vimplug', '~/.vimrc.vimplug'],
-                \ ['.vimrc.complete', '~/.vimrc.complete'],
-                \ ['.vimrc.language', '~/.vimrc.language'],
-                \ ['.vimrc.unitevim', '~/.vimrc.unitvim'],
-                \ ['.vimrc.ctrlp', '~/.vimrc.ctrlp'],
-                \ ]
-
-    let s:menus.my_commands = {
-                \ 'description': 'Example commands'
-                \ }
-    let s:menus.my_commands.command_candidates = [
-                \ ['Split the window', 'vnew'],
-                \ ['Open zsh menu', 'Denite menu:zsh'],
-                \ ]
-
-    call denite#custom#var('menu', 'menus', s:menus)
+    " call denite#custom#source(
+                " \ 'file_rec', 'matchers', ['matcher_cpsm'])
 
     " Ripgrep command on grep source
     call denite#custom#var('grep', 'command', ['rg'])
@@ -69,7 +41,7 @@ function! DeniteInit() abort "{{{
                 \ ['git', 'ls-files', '-co', '--exclude-standard'])
 
     " Change default prompt
-    call denite#custom#option('default', 'prompt', '>')
+    call denite#custom#option('default', 'prompt', '▷')
 endfunction " }}}
     call add(g:init_func_list, function('DeniteInit'))
 " }}}
@@ -91,25 +63,25 @@ let g:unite_source_history_yank_enable=1
 let g:unite_prompt='▷'
 let g:unite_winheight=25
 let g:unite_source_grep_default_opts = '-iRHn'
-             \ . " --exclude='tags'"
-             \ . " --exclude='cscope*'"
-             \ . " --exclude='*.svn*'"
-             \ . " --exclude='*.log*'"
-             \ . " --exclude='*tmp*'"
-             \ . " --exclude-dir='**/tmp'"
-             \ . " --exclude-dir='CVS'"
-             \ . " --exclude-dir='.svn'"
-             \ . " --exclude-dir='.git'"
-             \ . " --exclude-dir='.exvim'"
-             \ . " --exclude-dir='node_modules'"
+            \ . " --exclude='tags'"
+            \ . " --exclude='cscope*'"
+            \ . " --exclude='*.svn*'"
+            \ . " --exclude='*.log*'"
+            \ . " --exclude='*tmp*'"
+            \ . " --exclude-dir='**/tmp'"
+            \ . " --exclude-dir='CVS'"
+            \ . " --exclude-dir='.svn'"
+            \ . " --exclude-dir='.git'"
+            \ . " --exclude-dir='.exvim'"
+            \ . " --exclude-dir='node_modules'"
 " Using ag or pt as recursive command.
 if executable('ag')
     " https://github.com/ggreer/the_silver_searcher
     let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', '']
     let g:unite_source_grep_command = 'ag'
     let g:unite_source_grep_default_opts =
-               \ '-i --line-numbers --nocolor --nogroup --hidden --ignore ' .
-               \  '''.exvim'' --ignore ''.svn'' --ignore ''.git'' --ignore ''.bzr'''
+                \ '-i --line-numbers --nocolor --nogroup --hidden --ignore ' .
+                \  '''.exvim'' --ignore ''.svn'' --ignore ''.git'' --ignore ''.bzr'''
     let g:unite_source_grep_recursive_opt = ''
     " let g:unite_source_grep_encoding = 'utf-8'
 elseif executable('pt')
@@ -131,15 +103,44 @@ nnoremap <silent> <leader>fk :<C-u>Unite -quick-match -buffer-name=buffer buffer
 " nnoremap <silent> <leader>gw :<C-u>Unite grep:%:expand("<cword>")<CR>
 nnoremap <silent> <leader>gw :<C-u>UniteWithCursorWord grep<CR>
 "" grep dictionay
- """ For searching the word in the cursor in the current directory
- nnoremap <silent> <leader>gv :Unite grep:.::<C-R><C-w><CR>
- nnoremap <silent> <leader>ge :Unite grep:.<cr>
- """ For searching the word handin
- " nnoremap <silent> <leader>vs :Unite grep:.<CR>
- """ For searching the word in the cursor in the current buffer
- " noremap <silent> <leader>vf :Unite grep:%::<C-r><C-w><CR>
- """ For searching the word in the cursor in all opened buffer
- " noremap <silent> <leader>va :Unite grep:$buffers::<C-r><C-w><CR>
+""" For searching the word in the cursor in the current directory
+nnoremap <silent> <leader>gv :Unite grep:.::<C-R><C-w><CR>
+nnoremap <silent> <leader>ge :Unite grep:.<cr>
+"For searching the word handin
+" nnoremap <silent> <leader>vs :Unite grep:.<CR>
+"For searching the word in the cursor in the current buffer
+" noremap <silent> <leader>vf :Unite grep:%::<C-r><C-w><CR>
+"For searching the word in the cursor in all opened buffer
+" noremap <silent> <leader>va :Unite grep:$buffers::<C-r><C-w><CR>
+
+" menu设置 {{{
+let g:unite_source_menu_menus = {}
+let g:unite_source_menu_menus.vim = {
+            \ 'description' : 'vim configure files',
+            \ }
+if g:iswindows
+    let g:unite_source_menu_menus.vim.file_candidates = [
+                \ ['vimrc', '$VIM/.vimrc'],
+                \ ['commonPlug', '$VIM/.vimrc.vimplug'],
+                \ ['unit.vim or denite.nvim', '$VIM/.vimrc.unitvim'],
+                \ ['complete', '$VIM/.vimrc.complete'],
+                \ ['language', '$VIM/.vimrc.language'],
+                \ ['ctrlp', '$VIM/.vimrc.ctrlp'],
+                \ ['discard', '$VIM/.vimrc.discard']
+                \ ]
+else
+    let g:unite_source_menu_menus.vim.file_candidates = [
+                \ ['vimrc', '~/.vimrc'],
+                \ ['commonPlug', '~/.vimrc.vimplug'],
+                \ ['unit.vim or denite.nvim', '~/.vimrc.unitvim'],
+                \ ['complete', '~/.vimrc.complete'],
+                \ ['language', '~/.vimrc.language'],
+                \ ['ctrlp', '~/.vimrc.ctrlp'],
+                \ ['discard', '~/.vimrc.discard']
+                \ ]
+endif
+nnoremap <silent> <leader>am :<C-u>Unite menu<CR>
+"}}}
 "}}}
 
 Plug 'Shougo/neomru.vim' "{{{
