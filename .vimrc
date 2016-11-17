@@ -99,13 +99,11 @@ let g:setting.version_status = 'no'
 " 状态栏(ariline or no), 如果为no, 自定义状态栏
 let g:setting.status_line = 'airline'
 let g:setting.status_color = 'light'
-let g:setting.show_tabline = 'yes'
+let g:setting.show_tabline = 'no'
 " 使用ctrlp还是使用unit.vim
 let g:setting.ctrlp_or_unite = 'unitvim'
-" 是否需要开启代码的静态语法检查(validator.vim插件)
-let g:setting.syntastic_need = 'no'
-" 是否需要开启cppcheck功能
-let g:setting.cppcheck_need = 'no'
+" 是否需要开启代码的静态语法检查(neomake插件)
+let g:setting.make_lint_need = 'no'
 " name
 let g:setting.author_name = 'DaSea'
 " windows与linux使用不同的目录
@@ -372,7 +370,7 @@ if g:isGUI
         set background=light
     endif
 else
-    set background=dark
+    set background=light
     set t_Co=256 " make sure our terminal use 256 color
 endif
 exec 'colorscheme ' . g:setting.color_scheme
@@ -610,10 +608,17 @@ if g:isNvim
     " let g:python3_host_skip_check = 0
     " 禁用ruby支持
     " let g:loaded_ruby_provider = 0
+
+    " 搜索替换设置{{{
+    set inccommand=nosplit
+    " }}}
+
+    "终端设置{{{
     tnoremap <ESC> <C-\><C-n>
     augroup me_nvim
         autocmd BufEnter term://* startinsert
     augroup END
+    " }}}
 endif
 "}}}
 

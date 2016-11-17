@@ -219,6 +219,19 @@ function! UnitInit() abort " unite 系列加载完成后的初始化{{{
                 \ '\release/',
                 \ '\debug/',
                 \ ], '\|'))
+    call neomru#set_default(
+                \ 'g:neomru#file_mru_ignore_pattern',
+                \'\~$\|\.\%(o\|exe\|dll\|bak\|zwc\|pyc\|sw[po]\)$'.
+                \'\|\%(^\|/\)\.\%(exvim\|hg\|git\|bzr\|svn\)\%($\|/\)'.
+                \'\|^\%(\\\\\|/media/\|/temp/\|/tmp/\|\%(/private\)\=/var/folders/\)'.
+                \'\|\%(^\%(fugitive\)://\)'.
+                \'\|\%(^\%(term\)://\)'
+                \ )
+    call neomru#set_default(
+                \ 'g:neomru#directory_mru_ignore_pattern',
+                \'\%(^\|/\)\.\%(exvim\|hg\|git\|bzr\|svn\)\%($\|/\)'.
+                \'\|^\%(\\\\\|/obj/\|/media/\|/temp/\|/tmp/\|\%(/private\)\=/var/folders/\)',
+                \ )
     " call unite#custom#source('file_rec/async,file_rec/git', 'ignore_globs', [])
 endfunction "}}}
 call add(g:init_func_list, function('UnitInit'))

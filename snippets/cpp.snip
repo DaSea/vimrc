@@ -1,9 +1,19 @@
 include c.snip
 
+snippet     cpp_template
+abbr        cpp_file_template
+    /*
+     * Copyright (C) `strftime("%Y-%m-%d")` Dasea
+     *
+     * Description: ${2}
+     */
+    #include "${1}"
+    ${0}
+
 snippet     hpp_template
 abbr        hpp_file_template
     /*
-     * Copyright (C) 2016-08-29 Dasea
+     * Copyright (C) `strftime("%Y-%m-%d")` Dasea
      *
      * Description: ${2}
      */

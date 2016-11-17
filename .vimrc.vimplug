@@ -137,18 +137,6 @@ Plug 'DaSea/ex-prjlist'
 " let g:exprj_list_win_szie = 30
 " }}}
 
-" 代码查找插件{{{
-" Plug 'devjoe/vim-codequery'
-" Plug 'mileszs/ack.vim',{'on': 'ACK'}
-" if executable('ag')
-"  let g:ackprg = 'ag --vimgrep'
-" endif
-" }}}
-
-" 异步插件{{{
-" Plug 'skywind3000/asyncrun.vim'
-"}}}
-
 " 版本控制(git,svn)及修改状态显示{{{
 " 使用git
 if g:setting.version_status !=? 'no'
@@ -229,7 +217,13 @@ Plug 'dyng/ctrlsf.vim',{'on': 'CtrlSF'} "搜索工程下文件{{{
 " Fork'dyng/ctrlsf.vim', and add g:ctrlsf_vcs_folder;
 "---------------------------------------------------------------------
 " 设置CtrlSF使用的搜索工具,默认使用ag,如果没有ag,则考虑使用ack
-let g:ctrlsf_ackprg = 'rg'
+if executable('rg')
+    let g:ctrlsf_ackprg = 'rg'
+elseif executable('ag')
+    let g:ctrlsf_ackprg = 'ag'
+elseif executable('pt')
+    let g:ctrlsf_ackprg = 'pt'
+endif
 " 是否在ctrlsf搜索结果打开其他窗口时,关闭搜索结果窗口
 let g:ctrlsf_auto_close = 0
 " 大小写敏感
@@ -248,14 +242,14 @@ let g:ctrlsf_selected_line_hl = 'op'
 nnoremap <F5> :CtrlSFToggle<CR>
 nnoremap <leader>sw :call CtrlsfCurWord(expand("<cword>"))<CR>
 function! CtrlsfCurWord(word) abort
-    " TODO: 需要修改为根据exvim工程文件类型进行搜索
+    " 需要修改为根据exvim工程文件类型进行搜索
     let s:type = &filetype
     if "c" == s:type
         let s:type = "cc"
     endif
     let s:filetype = '-filetype '.s:type
     " -w whole word;
-    execute "CtrlSF ".s:filetype.' '. a:word
+    execute "CtrlSF ".s:filetype.' -R \b'. a:word .'\b'
 endfunction
 "}}}
 
@@ -417,7 +411,9 @@ if 'airline' ==? g:setting.status_line
         let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
     endif
     " 各个部分的设置简化
-    let g:airline_section_c = '%t'
+    if g:isGUI
+        let g:airline_section_c = '%t'
+    endif
     let g:airline_section_z = '%l%{g:airline_symbols.linenr}%L'
     let g:airline_mode_map = {
                 \ '__' : '-',
@@ -509,9 +505,9 @@ inoremap <leader>mq <ESC>:Bdelete<CR>
 vnoremap <leader>mq <ESC>:Bdelete<CR>
 "}}}
 
-Plug 'DaSea/uncrustify.vim' " 代码格式化:{{{
+Plug 'DaSea/uncrustify.vim', {'on': 'Uncrustify'} " 代码格式化:{{{
 nnoremap <Leader>ff :Uncrustify<CR>
-vnoremap <Leader>fr :'<,'>Uncrustify<CR>
+vnoremap <Leader>ff :'<,'>Uncrustify<CR>
 "}}}
 
 Plug 'iamcco/dict.vim' " 有道翻译{{{
@@ -529,8 +525,8 @@ nnoremap <silent> <leader>yr  viw:<C-U>call dict#VSearch("replace")<CR>
 vnoremap <silent> <leader>yr :<C-U>call dict#VSearch("replace")<CR>
 " }}}
 
-" Plug 'mbbill/fencview' " (编码检查)auto check Encoding{{{
-" let g:fencview_autodetect = 1
+Plug 'mbbill/fencview' " (编码检查)auto check Encoding{{{
+let g:fencview_autodetect = 1
 "}}}
 
 " 补全相关插件, 语言无关 {{{
@@ -555,6 +551,23 @@ if filereadable(expand(g:vim_language_path))
 endif
 " }}}
 
+" 异步编译和lint插件 {{{
+if 'yes' ==? g:setting.make_lint_need
+    Plug 'neomake/neomake'
+    let g:neomake_verbose = 1
+    let g:neomake_c_lint_maker = {
+                \ 'exe': 'clang-tidy',
+                \ 'args': ['%:p', '--option', 'x'],
+                \ 'errorformat': '%f:%l:%c: %m',
+                \ }
+    let g:neomake_cpp_lint_maker = {
+                \ 'exe': 'clang-tidy',
+                \ 'args': ['%:p', '--option', 'x'],
+                \ 'errorformat': '%f:%l:%c: %m',
+                \ }
+endif
+"}}}
+
 "括号补全, endif等补全{{{
 Plug 'jiangmiao/auto-pairs'
 let g:AutoPairsFlyMode = 0
@@ -568,14 +581,12 @@ Plug 'tpope/vim-endwise'
 "}}}
 
 " vim documentation {{{
-if 0 == g:isNvim
-    Plug 'asins/vimcdoc' "{{{
-    " < VIM中文帮助文档:>
-    " 设定doc文档目录
-    let helptags=$VIM."/vimfiles/doc"
-    set helplang=cn
-    "}}}
-endif
+Plug 'asins/vimcdoc' "{{{
+" < VIM中文帮助文档:>
+" 设定doc文档目录
+let helptags=$VIM."/vimfiles/doc"
+set helplang=cn
+"}}}
 "}}}
 
 " TEST {{{

@@ -9,7 +9,7 @@ if g:isNvim
     if !exists('g:deoplete#sources')
         let g:deoplete#sources = {}
     endif
-    let g:deoplete#sources._ = ['buffer', 'file/include']
+    let g:deoplete#sources._ = ['buffer', 'neosnippet', 'file/include']
     let g:deoplete#ignore_sources = ['tag']
     " debug
     " let g:deoplete#enable_profile=1
@@ -38,7 +38,14 @@ if g:isNvim
     endfunction
     function! s:check_back_space() abort "{{{
         let col = col('.') - 1
-        return !col || getline('.')[col - 1]  =~ '\s'
+        let lastChar = getline('.')[col-1]
+        let invalid = 0
+        if lastChar =~ '\s'
+            let invalid = 1
+        elseif (-1 == index(g:deoplete#delimiters, lastChar))
+            let invalid = 1
+        endif
+        return !col || invalid
     endfunction"}}}
 
     " Initial {{{
@@ -141,11 +148,6 @@ else
 endif
 
 if g:hasNeocomplete
-    Plug 'Shougo/echodoc.vim'
-    let g:echodoc_enable_at_startup=1
-    set noshowmode
-    " set cmdheight=2
-
     Plug 'Shougo/neoinclude.vim' "{{{
     " disable ctags
     " let g:neoinclude#ctags_command = ''

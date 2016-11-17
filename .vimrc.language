@@ -83,6 +83,7 @@ if 'yes' ==? g:setting.cpp_enable
                     \ "-ferror-limit", "19",
                     \ "-fmessage-length", "103",
                     \ "-fobjc-runtime=gcc",
+                    \ "-I/home/Feng/java/jdk1.8.0_111/include"
                     \ ]
         " }}}
     else
@@ -132,7 +133,7 @@ if g:setting.vim_enable ==? 'yes'
     if !exists('g:deoplete#sources')
         let g:deoplete#sources = {}
     endif
-    let g:deoplete#sources.c = ['buffer', 'neosnippet', 'vim']
+    let g:deoplete#sources.vim = ['buffer', 'neosnippet', 'file/include', 'vim']
 endif
 "}}}
 
@@ -152,12 +153,13 @@ if 'yes' ==? g:setting.org_wiki_enable
     if g:iswindows
         let g:org_agenda_files = ['E:\\Self\\01_mywiki\\gtd\\gtd.org']
     else
-        let g:org_agenda_files = ['~/gtd/gtd.org']
+        let g:org_agenda_files = ['/mnt/e/Self/01_mywiki/gtd/gtd.org']
     endif
     " 打开todo文件
     nnoremap <leader>oo :call OpenOrgToDoFile()<CR>
     function! OpenOrgToDoFile() abort "{{{
-        let gtdFile = g:org_agenda_files
+        let gtdFile = g:org_agenda_files[0]
+        echomsg gtdFile
         silent! execute 'edit! ' . gtdFile
     endfunction " }}}
     " }}}
