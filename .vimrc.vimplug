@@ -192,7 +192,7 @@ let g:clever_f_across_no_line = 1
 let g:clever_f_smart_case = 1
 " }}}
 
-Plug 'majutsushi/tagbar',{'on': 'TagbarToggle'} " 主要为了在状态栏显示当前行所在函数{{{
+Plug 'majutsushi/tagbar' " 主要为了在状态栏显示当前行所在函数{{{
 nnoremap <Leader>tb :TagbarToggle<CR>
 " }}}
 

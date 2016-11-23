@@ -12,10 +12,11 @@ let s:denite_menus.vim = {
             \ 'description' : 'vim configure files',
             \ }
 if g:iswindows
+    " 有错误, 路径无法正确展开
     let s:denite_menus.vim.file_candidates = [
                 \ ['vimrc', '$VIM/.vimrc'],
                 \ ['commonPlug', '$VIM/.vimrc.vimplug'],
-                \ ['unit.vim or denite.nvim', '$VIM/.vimrc.unitvim'],
+                \ ['unit.vim and denite.nvim', '$VIM/.vimrc.unitvim'],
                 \ ['complete', '$VIM/.vimrc.complete'],
                 \ ['language', '$VIM/.vimrc.language'],
                 \ ['ctrlp', '$VIM/.vimrc.ctrlp'],
@@ -25,7 +26,7 @@ else
     let s:denite_menus.vim.file_candidates = [
                 \ ['vimrc', '~/.vimrc'],
                 \ ['commonPlug', '~/.vimrc.vimplug'],
-                \ ['unit.vim or denite.nvim', '~/.vimrc.unitvim'],
+                \ ['unit.vim and denite.nvim', '~/.vimrc.unitvim'],
                 \ ['complete', '~/.vimrc.complete'],
                 \ ['language', '~/.vimrc.language'],
                 \ ['ctrlp', '~/.vimrc.ctrlp'],

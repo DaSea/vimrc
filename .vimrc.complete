@@ -159,8 +159,6 @@ if g:hasNeocomplete
     " let g:neoinclude#exts.cpp = ['', 'h', 'hpp', 'hxx']
     "}}}
 
-    " Plug 'Shougo/neopairs.vim'
-
     Plug 'Shougo/neosnippet.vim' "{{{
     let g:neosnippet#disable_runtime_snippets = {
                 \   '_' : 1,

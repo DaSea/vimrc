@@ -98,7 +98,7 @@ let g:setting.color_scheme = 'solarized'
 let g:setting.version_status = 'no'
 " 状态栏(ariline or no), 如果为no, 自定义状态栏
 let g:setting.status_line = 'airline'
-let g:setting.status_color = 'onedark'
+let g:setting.status_color = 'light'
 let g:setting.show_tabline = 'no'
 " 使用ctrlp还是使用unit.vim
 " 由于denite出色的特性, 测试用denite替换unite相关插件
