@@ -1,12 +1,43 @@
 " 因为unit.vim和ctrlp有许多相同的功能, 所以分开, 可以让大家自由选择
 " 这个主要是unite.vim的相关插件
-if g:isNvim " 有点问题
+" Denite.nvim 设置, 最终是取代unite.vim{{{
 Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins'} " {{{
-nnoremap <silent> <leader>lf :<C-u>Denite
-            \ `finddir('.git', ';') != '' ? 'file_rec/git' : 'file_rec'`<CR>
-nnoremap <silent> <leader>lb :<C-u>Denite -resume buffer<CR>
-nnoremap <silent> <leader>lm :<C-u>Denite -resume file_mru<CR>
+nnoremap <silent> <leader>lf :<C-u>Denite -mode=insert file_rec<CR>
+nnoremap <silent> <leader>fl :<C-u>Denite -auto-highlight -mode=normal buffer<CR>
+nnoremap <silent> <leader>ft :<C-u>Denite -mode=insert line<CR>
+
+" menu设置 {{{
+let s:denite_menus = {}
+let s:denite_menus.vim = {
+            \ 'description' : 'vim configure files',
+            \ }
+if g:iswindows
+    let s:denite_menus.vim.file_candidates = [
+                \ ['vimrc', '$VIM/.vimrc'],
+                \ ['commonPlug', '$VIM/.vimrc.vimplug'],
+                \ ['unit.vim or denite.nvim', '$VIM/.vimrc.unitvim'],
+                \ ['complete', '$VIM/.vimrc.complete'],
+                \ ['language', '$VIM/.vimrc.language'],
+                \ ['ctrlp', '$VIM/.vimrc.ctrlp'],
+                \ ['discard', '$VIM/.vimrc.discard']
+                \ ]
+else
+    let s:denite_menus.vim.file_candidates = [
+                \ ['vimrc', '~/.vimrc'],
+                \ ['commonPlug', '~/.vimrc.vimplug'],
+                \ ['unit.vim or denite.nvim', '~/.vimrc.unitvim'],
+                \ ['complete', '~/.vimrc.complete'],
+                \ ['language', '~/.vimrc.language'],
+                \ ['ctrlp', '~/.vimrc.ctrlp'],
+                \ ['discard', '~/.vimrc.discard']
+                \ ]
+endif
+nnoremap <silent> <leader>am :<C-u>Denite -mode=normal menu<CR>
+"}}}
+
 function! DeniteInit() abort "{{{
+    " menu 设置
+    call denite#custom#var('menu', 'menus', s:denite_menus)
     " Change file_rec command.
     call denite#custom#var('file_rec', 'command',
                 \ ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
@@ -22,7 +53,7 @@ function! DeniteInit() abort "{{{
     call denite#custom#source(
                 \ 'file_mru', 'matchers', ['matcher_fuzzy', 'matcher_project_files'])
     " call denite#custom#source(
-                " \ 'file_rec', 'matchers', ['matcher_cpsm'])
+    " \ 'file_rec', 'matchers', ['matcher_cpsm'])
 
     " Ripgrep command on grep source
     call denite#custom#var('grep', 'command', ['rg'])
@@ -43,9 +74,13 @@ function! DeniteInit() abort "{{{
     " Change default prompt
     call denite#custom#option('default', 'prompt', '▷')
 endfunction " }}}
-    call add(g:init_func_list, function('DeniteInit'))
+call add(g:init_func_list, function('DeniteInit'))
 " }}}
-endif
+
+Plug 'Shougo/neomru.vim' " {{{
+nnoremap <silent> <leader>jf :<C-u>Denite -mode=insert file_mru<CR>
+" }}}
+"}}}
 
 Plug 'Shougo/unite.vim' "  {{{
 " 基本设置
@@ -94,10 +129,9 @@ elseif executable('pt')
 endif
 " 文件查找
 nnoremap <silent> <C-p> :<C-u>Unite -no-split -buffer-name=files -start-insert -update-time=100 file_rec<CR>
-nnoremap <silent> <leader>ft :<C-u>Unite -no-split -buffer-name=files -start-insert file_rec/async:!<CR>
-nnoremap <silent> <leader>fs :Unite -no-split -buffer-name=files -start-insert file_rec/async<cr>
+" nnoremap <silent> <leader>ft :<C-u>Unite -no-split -buffer-name=files -start-insert file_rec/async:!<CR>
+" nnoremap <silent> <leader>fs :Unite -no-split -buffer-name=files -start-insert file_rec/async<cr>
 " 打开的buffer查找
-nnoremap <silent> <leader>fl :<C-u>Unite -buffer-name=buffer buffer<CR>
 nnoremap <silent> <leader>fk :<C-u>Unite -quick-match -buffer-name=buffer buffer<CR>
 " 文件内搜索
 " nnoremap <silent> <leader>gw :<C-u>Unite grep:%:expand("<cword>")<CR>
@@ -112,43 +146,7 @@ nnoremap <silent> <leader>ge :Unite grep:.<cr>
 " noremap <silent> <leader>vf :Unite grep:%::<C-r><C-w><CR>
 "For searching the word in the cursor in all opened buffer
 " noremap <silent> <leader>va :Unite grep:$buffers::<C-r><C-w><CR>
-
-" menu设置 {{{
-let g:unite_source_menu_menus = {}
-let g:unite_source_menu_menus.vim = {
-            \ 'description' : 'vim configure files',
-            \ }
-if g:iswindows
-    let g:unite_source_menu_menus.vim.file_candidates = [
-                \ ['vimrc', '$VIM/.vimrc'],
-                \ ['commonPlug', '$VIM/.vimrc.vimplug'],
-                \ ['unit.vim or denite.nvim', '$VIM/.vimrc.unitvim'],
-                \ ['complete', '$VIM/.vimrc.complete'],
-                \ ['language', '$VIM/.vimrc.language'],
-                \ ['ctrlp', '$VIM/.vimrc.ctrlp'],
-                \ ['discard', '$VIM/.vimrc.discard']
-                \ ]
-else
-    let g:unite_source_menu_menus.vim.file_candidates = [
-                \ ['vimrc', '~/.vimrc'],
-                \ ['commonPlug', '~/.vimrc.vimplug'],
-                \ ['unit.vim or denite.nvim', '~/.vimrc.unitvim'],
-                \ ['complete', '~/.vimrc.complete'],
-                \ ['language', '~/.vimrc.language'],
-                \ ['ctrlp', '~/.vimrc.ctrlp'],
-                \ ['discard', '~/.vimrc.discard']
-                \ ]
-endif
-nnoremap <silent> <leader>am :<C-u>Unite menu<CR>
 "}}}
-"}}}
-
-Plug 'Shougo/neomru.vim' "{{{
-" 最近文件
-nnoremap <silent> <leader>jf :<C-u>Unite -no-split -buffer-name=mru -start-insert file_mru<CR>
-" 浏览当前工程所在目录的mru
-" nnoremap <silent> <leader>jf :<C-u>Unite -no-split -buffer-name=mru -start-insert file_mru<CR>
-" }}}
 
 Plug 'tacroe/unite-mark' " {{{
 nnoremap <leader>vm :Unite mark<CR>
@@ -156,9 +154,7 @@ nnoremap <leader>vm :Unite mark<CR>
 
 Plug 'Shougo/unite-outline' " 函数跳转等变量跳转{{{
 nnoremap <leader>fm :Unite -start-insert -no-split -buffer-name=outline outline<CR>
-
-" 快速浏览已有的颜色主题并选择
-Plug 'ujihisa/unite-colorscheme'
+" }}}
 
 Plug 'Shougo/vimfiler.vim'  " 替换nertw(文件浏览器) {{{
 let g:vimfiler_as_default_explorer = 1

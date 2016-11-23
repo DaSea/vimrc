@@ -98,12 +98,13 @@ let g:setting.color_scheme = 'solarized'
 let g:setting.version_status = 'no'
 " 状态栏(ariline or no), 如果为no, 自定义状态栏
 let g:setting.status_line = 'airline'
-let g:setting.status_color = 'light'
+let g:setting.status_color = 'onedark'
 let g:setting.show_tabline = 'no'
 " 使用ctrlp还是使用unit.vim
-let g:setting.ctrlp_or_unite = 'unitvim'
+" 由于denite出色的特性, 测试用denite替换unite相关插件
+let g:setting.ctrlp_or_unite = 'unitevim'
 " 是否需要开启代码的静态语法检查(neomake插件)
-let g:setting.make_lint_need = 'no'
+let g:setting.make_lint_need = 'yes'
 " name
 let g:setting.author_name = 'DaSea'
 " windows与linux使用不同的目录
@@ -117,7 +118,7 @@ endif
 " 语言list{主要决定.vimrc.language文件里面语言选项}
 let g:setting.cpp_enable = 'yes'
 let g:setting.markdown_enable = 'no'
-let g:setting.python_enable = 'no'
+let g:setting.python_enable = 'yes'
 let g:setting.plantuml_enable = 'no'
 let g:setting.vim_enable = 'yes'
 let g:setting.php_enbale = 'no'
@@ -363,16 +364,14 @@ endif
 " Default colorscheme setup 颜色方案设置{{{
 " g:statuscheme 状态栏配色
 "/////////////////////////////////////////////////////////////////////////////
-if g:isGUI
+if !g:isGUI
+    set t_Co=256
+endif
     if strftime("%H") >= 17 || strftime("%H") <= 8
         set background=dark
     else
         set background=light
     endif
-else
-    set background=light
-    set t_Co=256 " make sure our terminal use 256 color
-endif
 exec 'colorscheme ' . g:setting.color_scheme
 " 切换背景色 {{{
 function! ToggleBackground() abort

@@ -187,21 +187,6 @@ if filereadable(expand(g:vim_ctrlp_or_unite))
 endif
 "}}}
 
-" 由于ctrlp或者unit.vim速度可能有时较慢, 所以用LeaderF替换, neovim好像有问题 {{{
-if !g:isNvim
-    " Plug 'Yggdroot/LeaderF' 用自己的克隆版， 添加了airline的支持
-    Plug 'DaSea/LeaderF'
-    let g:Lf_ShowRelativePath = 1
-    let g:Lf_WindowPosition = 0
-    let g:Lf_ShortcutF = '<Leader>lf'
-    let g:Lf_WildIgnore = {
-                \ 'dir': ['.svn','.git', '.exvim', '.vscode', '.setting', '.imdone', 'bin', 'res'. 'obj'],
-                \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]', '*.png', "*.dll",
-                \ '*.exvim', '*.class', '*.o.d', '.setting', '.project']
-                \}
-endif
-"}}}
-
 Plug 'rhysd/clever-f.vim' " 行内搜索{{{
 let g:clever_f_across_no_line = 1
 let g:clever_f_smart_case = 1
@@ -212,7 +197,6 @@ nnoremap <Leader>tb :TagbarToggle<CR>
 " }}}
 
 "文件内容搜索和替换, undotree{{{
-" Plug 'DaSea/ctrlsf.vim',{'on': 'CtrlSF'}
 Plug 'dyng/ctrlsf.vim',{'on': 'CtrlSF'} "搜索工程下文件{{{
 " Fork'dyng/ctrlsf.vim', and add g:ctrlsf_vcs_folder;
 "---------------------------------------------------------------------
@@ -349,7 +333,7 @@ map <Leader><Leader>. <Plug>(easymotion-repeat)
 Plug 'ntpeters/vim-better-whitespace' "显示行尾多余空格并快速删除{{{
 " 显示行尾空格(better)
 " ----------------------------------------------------
-let g:better_whitespace_filetypes_blacklist = ['unite', 'vimfiler', 'ctrlp']
+let g:better_whitespace_filetypes_blacklist = ['denite', 'unite', 'vimfiler', 'ctrlp']
 noremap CS :StripWhitespace<CR>
 "}}}
 
@@ -377,7 +361,7 @@ if 'airline' ==? g:setting.status_line
     let g:airline_detect_spell=0
     let g:airline_detect_iminsert=0
     let g:airline_inactive_collapse=0
-    let g:airline_extensions = ['quickfix']
+    let g:airline_extensions = ['quickfix', 'tagbar']
     if g:setting.ctrlp_or_unite ==? 'ctrlp'
         call add(g:airline_extensions, 'ctrlp')
     else
@@ -442,7 +426,6 @@ let g:c_folding=1
 Plug 'Yggdroot/indentLine' "对齐线{{{
 " ---------------------------------------------------
 let g:indentLine_color_gui = '#FF4040'
-" let g:indentLine_char = '|'
 let g:indentLine_char = '┊'
 let g:indentLine_faster = 1
 "}}}
@@ -450,6 +433,7 @@ let g:indentLine_faster = 1
 " colorscheme 插件 {{{
 Plug 'altercation/vim-colors-solarized'
 " ---------------------------------------------------
+let g:solarized_menu = 0
 let g:solaried_bold = 1
 let g:solaried_underline = 1
 let g:solaried_italic = 0
@@ -553,7 +537,8 @@ endif
 
 " 异步编译和lint插件 {{{
 if 'yes' ==? g:setting.make_lint_need
-    Plug 'neomake/neomake'
+    Plug 'neomake/neomake', {'on': 'Neomake'}
+    nnoremap <unique> <leader>nm :Neomake!<CR>
     let g:neomake_verbose = 1
     let g:neomake_c_lint_maker = {
                 \ 'exe': 'clang-tidy',
@@ -563,6 +548,10 @@ if 'yes' ==? g:setting.make_lint_need
     let g:neomake_cpp_lint_maker = {
                 \ 'exe': 'clang-tidy',
                 \ 'args': ['%:p', '--option', 'x'],
+                \ 'errorformat': '%f:%l:%c: %m',
+                \ }
+    let g:neomake_python_lint_maker = {
+                \ 'exe': 'pep8',
                 \ 'errorformat': '%f:%l:%c: %m',
                 \ }
 endif
