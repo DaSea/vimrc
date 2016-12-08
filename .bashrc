@@ -49,5 +49,27 @@ unset BASH_IT_LEGACY_PASS
 
 # Load Bash It
 source $BASH_IT/bash_it.sh
+
 # source autojump
 source /usr/share/autojump/autojump.sh
+# source ~/.oh-my-bash/rg.bash-completion
+
+# 字符画
+# echo "H     H  E E E E  L        L        O O O O"
+# echo "H     H  E        L        L        O     O"
+# echo "H     H  E        L        L        O     O"
+# echo "H H H H  E E E E  L        L        O     O"
+# echo "H     H  E        L        L        O     O"
+# echo "H     H  E        L        L        O     O"
+# echo "H     H  E E E E  L L L L  L L L L  O O O O"
+echo "-----------------------------------------------------------"
+echo "|                                                         |"
+echo "|   'hello world' o  ^--^                                 |"
+echo "|                  o (oo)\=======                         |"
+echo "|                    (__)\       )\/\                     |"
+echo "|                        ||----w |                        |"
+echo "|                        ||     ||                        |"
+echo "|                                                         |"
+echo "|                                                         |"
+echo "-----------------------------------------------------------"
+

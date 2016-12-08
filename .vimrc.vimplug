@@ -40,7 +40,7 @@ let g:ex_project_winpos='left'
 let g:ex_project_winsize=28
 let g:ex_project_winsize_zoom=40
 nnoremap <unique> <silent> <F3> :EXProjectToggle<cr>
-nnoremap <unique> <silent> <Leader>pf :call EXProjectFind<CR>
+nnoremap <unique> <silent> <Leader>pf :EXProjectFind<CR>
 
 Plug 'exvim/ex-gsearch'
 " ---------------------------------------------------
@@ -130,7 +130,8 @@ Plug 'exvim/ex-searchcompl'
 " invoke by /
 " ---------------------------------------------------
 
-Plug 'DaSea/ex-prjlist'
+" Plug 'DaSea/ex-prjlist'
+" 已经用新的插件vim-denite-prjmgr 替代(依赖于denite.nvim)
 " ---------------------------------------------------
 " let g:exprj_list_cache_directory = 'D:/Develop/cache'
 " let g:exprj_list_win_pos = "botright"
@@ -367,6 +368,9 @@ if 'airline' ==? g:setting.status_line
     else
         call add(g:airline_extensions, 'unite')
     endif
+    if g:setting.version_status != 'no'
+        call add(g:airline_extensions, 'branch')
+    endif
     if g:setting.show_tabline ==? 'yes'
         call add(g:airline_extensions, 'tabline')
         let g:airline#extensions#tabline#enabled=1
@@ -537,8 +541,8 @@ endif
 
 " 异步编译和lint插件 {{{
 if 'yes' ==? g:setting.make_lint_need
-    Plug 'neomake/neomake', {'on': 'Neomake'}
-    nnoremap <unique> <leader>nm :Neomake!<CR>
+    Plug 'neomake/neomake', {'on': 'NeomakeFile'}
+    nnoremap <unique> <leader>nm :NeomakeFile<CR>
     let g:neomake_verbose = 1
     let g:neomake_c_lint_maker = {
                 \ 'exe': 'clang-tidy',

@@ -3,8 +3,8 @@
 " Denite.nvim 设置, 最终是取代unite.vim{{{
 Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins'} " {{{
 nnoremap <silent> <leader>lf :<C-u>Denite -mode=insert file_rec<CR>
-nnoremap <silent> <leader>fl :<C-u>Denite -auto-highlight -mode=normal buffer<CR>
-nnoremap <silent> <leader>ft :<C-u>Denite -mode=insert line<CR>
+nnoremap <silent> <leader>fl :<C-u>Denite -auto-resize -mode=normal buffer<CR>
+nnoremap <silent> <leader>ft :<C-u>Denite -mode=insert -input=`expand('<cword>')` line<CR>
 
 " menu设置 {{{
 let s:denite_menus = {}
@@ -12,15 +12,15 @@ let s:denite_menus.vim = {
             \ 'description' : 'vim configure files',
             \ }
 if g:iswindows
-    " 有错误, 路径无法正确展开
+    " TODO: 有错误, 路径无法正确展开
     let s:denite_menus.vim.file_candidates = [
-                \ ['vimrc', '$VIM/.vimrc'],
-                \ ['commonPlug', '$VIM/.vimrc.vimplug'],
-                \ ['unit.vim and denite.nvim', '$VIM/.vimrc.unitvim'],
-                \ ['complete', '$VIM/.vimrc.complete'],
-                \ ['language', '$VIM/.vimrc.language'],
-                \ ['ctrlp', '$VIM/.vimrc.ctrlp'],
-                \ ['discard', '$VIM/.vimrc.discard']
+                \ ['vimrc', $VIM./'.vimrc'],
+                \ ['commonPlug', $VIM.'/.vimrc.vimplug'],
+                \ ['unit.vim and denite.nvim', $VIM.'/.vimrc.unitvim'],
+                \ ['complete', $VIM.'/.vimrc.complete'],
+                \ ['language', $VIM.'/.vimrc.language'],
+                \ ['ctrlp', $VIM.'/.vimrc.ctrlp'],
+                \ ['discard', $VIM.'/.vimrc.discard']
                 \ ]
 else
     let s:denite_menus.vim.file_candidates = [
@@ -33,47 +33,60 @@ else
                 \ ['discard', '~/.vimrc.discard']
                 \ ]
 endif
-nnoremap <silent> <leader>am :<C-u>Denite -mode=normal menu<CR>
+nnoremap <silent> <leader>am :<C-u>Denite -auto-resize -mode=normal menu<CR>
 "}}}
 
 function! DeniteInit() abort "{{{
     " menu 设置
     call denite#custom#var('menu', 'menus', s:denite_menus)
-    " Change file_rec command.
-    call denite#custom#var('file_rec', 'command',
-                \ ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
 
     " Change mappings.
-    call denite#custom#map('_', '<Esc>', 'enter_mode:normal')
-    call denite#custom#map('insert', '<C-i>', 'input_command_line')
-    call denite#custom#map('insert', '<C-j>', 'move_to_next_line')
-    call denite#custom#map('insert', '<C-k>', 'move_to_prev_line')
-    call denite#custom#map('insert', '<Esc>', 'enter_mode:normal')
+    call denite#custom#map('_', '<Esc>', '<denite:enter_mode:normal>', 'noremap')
+    call denite#custom#map('insert', '<C-i>', '<denite:input_command_line>', 'noremap')
+    call denite#custom#map('insert', '<C-j>', '<denite:move_to_next_line>', 'noremap')
+    call denite#custom#map('insert', '<C-k>', '<denite:move_to_prev_line>', 'noremap')
+    call denite#custom#map('insert', '<Esc>', '<denite:enter_mode:normal>', 'noremap')
 
     " Change matchers.
     call denite#custom#source(
-                \ 'file_mru', 'matchers', ['matcher_fuzzy', 'matcher_project_files'])
+                \ 'file_mru', 'matchers', ['matcher_fuzzy'])
+    call denite#custom#source(
+                \ 'file_rec', 'matchers', ['matcher_fuzzy'])
     " call denite#custom#source(
     " \ 'file_rec', 'matchers', ['matcher_cpsm'])
 
     " Ripgrep command on grep source
-    call denite#custom#var('grep', 'command', ['rg'])
-    call denite#custom#var('grep', 'recursive_opts', [])
-    call denite#custom#var('grep', 'final_opts', [])
-    call denite#custom#var('grep', 'separator', ['--'])
-    call denite#custom#var('grep', 'default_opts',
-                \ ['--vimgrep', '--no-heading'])
+    " Change file_rec command.
+    if executable('ag')
+        call denite#custom#var('file_rec', 'command',
+                    \ ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
+        call denite#custom#var('grep', 'command', ['ag'])
+        call denite#custom#var('grep', 'default_opts',
+                    \ ['-w', '--vimgrep', '--noheading'])
+    elseif executable('rg')
+        call denite#custom#var('file_rec', 'command',
+                    \ ['rg', '--files', '--glob', '!.git'])
+        call denite#custom#var('grep', 'command', ['rg'])
+        call denite#custom#var('grep', 'default_opts',
+                    \ ['--vimgrep', '--no-heading'])
+    endif
 
     call denite#custom#source('file_mru', 'converters',
                 \ ['converter_relative_word'])
 
     " Define alias
-    call denite#custom#alias('source', 'file_rec/git', 'file_rec')
+    " call denite#custom#alias('source', 'file_rec/git', 'file_rec')
     call denite#custom#var('file_rec/git', 'command',
                 \ ['git', 'ls-files', '-co', '--exclude-standard'])
 
     " Change default prompt
-    call denite#custom#option('default', 'prompt', '▷')
+    call denite#custom#option('default', 'prompt', '>>')
+
+    " Change ignore_globs
+    call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
+                \ [ '.exvim/', '.git/', '.ropeproject/', '__pycache__/',
+                \   'venv/', 'images/', '*.min.*', 'img/', 'fonts/',
+                \   'build/'])
 endfunction " }}}
 call add(g:init_func_list, function('DeniteInit'))
 " }}}
@@ -81,6 +94,16 @@ call add(g:init_func_list, function('DeniteInit'))
 Plug 'Shougo/neomru.vim' " {{{
 nnoremap <silent> <leader>jf :<C-u>Denite -mode=insert file_mru<CR>
 " }}}
+
+Plug 'DaSea/vim-denite-prjmgr'
+if g:isNvim
+    let g:projectmgr_vsc_root_dir = {
+                \ "/mnt/e/Self/05_gitsrc": "git"}
+else
+    let g:projectmgr_vsc_root_dir = {
+                \ "e:/Self/05_gitsrc": "git"}
+endif
+nnoremap <silent> <Leader>el :<C-u>Denite -mode=normal prjmgr<CR>
 "}}}
 
 Plug 'Shougo/unite.vim' "  {{{
