@@ -98,7 +98,7 @@ let g:setting.color_scheme = 'solarized'
 let g:setting.version_status = 'no'
 " 状态栏(ariline or no), 如果为no, 自定义状态栏
 let g:setting.status_line = 'airline'
-let g:setting.status_color = 'light'
+let g:setting.status_color = 'wombat'
 let g:setting.show_tabline = 'yes'
 " 使用ctrlp还是使用unit.vim
 " 由于denite出色的特性, 测试用denite替换unite相关插件
@@ -279,12 +279,17 @@ set showfulltag " show tag with function protype.
 " 状态栏设置
 set laststatus=2 " always have status-line
 if g:setting.status_line ==? 'no'
-    let s:currentmode={'n':  {'text': 'NORMAL',  'termColor': 60, 'guiColor': '#076678'},
-                \ 'v':  {'text': 'VISUAL',  'termColor': 58, 'guiColor': '#D65D0E'},
-                \ 'VL': {'text': 'V-LINE',  'termColor': 58, 'guiColor': '#D65D0E'},
-                \ 'VB': {'text': 'V-BLOCK', 'termColor': 58, 'guiColor': '#D65D0E'},
-                \ 'i':  {'text': 'INSERT',  'termColor': 29, 'guiColor': '#8EC07C'},
-                \ 'R':  {'text': 'REPLACE', 'termColor': 88, 'guiColor': '#CC241D'}}
+    let s:currentmode={
+                \ 'n':  {'text': 'NORMAL',  'termColor': 60, 'guiColor': '#076678'},
+                \ 'v': {'text': 'VISUAL',  'termColor': 58, 'guiColor': '#D65D0E'},
+                \ 'V': {'text': 'V-LINE',  'termColor': 58, 'guiColor': '#D65D0E'},
+                \ '': {'text': 'V-BLOCK', 'termColor': 58, 'guiColor': '#D65D0E'},
+                \ 'i': {'text': 'INSERT',  'termColor': 29, 'guiColor': '#8EC07C'},
+                \ 'R': {'text': 'REPLACE', 'termColor': 88, 'guiColor': '#CC241D'},
+                \ 's': {'text': 'SELECT',  'termColor': 58, 'guiColor': '#D65D0E'},
+                \ 'S': {'text': 'S-LINE',  'termColor': 58, 'guiColor': '#D65D0E'},
+                \ '': {'text': 'S-BLOCK', 'termColor': 58, 'guiColor': '#D65D0E'}
+                \ }
 
     function! TextForCurrentMode()
         set lazyredraw
@@ -307,16 +312,15 @@ if g:setting.status_line ==? 'no'
             setl statusline+=%1*\ %{TextForCurrentMode()}\ "
         endif
         setl statusline+=%<                              " Truncate contents after when line too long
-        setl statusline+=%{&paste?'>\ PASTE':''}         " Alert when in paste mode
-        setl statusline+=%8*\ %F                         " File path
-        setl statusline+=%7*%m                           " File modified status
-        setl statusline+=%8*                             " Set User8 coloring for rest of status line
+        " setl statusline+=%{&paste?'>\ PASTE':''}         " Alert when in paste mode
+        setl statusline+=%8*[%n]\ %f                         " File path
+        setl statusline+=%7*%m                          " File modified status
         setl statusline+=%r%h%w                          " Flags
         setl statusline+=%=                              " Right align the rest of the status line
-        setl statusline+=\ [TYPE=%Y]                     " File type
-        setl statusline+=\ [POS=L%04l,R%04v]             " Cursor position in the file line, row
-        setl statusline+=\ [LEN=%L]                      " Number of line in the file
-        setl statusline+=%#warningmsg#                   " Highlights the syntastic errors in red
+        setl statusline+=%1*
+        setl statusline+=\ [Type=%y]                     " File type
+        setl statusline+=\ [Pos=%04l/%04L:%04v]             " Cursor position in the file line, row
+        " setl statusline+=%#warningmsg#                   " Highlights the syntastic errors in red
     endfunction
 
     au WinLeave * call BuildStatusLine(0)
@@ -406,10 +410,13 @@ endif
 " g:statuscheme 状态栏配色
 "/////////////////////////////////////////////////////////////////////////////
 if !g:isGUI
+    if has("termguicolors")
+        " set termguicolors
+    endif
     set t_Co=256
 endif
     if strftime("%H") >= 17 || strftime("%H") <= 8
-        set background=dark
+        set background=light
     else
         set background=light
     endif
@@ -559,6 +566,9 @@ if has('autocmd')
     augroup ex
         au!
 
+        " 在插入模式下, 一段时间没有按键,自动进入NORMAL
+        au CursorHoldI * stopinsert
+
         " ------------------------------------------------------------------
         " Desc: Buffer
         " ------------------------------------------------------------------
@@ -577,12 +587,14 @@ if has('autocmd')
 
         " ------------------------------------------------------------------
         au FileType * setlocal tabstop=4
-        au FileType c,cpp,cs,swig set nomodeline " this will avoid bug in my project with namespace ex, the vim will tree ex:: as modeline.
+        " this will avoid bug in my project with namespace ex,
+        " the vim will tree ex:: as modeline.
+        au FileType c,cpp,cs,swig set nomodeline
 
         " disable auto-comment for c/cpp, lua, javascript, c# and vim-script
-        au FileType c,cpp,java,javascript set comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,f://
-        au FileType cs set comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,f:///,f://
-        au FileType vim set comments=sO:\"\ -,mO:\"\ \ ,eO:\"\",f:\"
+        " au FileType c,cpp,java,javascript set comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,f://
+        " au FileType cs set comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,f:///,f://
+        " au FileType vim set comments=sO:\"\ -,mO:\"\ \ ,eO:\"\",f:\"
         au FileType vim set foldmethod=marker
         au FileType lua set comments=f:--
         au FileType qml,python set foldmethod=indent
@@ -591,7 +603,8 @@ if has('autocmd')
         au FileType dosbatch setlocal fileencoding=cp936
         au FileType org setlocal tabstop=2
 
-        " if edit python scripts, check if have \t. ( python said: the programme can only use \t or not, but can't use them together )
+        " if edit python scripts, check if have \t.( python said: the programme can only
+        " use \t or not, but can't use them together )
         au FileType python,coffee call s:check_if_expand_tab()
     augroup END
 

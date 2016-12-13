@@ -152,11 +152,21 @@ if g:hasNeocomplete
     " disable ctags
     " let g:neoinclude#ctags_command = ''
     " 字典,设置路径
-    " let g:neoinclude#paths = {'cpp': 'path'}
-    " if !exists('g:neoinclude#exts')
-    " let g:neoinclude#exts = {}
+    if !exists('g:neoinclude#_paths')
+        let g:neoinclude#_paths = {}
+    endif
+    if g:iswindows
+        let g:neoinclude#_paths = {
+                    \ 'cpp': 'D:/Develop/Java/android-ndk-r10/platforms/android-19/arch-arm/usr/include'
+                    \ }
+    else
+        let g:neoinclude#_paths = {'cpp': '/usr/include'}
+    endif
+    " if !exists('g:neoinclude#_exts')
+        " let g:neoinclude#_exts = {}
     " endif
-    " let g:neoinclude#exts.cpp = ['', 'h', 'hpp', 'hxx']
+    " let g:neoinclude#_exts.cpp = ['', 'h', 'hpp', 'hxx']
+    " let g:neoinclude#_exts.python = ['py', 'py3'];
     "}}}
 
     Plug 'Shougo/neosnippet.vim' "{{{
@@ -168,6 +178,10 @@ if g:hasNeocomplete
     let g:neosnippet#enable_conceal_markers = 0
     let g:neosnippet#disable_select_mode_mappings=0
     let g:neosnippet#enable_completed_snippet=1
+    " 主要防止自定义snippet与neosnippet的冲突
+    let g:neosnippet#disable_runtime_snippets = {
+                \   '_' : 1,
+                \ }
     " let g:neosnippet#enable_snipmate_compatibility=1
     " Plug key-mappings.
     imap <C-k> <Plug>(neosnippet_expand_or_jump)
