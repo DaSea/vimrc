@@ -2,8 +2,8 @@
 " 这个主要是unite.vim的相关插件
 " Denite.nvim 设置, 最终是取代unite.vim{{{
 Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins'} " {{{
-nnoremap <silent> <leader>lf :<C-u>Denite -mode=insert file_rec<CR>
-nnoremap <silent> <leader>fl :<C-u>Denite -auto-resize -mode=normal buffer<CR>
+nnoremap <silent> <leader>lf :<C-u>Denite -auto-resize -mode=insert file_rec<CR>
+nnoremap <silent> <leader>fl :<C-u>Denite -auto-resize -cursor-wrap -mode=normal buffer<CR>
 nnoremap <silent> <leader>ft :<C-u>Denite -mode=insert -input=`expand('<cword>')` line<CR>
 
 " menu设置 {{{
@@ -12,7 +12,6 @@ let s:denite_menus.vim = {
             \ 'description' : 'vim configure files',
             \ }
 if g:iswindows
-    " TODO: 有错误, 路径无法正确展开
     let s:denite_menus.vim.file_candidates = [
                 \ ['vimrc', $VIM./'.vimrc'],
                 \ ['commonPlug', $VIM.'/.vimrc.vimplug'],
@@ -71,16 +70,13 @@ function! DeniteInit() abort "{{{
                     \ ['--vimgrep', '--no-heading'])
     endif
 
-    call denite#custom#source('file_mru', 'converters',
-                \ ['converter_relative_word'])
-
     " Define alias
     " call denite#custom#alias('source', 'file_rec/git', 'file_rec')
     call denite#custom#var('file_rec/git', 'command',
                 \ ['git', 'ls-files', '-co', '--exclude-standard'])
 
     " Change default prompt
-    call denite#custom#option('default', 'prompt', '>>')
+    call denite#custom#option('default', 'prompt', '<> ')
 
     " Change ignore_globs
     call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',

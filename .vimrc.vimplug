@@ -199,10 +199,6 @@ let g:clever_f_smart_case = 1
 Plug 'majutsushi/tagbar' " 主要为了在状态栏显示当前行所在函数{{{
 nnoremap <Leader>tb :TagbarToggle<CR>
 nnoremap <Leader>tm :call HiEchoCurrentTag()<CR>
-augroup MyTagbarDis
-    autocmd!
-    autocmd InsertLeave * call HiEchoCurrentTag()
-augroup END
 function! HiEchoCurrentTag() abort " 命令行高亮输出当前所在tag {{{
     echohl Error | echo tagbar#currenttag("%s", "Unknown Function") | echohl None
 endfunction " }}}

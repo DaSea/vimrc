@@ -318,8 +318,8 @@ if g:setting.status_line ==? 'no'
         setl statusline+=%r%h%w                          " Flags
         setl statusline+=%=                              " Right align the rest of the status line
         setl statusline+=%1*
-        setl statusline+=\ [Type=%y]                     " File type
-        setl statusline+=\ [Pos=%04l/%04L:%04v]             " Cursor position in the file line, row
+        setl statusline+=\ %y                     " File type
+        setl statusline+=\ [%03l/%04L:%03v]             " Cursor position in the file line, row
         " setl statusline+=%#warningmsg#                   " Highlights the syntastic errors in red
     endfunction
 
@@ -567,7 +567,7 @@ if has('autocmd')
         au!
 
         " 在插入模式下, 一段时间没有按键,自动进入NORMAL
-        au CursorHoldI * stopinsert
+        " au CursorHoldI * stopinsert
 
         " ------------------------------------------------------------------
         " Desc: Buffer
