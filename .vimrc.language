@@ -133,7 +133,7 @@ endif
 " }}}
 
 " vim 补全{{{
-if g:setting.vim_enable ==? 'yes'
+if (g:setting.vim_enable ==? 'yes') && g:hasNeocomplete
     Plug 'Shougo/neco-vim'
     if !exists('g:deoplete#sources')
         let g:deoplete#sources = {}
