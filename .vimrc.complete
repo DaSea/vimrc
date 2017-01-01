@@ -61,12 +61,35 @@ if g:isNvim
     "}}}
 else
     let g:hasNeocomplete = 0
-    if  0 " has('python3')
-        Plug 'maralla/completor.vim' "windows下cpp补全有问题{{{
-        let g:completor_blacklist = ['tagbar', 'qf', 'netrw', 'unite', 'vimwiki']
-        let g:completor_auto_trigger=1
-        let g:completor_python_binary = 'D:\\Develop\\Python35'
-        let g:completor_clang_binary = 'D:\\Develop\\LLVM\\bin'
+    if  has('python3')
+        Plug 'Valloric/YouCompleteMe' " {{{
+        let g:ycm_python_binary_path = 'python'
+        " let g:ycm_use_ultisnips_completer=1
+        let g:ycm_goto_buffer_command='vertical-spit'
+        let g:ycm_log_level='error'
+        " let g:ycm_global_ycm_extra_conf = '/home/egbomrt/.ycm_extra_conf.py'
+        "map gd :YcmCompleter GoTo<CR>
+        " map gi :YcmCompleter GoToImprecise<CR>
+        " map <Leader>yY :YcmDiags<cr>
+        " map <Leader>yy :YcmForceCompileAndDiagnostics<cr>
+        " map <Leader>ys :YcmShowDetailedDiagnostic<cr>
+        " map <Leader>yt :YcmCompleter GetType<cr>
+        " }}}
+
+        Plug 'SirVer/ultisnips' " snippets {{{
+        let g:UltiSnipsUsePythonVersion=3
+        let g:UltiSnipsSnippetsDir=$VIM.'/vimfiles/ultisnips'
+        " 不起作用
+        " if !exists('g:UltiSnipsSnippetDirectories')
+            " let g:UltiSnipsSnippetDirectories = ['snippets/ultisnips']
+        " endif
+        let g:UltiSnipsEnableSnipMate=0
+        let g:UltiSnipsEditSplit="vertical"
+        let g:UltiSnipsExpandTrigger="<C-k>"
+        let g:UltiSnipsJumpForwardTrigger="<C-k>"
+        let g:UltiSnipsJumpBackwardTrigger="<C-j>"
+        " 编辑snippet
+        nnoremap <leader>ns :UltiSnipsEdit<CR>
         " }}}
     elseif has('lua')
         Plug 'Shougo/neocomplete.vim' "{{{

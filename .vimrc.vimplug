@@ -220,7 +220,7 @@ let g:ctrlsf_auto_close = 0
 " 大小写敏感
 let g:ctrlsf_case_sensitive = 'yes'
 " 默认搜索路径, 设置为project则从本文件的工程目录搜索
-let g:ctrlsf_default_root = 'project+cwd'
+let g:ctrlsf_default_root = 'project+wf'
 " 工程目录的顶级文件夹
 " let g:ctrlsf_vcs_folder = ['.exvim', '.git', '.hg', '.svn', '.bzr', '_darcs']
 " make result windows compact
@@ -387,6 +387,7 @@ if 'airline' ==? g:setting.status_line
         let g:airline#extensions#tabline#buffers_label = 'B'
         let g:airline#extensions#tabline#tabs_label = 'T'
         let g:airline#extensions#tabline#buffer_idx_mode = 1
+        let g:airline#extensions#tabline#excludes = ['denite', 'unite']
         nmap ,1 <Plug>AirlineSelectTab1
         nmap ,2 <Plug>AirlineSelectTab2
         nmap ,3 <Plug>AirlineSelectTab3
@@ -579,13 +580,46 @@ let g:AutoPairsShortcutJump = '<leader>pn'
 Plug 'tpope/vim-endwise'
 "}}}
 
-" vim documentation {{{
-Plug 'asins/vimcdoc' "{{{
+" Document(查阅文档){{{
+
+" zeal 文档工具查看
+let g:zv_zeal_executable = has('win32') ?
+            \ 'D:/Develop/zeal/zeal.exe' :
+            \ '/usr/bin/zeal'
+if executable(g:zv_zeal_executable)  " zeal {{{
+    Plug 'KabbAmine/zeavim.vim' , {'on': [
+            \   'Zeavim', 'Docset',
+            \   '<Plug>Zeavim',
+            \   '<Plug>ZVVisSelection',
+            \   '<Plug>ZVKeyDocset',
+            \   '<Plug>ZVMotion'
+            \ ]}
+    nmap gzz <Plug>Zeavim
+    vmap gzz <Plug>ZVVisSelection
+    nmap gZ <Plug>ZVKeyDocset<CR>
+    nmap gz <Plug>ZVMotion
+    nmap <leader>z <Plug>ZVKeyDocset
+endif
+" }}}
+
+Plug 'asins/vimcdoc' "vim documentation{{{
 " < VIM中文帮助文档:>
 " 设定doc文档目录
 let helptags=$VIM."/vimfiles/doc"
 set helplang=cn
 "}}}
+
+" 查看当前单词的帮助
+nnoremap <F1> :call FindWord()<CR>
+function! FindWord() abort "{{{
+    let filet = eval('&filetype')
+    if filet ==# 'vim'
+        let curWord = expand("<cword>")
+        execute "h " . curWord
+    else
+        execute 'Zeavim'
+    endif
+endfunction "}}}
 "}}}
 
 " TEST {{{

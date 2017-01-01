@@ -1,5 +1,5 @@
 scriptencoding utf-8
-"/////////////////////////////////////////////////////////////////////////////
+" ==============================================================================
 " 系统及gui判断{{{
 "/////////////////////////////////////////////////////////////////////////////
 " -----------------------------------------------------------------------------
@@ -42,7 +42,7 @@ if !exists('g:exvim_custom_path')
 endif
 " }}}
 
-"/////////////////////////////////////////////////////////////////////////////
+" ==============================================================================
 " language and encoding setup  语言及编码设置{{{
 "/////////////////////////////////////////////////////////////////////////////
 " always use English menu一般使用英文菜单
@@ -89,17 +89,18 @@ else
 endif
 "}}}
 
+" ==============================================================================
 " 全局配置变量(Dictionnary){{{
 let g:setting = {}
 let g:plugins_file = '.vimrc.vimplug'
 " 全局设置
 let g:setting.color_scheme = 'solarized'
 " 关于更改行的设置(git(vim-gitgutter), git_svn(vim-signify), no)
-let g:setting.version_status = 'no'
+let g:setting.version_status = 'git_svn'
 " 状态栏(ariline or no), 如果为no, 自定义状态栏
 let g:setting.status_line = 'airline'
-let g:setting.status_color = 'wombat'
-let g:setting.show_tabline = 'yes'
+let g:setting.status_color = 'dark'
+let g:setting.show_tabline = 'no'
 " 使用ctrlp还是使用unit.vim
 " 由于denite出色的特性, 测试用denite替换unite相关插件
 let g:setting.ctrlp_or_unite = 'unitevim'
@@ -125,8 +126,8 @@ let g:setting.php_enbale = 'no'
 let g:setting.org_wiki_enable = 'yes'
 " }}}
 
-"/////////////////////////////////////////////////////////////////////////////
-" Bundle steup 插件管理插件设置{{{
+" ==============================================================================
+" vim-plug steup 插件管理插件设置{{{
 "/////////////////////////////////////////////////////////////////////////////
 set nocompatible
 set hidden
@@ -167,7 +168,7 @@ call PluginLoadFinished()
 syntax on " required
 "}}}
 
-"/////////////////////////////////////////////////////////////////////////////
+" ==============================================================================
 " 备份及 历史等设置{{{
 "/////////////////////////////////////////////////////////////////////////////
 " where gf, ^Wf, :find will search
@@ -212,6 +213,7 @@ endif
 
 " }}}
 
+" ==============================================================================
 " 字体设置(font set){{{
 if g:isGUI
     augroup ex_gui_font
@@ -357,10 +359,10 @@ set nonumber
 function! ToggleLineNumber() abort " 切换行号 {{{
     if 0 == &number
         exec 'set number'
-        exec 'set relativenumber'
+        " exec 'set relativenumber'
     else
         exec 'set nonumber'
-        exec 'set norelativenumber'
+        " exec 'set norelativenumber'
     endif
 endfunction " }}}
 nnoremap <silent> <leader>nc :call ToggleLineNumber()<CR>
@@ -405,7 +407,7 @@ endif
 
 "}}}
 
-"/////////////////////////////////////////////////////////////////////////////
+" ==============================================================================
 " Default colorscheme setup 颜色方案设置{{{
 " g:statuscheme 状态栏配色
 "/////////////////////////////////////////////////////////////////////////////
@@ -704,15 +706,6 @@ nnoremap U <c-r>
 
 " 用空格键来开关折叠
 nnoremap <space> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
-
-"===================================================
-" 观看当前单词的帮助
-" nnoremap <Leader>hh :call FindWord()<CR>
-nnoremap <F1> :call FindWord()<CR>
-function! FindWord() abort "{{{
-    let curWord = expand("<cword>")
-    execute "h " . curWord
-endfunction "}}}
 
 " 替换当前当前光标下单词 {{{
 nnoremap <leader>pw :call ReplaceCurrentWord()<CR>
