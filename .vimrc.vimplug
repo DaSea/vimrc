@@ -9,23 +9,180 @@ let g:init_func_list = []
 "========================================================================================
 " 使用到的插件的配置(The setting of the used plugin)
 "========================================================================================
-" ex系列插件, 工程管理 {{{
+" 界面显示相关{{{
+Plug 'ntpeters/vim-better-whitespace' "显示行尾多余空格并快速删除{{{
+" 显示行尾空格(better)
+" ----------------------------------------------------
+let g:better_whitespace_filetypes_blacklist = ['denite', 'unite', 'vimfiler', 'ctrlp', 'org',
+            \ 'markdown', 'java']
+noremap CS :StripWhitespace<CR>
+"}}}
 
+if 'airline' ==? g:setting.status_line
+    Plug 'vim-airline/vim-airline'
+    Plug 'vim-airline/vim-airline-themes' " 可以打开, 就有很多选择了, 但是我觉得onedark很好
+    " airline状态栏{{{
+    let g:airline_powerline_fonts = 1
+    let g:airline_theme = g:setting.status_color
+    " let g:airline_left_sep = ''
+    " let g:airline_left_alt_sep = ''
+    " let g:airline_right_sep = ''
+    " let g:airline_right_alt_sep = ''
+    let g:airline_left_sep = '▶'
+    let g:airline_left_alt_sep = '❯'
+    let g:airline_right_sep = '◀'
+    let g:airline_right_alt_sep = '❮'
+    if !exists('g:airline_symbols')
+        let g:airline_symbols = {}
+    endif
+    let g:airline_symbols.branch = ''
+    let g:airline_symbols.readonly = ''
+    let g:airline_symbols.linenr = ''
+    let g:airline_detect_modified=1
+    let g:airline_detect_crypt=0
+    let g:airline_detect_spell=0
+    let g:airline_detect_iminsert=0
+    let g:airline_inactive_collapse=0
+    let g:airline_extensions = ['quickfix']
+    if g:setting.show_tabline ==? 'yes' " {{{
+        call add(g:airline_extensions, 'tabline')
+        let g:airline#extensions#tabline#enabled=1
+        let g:airline#extensions#tabline#show_splits = 1
+        let g:airline#extensions#tabline#switch_buffers_and_tabs = 1
+        let g:airline#extensions#tabline#show_buffers = 1
+        let g:airline#extensions#tabline#show_tabs = 1
+        let g:airline#extensions#tabline#buffers_label = 'B'
+        let g:airline#extensions#tabline#tabs_label = 'T'
+        let g:airline#extensions#tabline#buffer_idx_mode = 1
+        let g:airline#extensions#tabline#excludes = ['denite', 'unite', 'vimfiler']
+        nmap ,1 <Plug>AirlineSelectTab1
+        nmap ,2 <Plug>AirlineSelectTab2
+        nmap ,3 <Plug>AirlineSelectTab3
+        nmap ,4 <Plug>AirlineSelectTab4
+        nmap ,5 <Plug>AirlineSelectTab5
+        nmap ,6 <Plug>AirlineSelectTab6
+        nmap ,7 <Plug>AirlineSelectTab7
+        nmap ,8 <Plug>AirlineSelectTab8
+        nmap ,9 <Plug>AirlineSelectTab9
+        nmap <Leader>k <Plug>AirlineSelectPrevTab
+        nmap <Leader>j <Plug>AirlineSelectNextTab
+        let g:airline#extensions#tabline#buffer_nr_format = '%s: '
+        let g:airline#extensions#tabline#fnamemod = ':t:.'
+        let g:airline#extensions#tabline#fnametruncate = 0
+        let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+    endif "}}}
+    " 各个部分的设置简化
+    if g:isGUI
+        let g:airline_section_c = '%t'
+    endif
+    let g:airline_section_z = '%l%{g:airline_symbols.linenr}%L'
+    let g:airline_mode_map = {
+                \ '__' : '-',
+                \ 'n'  : 'N',
+                \ 'i'  : 'I',
+                \ 'R'  : 'R',
+                \ 'c'  : 'C',
+                \ 'v'  : 'v',
+                \ 'V'  : 'VL',
+                \ '' : 'VB',
+                \ 's'  : 's',
+                \ 'S'  : 'S',
+                \ '' : 'S',
+                \ }
+    " }}}
+endif
+
+Plug 'Konfekt/FastFold' "{{{
+let g:cpp_folding=1
+let g:php_folding=1
+let g:lua_folding=1
+let g:vimsyn_folding='af'
+let g:c_folding=1
+" }}}
+
+Plug 'Yggdroot/indentLine' "对齐线{{{
+" ---------------------------------------------------
+let g:indentLine_color_gui = '#FF4040'
+let g:indentLine_char = '┊'
+let g:indentLine_faster = 1
+"}}}
+
+" colorscheme 插件 {{{
+" Plug 'altercation/vim-colors-solarized'
+" ---------------------------------------------------
+Plug 'lifepillar/vim-solarized8'
+let g:solarized_menu = 0
+let g:solarized_bold = 1
+let g:solarized_underline = 1
+let g:solarized_italic = 0
+let g:solarized_termcolors=256
+let g:solarized_termtrans=1
+let g:solarized_visibility="high"
+" let g:solarized_statusline="low"
+" let g:solarized_diffmode="high"
+
+Plug 'joshdick/onedark.vim'
+let g:onedark_termcolors=256
+
+Plug 'morhetz/gruvbox'
+
+" 个人收集的一些主题
+" Plug 'DaSea/vim-personcolors'
+"}}}
+
+" buffer窗口的大小的改变{{{
+" 宽度与高度相等
+nnoremap W= <C-W>=
+" 宽度的变化
+nnoremap WA :call WinWidthChange(10, 0)<CR>
+nnoremap WS :call WinWidthChange(10, 1)<CR>
+" 高度的变化
+nnoremap HA :call WinHeightChange(10, 0)<CR>
+nnoremap HS :call WinHeightChange(10, 1)<CR>
+
+" 宽度改变->(increment: 要增加或减少的宽度, add_sub: 0, 增加, 1, 减少){{{
+function! WinWidthChange(increment, add_sub) abort
+    let cur_width = winwidth(0)
+    if 0 == a:add_sub
+        let cur_width = cur_width + a:increment
+    else
+        let cur_width = cur_width - a:increment
+    endif
+    " 如果小于最小宽度, 大于最大宽度, 就不会有什么变化了
+    silent exe "normal " . cur_width ."\<C-W>|"
+endfunction " }}}
+
+" 高度改变->(increment: 要增加或减少的高度; add_sub: 0, 增加, 1, 减少) {{{
+function! WinHeightChange(increment, add_sub) abort
+    let cur_height = winheight(0)
+    if 0 == a:add_sub
+        let cur_height = cur_height + a:increment
+    else
+        let cur_height = cur_height - a:increment
+    endif
+
+    " 如果小于最小高度, 或大于最大高度, 就不会有反应了
+    silent exe "normal " . cur_height ."\<C-W>_"
+endfunction " }}}
+" }}}
+"}}}
+
+" ex系列插件, 工程管理 {{{
 Plug 'DaSea/ex-config'
 " Fork 'exvim/ex-config', change '.exvim.project_name' to '.exvim'
 " ---------------------------------------------------
-nnoremap <unique> <leader>ve :call exconfig#edit_cur_vimentry ()<CR>
+nnoremap <unique> <Leader>ve :call exconfig#edit_cur_vimentry ()<CR>
 
 Plug 'DaSea/ex-utility'
 " ---------------------------------------------------
 nnoremap <unique> <silent> <Leader>ad :EXbd<CR>
-nnoremap <unique> <silent> <leader>an :EXbn<CR>
-nnoremap <unique> <silent> <leader>ap :EXbp<CR>
+nnoremap <unique> <silent> <Leader>an :EXbn<CR>
+nnoremap <unique> <silent> <Leader>ap :EXbp<CR>
 nnoremap <unique> <silent> <C-Tab> :EXbalt<CR>
 nnoremap <unique> <silent> <Leader><Tab> :EXsw<CR>
 nmap <unique> <silent> <Leader><Esc> :EXgp<CR><ESC>
 " 定义运行qml文件的脚本
-" nnoremap <leader>mr :call system("qmlscene". expand("%"))<CR>
+" nnoremap <Leader>mr :call system("qmlscene". expand("%"))<CR>
 
 Plug 'exvim/ex-aftercolors'
 " ---------------------------------------------------
@@ -46,9 +203,9 @@ Plug 'exvim/ex-gsearch'
 " ---------------------------------------------------
 let g:ex_gsearch_ignore_case = 0
 function! ExgsearchInit() abort "{{{
-    call exgsearch#register_hotkey( 100, 0, '<leader>gs', ":EXGSearchToggle<CR>", 'Toggle global search window.' )
-    call exgsearch#register_hotkey( 101, 0, '<leader>gg', ":EXGSearchCWord<CR>", 'Search current word.' )
-    call exgsearch#register_hotkey( 102, 0, '<leader><S-f>', ":GS ", 'Shortcut for :GS' )
+    call exgsearch#register_hotkey( 100, 0, '<Leader>gs', ":EXGSearchToggle<CR>", 'Toggle global search window.' )
+    call exgsearch#register_hotkey( 101, 0, '<Leader>gg', ":EXGSearchCWord<CR>", 'Search current word.' )
+    call exgsearch#register_hotkey( 102, 0, '<Leader><S-f>', ":GS ", 'Shortcut for :GS' )
     call exgsearch#register_hotkey( 2, 1, 'q', ":EXGSearchClose<CR>" , 'Close window.')
 endfunction "}}}
 call add(g:init_func_list, function('ExgsearchInit'))
@@ -56,18 +213,18 @@ call add(g:init_func_list, function('ExgsearchInit'))
 Plug 'exvim/ex-tags'
 " ---------------------------------------------------
 function! ExtagsInit() abort "{{{
-    call extags#register_hotkey( 100, 0, '<leader>ts', ":EXTagsToggle<CR>", 'Toggle tag select window.' )
-    call extags#register_hotkey( 101, 0, '<leader>]', ":EXTagsCWord<CR>", 'Tag select current word.' )
-    " DISABLE: nnoremap <unique> <leader>] :exec 'ts ' . expand('<cword>')<CR>
+    call extags#register_hotkey( 100, 0, '<Leader>ts', ":EXTagsToggle<CR>", 'Toggle tag select window.' )
+    call extags#register_hotkey( 101, 0, '<Leader>]', ":EXTagsCWord<CR>", 'Tag select current word.' )
+    " DISABLE: nnoremap <unique> <Leader>] :exec 'ts ' . expand('<cword>')<CR>
 endfunction "}}}
 call add(g:init_func_list, function('ExtagsInit'))
 
 Plug 'exvim/ex-symbol'
 " ---------------------------------------------------
 function! Exsymbol() abort "{{{
-    call exsymbol#register_hotkey( 100, 0, '<leader>ss', ":EXSymbolList<CR>", 'List all symbols.' )
-    call exsymbol#register_hotkey( 101, 0, '<leader>sq', ":EXSymbolOpen<CR>", 'Open symbols window.' )
-    call exsymbol#register_hotkey( 102, 0, '<leader>sg', ":EXSymbolCWord<CR>", 'List symbols contains current word.' )
+    call exsymbol#register_hotkey( 100, 0, '<Leader>ss', ":EXSymbolList<CR>", 'List all symbols.' )
+    call exsymbol#register_hotkey( 101, 0, '<Leader>sq', ":EXSymbolOpen<CR>", 'Open symbols window.' )
+    call exsymbol#register_hotkey( 102, 0, '<Leader>sg', ":EXSymbolCWord<CR>", 'List symbols contains current word.' )
 
     if g:isGUI
         if g:ismac
@@ -83,25 +240,25 @@ let g:ex_symbol_select_cmd = 'TS'
 Plug 'exvim/ex-cscope'
 " ---------------------------------------------------
 function! Excscope() abort "{{{
-    call excscope#register_hotkey( 100, 0, '<leader>cd', ":EXCSToggle<CR>", 'Toggle cscope window.' )
+    call excscope#register_hotkey( 100, 0, '<Leader>cd', ":EXCSToggle<CR>", 'Toggle cscope window.' )
 endfunction "}}}
 call add(g:init_func_list, function('Excscope'))
 
 Plug 'exvim/ex-qfix'
 " ---------------------------------------------------
 function! Exqfix() abort "{{{
-    call exqfix#register_hotkey( 100, 0, '<leader>qf', ":EXQFixToggle<CR>", 'Toggle quickfix window.' )
-    call exqfix#register_hotkey( 101, 0, '<leader>qq', ":EXQFixPaste<CR>", 'Open quickfix window and paste error list from register *.' )
+    call exqfix#register_hotkey( 100, 0, '<Leader>qf', ":EXQFixToggle<CR>", 'Toggle quickfix window.' )
+    call exqfix#register_hotkey( 101, 0, '<Leader>qq', ":EXQFixPaste<CR>", 'Open quickfix window and paste error list from register *.' )
 endfunction "}}}
 call add(g:init_func_list, function('Exqfix'))
 
 " Plug 'exvim/ex-hierarchy'
 " 生成继承关系图
 " ---------------------------------------------------
-" nnoremap <unique> <leader>hv :EXHierarchyCWord<CR>
+" nnoremap <unique> <Leader>hv :EXHierarchyCWord<CR>
 
 Plug 'exvim/ex-showmarks'
-" ex-showmarks: invoke by m... or <leader>mm, <leader>ma
+" ex-showmarks: invoke by m... or <Leader>mm, <Leader>ma
 " ---------------------------------------------------
 " TODO: bootleq/ShowMarks on github is well organized in code, but have lots
 " bugs, consider merge his code and fixes the bugs
@@ -153,6 +310,9 @@ if g:setting.version_status ==? 'git'
     nmap [h <Plug>GitGutterPrevHunk
     let g:gitgutter_realtime = 0
     let g:gitgutter_eager = 0
+    if g:setting.status_line ==? 'airline'
+        call add(g:airline_extensions, 'hunks')
+    endif
     "}}}
 endif
 
@@ -168,26 +328,11 @@ if g:setting.version_status ==? 'git_svn'
                 \ 'denite': 1, 'vimfiler': 1,
                 \ 'unite': 1, 'exproject': 1
                 \ }
-    "}}}
-endif
-"}}}
 
-" unit.vim 或者 ctrlp相关插件, 及文件管理器{{{
-if g:setting.ctrlp_or_unite ==? 'ctrlp'
-    if exists('g:exvim_custom_path')
-        let g:vim_ctrlp_or_unite = g:exvim_custom_path.'/.vimrc.ctrlp'
-    else
-        let g:vim_ctrlp_or_unite = '~/.vimrc.ctrlp'
+    if g:setting.status_line ==? 'airline'
+        call add(g:airline_extensions, 'hunks')
     endif
-else
-    if exists('g:exvim_custom_path')
-        let g:vim_ctrlp_or_unite = g:exvim_custom_path.'/.vimrc.unitvim'
-    else
-        let g:vim_ctrlp_or_unite = '~/.vimrc.unitvim'
-    endif
-endif
-if filereadable(expand(g:vim_ctrlp_or_unite))
-    exec 'source ' . fnameescape(g:vim_ctrlp_or_unite)
+    "}}}
 endif
 "}}}
 
@@ -196,7 +341,8 @@ let g:clever_f_across_no_line = 1
 let g:clever_f_smart_case = 1
 " }}}
 
-Plug 'majutsushi/tagbar' " 主要为了在状态栏显示当前行所在函数{{{
+ " 主要为了在状态栏显示当前行所在函数{{{
+Plug 'majutsushi/tagbar', {'on': 'TagbarToggle', 'do': 'HiEchoCurrentTag'}
 nnoremap <Leader>tb :TagbarToggle<CR>
 nnoremap <Leader>tm :call HiEchoCurrentTag()<CR>
 function! HiEchoCurrentTag() abort " 命令行高亮输出当前所在tag {{{
@@ -208,11 +354,8 @@ endfunction " }}}
 Plug 'dyng/ctrlsf.vim',{'on': 'CtrlSF'} "搜索工程下文件{{{
 "---------------------------------------------------------------------
 " 设置CtrlSF使用的搜索工具,默认使用ag,如果没有ag,则考虑使用ack
-if executable('ag')
-    let g:ctrlsf_ackprg = 'ag'
-elseif executable('pt')
-    let g:ctrlsf_ackprg = 'pt'
-elseif executable('rg')
+let g:ctrlsf_ackprg = 'rg'
+if !executable(g:ctrlsf_ackprg)
     let g:ctrlsf_ackprg = 'rg'
 endif
 " 是否在ctrlsf搜索结果打开其他窗口时,关闭搜索结果窗口
@@ -231,11 +374,11 @@ let g:ctrlsf_context = '-B 0 -A 0'
 " 高亮匹配行: o->打开的目标文件;p->预览文件
 let g:ctrlsf_selected_line_hl = 'op'
 nnoremap <F5> :CtrlSFToggle<CR>
-nnoremap <leader>sw :call CtrlsfCurWord(expand("<cword>"))<CR>
+nnoremap <Leader>sw :call CtrlsfCurWord(expand("<cword>"))<CR>
 function! CtrlsfCurWord(word) abort
     " 需要修改为根据exvim工程文件类型进行搜索
     let s:type = &filetype
-    if "c" == s:type
+    if ("c" == s:type) && (g:ctrlsf_ackprg !=? 'rg')
         let s:type = "cc"
     endif
     let s:filetype = '-filetype '.s:type
@@ -277,7 +420,7 @@ endif
 
 "  快速注释, 及生成函数及文件注释{{{
 Plug 'scrooloose/nerdcommenter' " 快速注释{{{
-" Invoke by <leader>c<space>, <leader>cl, <leader>cu, <F11> or <C-F11>
+" Invoke by <Leader>c<space>, <Leader>cl, <Leader>cu, <F11> or <C-F11>
 " ---------------------------------------------------
 " 我主要用于C/C++代码注释(其它的也行)
 " 以下为插件默认快捷键，其中的说明是以C/C++为例的，其它语言类似
@@ -295,7 +438,8 @@ let g:NERDCustomDelimiters = {
             \ }
 "}}}
 
-Plug 'DaSea/DoxygenToolkit.vim' "生成文件注释和函数注释{{{
+"生成文件注释和函数注释{{{
+Plug 'DaSea/DoxygenToolkit.vim', {'on': ['DoxFunc', 'DoxFile']}
 " ---------------------------------------------------
 " let g:DoxygenToolkit_commentType = "C++"
 let g:DoxygenToolkit_briefTag_pre="@brief  "
@@ -307,26 +451,27 @@ let g:DoxygenToolkit_authorName=g:setting.author_name
 let g:DoxygenToolkit_licenseTag="None"
 let g:DoxygenToolkit_compactDoc="no"
 " map
-nnoremap <leader>di :DoxFunc<CR>
+nnoremap <Leader>di :DoxFunc<CR>
 nnoremap <Leader>df :DoxFile<CR>
 "}}}
 "}}}
 
 " 快速移动(行的移动， 行间移动， 窗口间移动)  {{{
-Plug 'matze/vim-move'
-" alt + j : 下移; alt+k: 上移;
+Plug 'matze/vim-move', {'on': ['<Plug>MoveLineUp', '<Plug>MoveLineDown',
+            \ '<Plug>MoveBlockUp', '<Plug>MoveBlockDown']}
+" alt + j : 行或块下移; alt+k: 行或块上移;
 
-Plug 't9md/vim-choosewin' " 快速在窗口在跳转 {{{
+Plug 't9md/vim-choosewin', {'on': 'ChooseWin'} " 快速在窗口在跳转 {{{
 " let g:choosewin_statusline_replace=1
 " let g:choosewin_overlay_enable=1
-nmap - <Plug>(choosewin)
+nmap - :ChooseWin<CR>
 " }}}
 
 Plug 'Lokaltog/vim-easymotion' " {{{
 let g:EasyMotion_smartcase = 1
 let g:EasyMotion_startofline=0
-" map <leader> <Plug>(easymotion-prefix)
-map <leader><leader>/ <Plug>(easymotion-sn)
+" map <Leader> <Plug>(easymotion-prefix)
+map <Leader><Leader>/ <Plug>(easymotion-sn)
 omap <Leader><Leader>/ <Plug>(easymotion-tn)
 map <Leader><Leader>j <Plug>(easymotion-j)
 map <Leader><Leader>k <Plug>(easymotion-k)
@@ -336,168 +481,10 @@ map <Leader><Leader>. <Plug>(easymotion-repeat)
 "}}}
 "}}}
 
-" 界面显示相关{{{
-Plug 'ntpeters/vim-better-whitespace' "显示行尾多余空格并快速删除{{{
-" 显示行尾空格(better)
-" ----------------------------------------------------
-let g:better_whitespace_filetypes_blacklist = ['denite', 'unite', 'vimfiler', 'ctrlp']
-noremap CS :StripWhitespace<CR>
-"}}}
-
-if 'airline' ==? g:setting.status_line
-    Plug 'vim-airline/vim-airline'
-    Plug 'vim-airline/vim-airline-themes' " airline状态栏{{{
-    let g:airline_powerline_fonts = 1
-    let g:airline_theme = g:setting.status_color
-    " let g:airline_left_sep = ''
-    " let g:airline_left_alt_sep = ''
-    " let g:airline_right_sep = ''
-    " let g:airline_right_alt_sep = ''
-    let g:airline_left_sep = '▶'
-    let g:airline_left_alt_sep = '❯'
-    let g:airline_right_sep = '◀'
-    let g:airline_right_alt_sep = '❮'
-    if !exists('g:airline_symbols')
-        let g:airline_symbols = {}
-    endif
-    let g:airline_symbols.branch = ''
-    let g:airline_symbols.readonly = ''
-    let g:airline_symbols.linenr = ''
-    let g:airline_detect_modified=1
-    let g:airline_detect_crypt=0
-    let g:airline_detect_spell=0
-    let g:airline_detect_iminsert=0
-    let g:airline_inactive_collapse=0
-    let g:airline_extensions = ['quickfix']
-    if g:setting.ctrlp_or_unite ==? 'ctrlp'
-        call add(g:airline_extensions, 'ctrlp')
-    else
-        call add(g:airline_extensions, 'unite')
-    endif
-    if g:setting.version_status ==? 'git'
-        call add(g:airline_extensions, 'branch')
-    endif
-    if g:setting.show_tabline ==? 'yes' " {{{
-        call add(g:airline_extensions, 'tabline')
-        let g:airline#extensions#tabline#enabled=1
-        let g:airline#extensions#tabline#show_splits = 1
-        let g:airline#extensions#tabline#switch_buffers_and_tabs = 1
-        let g:airline#extensions#tabline#show_buffers = 1
-        let g:airline#extensions#tabline#show_tabs = 1
-        let g:airline#extensions#tabline#buffers_label = 'B'
-        let g:airline#extensions#tabline#tabs_label = 'T'
-        let g:airline#extensions#tabline#buffer_idx_mode = 1
-        let g:airline#extensions#tabline#excludes = ['denite', 'unite']
-        nmap ,1 <Plug>AirlineSelectTab1
-        nmap ,2 <Plug>AirlineSelectTab2
-        nmap ,3 <Plug>AirlineSelectTab3
-        nmap ,4 <Plug>AirlineSelectTab4
-        nmap ,5 <Plug>AirlineSelectTab5
-        nmap ,6 <Plug>AirlineSelectTab6
-        nmap ,7 <Plug>AirlineSelectTab7
-        nmap ,8 <Plug>AirlineSelectTab8
-        nmap ,9 <Plug>AirlineSelectTab9
-        nmap <leader>j <Plug>AirlineSelectPrevTab
-        nmap <leader>k <Plug>AirlineSelectNextTab
-        " let g:airline#extensions#tabline#formatter = 'unique_tail'
-        let g:airline#extensions#tabline#buffer_nr_format = '%s: '
-        let g:airline#extensions#tabline#fnamemod = ':t:.'
-        let g:airline#extensions#tabline#fnametruncate = 0
-        let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
-    endif "}}}
-    " 各个部分的设置简化
-    if g:isGUI
-        let g:airline_section_c = '%t'
-    endif
-    let g:airline_section_z = '%l%{g:airline_symbols.linenr}%L'
-    let g:airline_mode_map = {
-                \ '__' : '-',
-                \ 'n'  : 'N',
-                \ 'i'  : 'I',
-                \ 'R'  : 'R',
-                \ 'c'  : 'C',
-                \ 'v'  : 'v',
-                \ 'V'  : 'VL',
-                \ '' : 'VB',
-                \ 's'  : 's',
-                \ 'S'  : 'S',
-                \ '' : 'S',
-                \ }
-    " }}}
-endif
-
-Plug 'Konfekt/FastFold' "{{{
-let g:cpp_folding=1
-let g:php_folding=1
-let g:lua_folding=1
-let g:vimsyn_folding='af'
-let g:c_folding=1
-" }}}
-
-Plug 'Yggdroot/indentLine' "对齐线{{{
-" ---------------------------------------------------
-let g:indentLine_color_gui = '#FF4040'
-let g:indentLine_char = '┊'
-let g:indentLine_faster = 1
-"}}}
-
-" colorscheme 插件 {{{
-Plug 'altercation/vim-colors-solarized'
-" ---------------------------------------------------
-let g:solarized_menu = 0
-let g:solaried_bold = 1
-let g:solaried_underline = 1
-let g:solaried_italic = 0
-let g:solarized_termcolors=256
-
-Plug 'joshdick/onedark.vim'
-let g:onedark_termcolors=256
-
-" 个人收集的一些主题
-" Plug 'DaSea/vim-personcolors'
-"}}}
-
-" buffer窗口的大小的改变{{{
-" 宽度与高度相等
-nnoremap W= <C-W>=
-" 宽度的变化
-nnoremap WA :call WinWidthChange(10, 0)<CR>
-nnoremap WS :call WinWidthChange(10, 1)<CR>
-" 高度的变化
-nnoremap HA :call WinHeightChange(10, 0)<CR>
-nnoremap HS :call WinHeightChange(10, 1)<CR>
-
-" 宽度改变->(increment: 要增加或减少的宽度, add_sub: 0, 增加, 1, 减少){{{
-function! WinWidthChange(increment, add_sub) abort
-    let cur_width = winwidth(0)
-    if 0 == a:add_sub
-        let cur_width = cur_width + a:increment
-    else
-        let cur_width = cur_width - a:increment
-    endif
-    " 如果小于最小宽度, 大于最大宽度, 就不会有什么变化了
-    silent exe "normal " . cur_width ."\<C-W>|"
-endfunction " }}}
-
-" 高度改变->(increment: 要增加或减少的高度; add_sub: 0, 增加, 1, 减少) {{{
-function! WinHeightChange(increment, add_sub) abort
-    let cur_height = winheight(0)
-    if 0 == a:add_sub
-        let cur_height = cur_height + a:increment
-    else
-        let cur_height = cur_height - a:increment
-    endif
-
-    " 如果小于最小高度, 或大于最大高度, 就不会有反应了
-    silent exe "normal " . cur_height ."\<C-W>_"
-endfunction " }}}
-" }}}
-"}}}
-
-Plug 'moll/vim-bbye' "主要界面关闭buffer引起的窗口乱的问题{{{
-noremap <leader>mq :Bdelete<CR>
-inoremap <leader>mq <ESC>:Bdelete<CR>
-vnoremap <leader>mq <ESC>:Bdelete<CR>
+Plug 'moll/vim-bbye', {'on': 'Bdelete'} "主要界面关闭buffer引起的窗口乱的问题{{{
+noremap <Leader>mq :Bdelete<CR>
+inoremap <Leader>mq <ESC>:Bdelete<CR>
+vnoremap <Leader>mq <ESC>:Bdelete<CR>
 "}}}
 
 Plug 'DaSea/uncrustify.vim', {'on': 'Uncrustify'} " 代码格式化:{{{
@@ -507,21 +494,40 @@ vnoremap <Leader>ff :'<,'>Uncrustify<CR>
 
 Plug 'iamcco/dict.vim' " 有道翻译{{{
 " 普通模式下，<Leader>d 即可翻译光标下的文本，并在命令行回显
-nnoremap <silent> <leader>yd :call dict#Search(expand("<cword>"), "simple")<CR>
-" 可视化模式下，<leader>d 即可翻译选中的文本，并在命令行回显
-vnoremap <silent> <leader>yd  :<C-U>call dict#VSearch("simple")<CR>
-" 普通模式下，<leader>w 即可翻译光标下的文本，并且在Dict新窗口显示
-nnoremap <silent> <leader>yw  :call dict#Search(expand("<cword>"), "complex")<CR>
-" 可视化模式下，<leader>w 即可翻译选中的文本，并且在Dict新窗口显示
-vnoremap <silent> <leader>yw :<C-U>call dict#VSearch("complex")<CR>
-" 普通模式下，<leader><leader>r 即可翻译光标下的单词，并替换为翻译的结果
-nnoremap <silent> <leader>yr  viw:<C-U>call dict#VSearch("replace")<CR>
-" 可视化模式下，<leader><leader>r 即可翻译光标下的单词，并替换为翻译的结果
-vnoremap <silent> <leader>yr :<C-U>call dict#VSearch("replace")<CR>
+nnoremap <silent> <Leader>yd :call dict#Search(expand("<cword>"), "simple")<CR>
+" 可视化模式下，<Leader>d 即可翻译选中的文本，并在命令行回显
+vnoremap <silent> <Leader>yd  :<C-U>call dict#VSearch("simple")<CR>
+" 普通模式下，<Leader>w 即可翻译光标下的文本，并且在Dict新窗口显示
+nnoremap <silent> <Leader>yw  :call dict#Search(expand("<cword>"), "complex")<CR>
+" 可视化模式下，<Leader>w 即可翻译选中的文本，并且在Dict新窗口显示
+vnoremap <silent> <Leader>yw :<C-U>call dict#VSearch("complex")<CR>
+" 普通模式下，<Leader><Leader>r 即可翻译光标下的单词，并替换为翻译的结果
+nnoremap <silent> <Leader>yr  viw:<C-U>call dict#VSearch("replace")<CR>
+" 可视化模式下，<Leader><Leader>r 即可翻译光标下的单词，并替换为翻译的结果
+vnoremap <silent> <Leader>yr :<C-U>call dict#VSearch("replace")<CR>
 " }}}
 
 Plug 'mbbill/fencview' " (编码检查)auto check Encoding{{{
 let g:fencview_autodetect = 1
+"}}}
+
+" unit.vim 或者 ctrlp相关插件, 及文件管理器{{{
+if g:setting.ctrlp_or_unite ==? 'ctrlp'
+    if exists('g:exvim_custom_path')
+        let g:vim_ctrlp_or_unite = g:exvim_custom_path.'/.vimrc.ctrlp'
+    else
+        let g:vim_ctrlp_or_unite = '~/.vimrc.ctrlp'
+    endif
+else
+    if exists('g:exvim_custom_path')
+        let g:vim_ctrlp_or_unite = g:exvim_custom_path.'/.vimrc.unitvim'
+    else
+        let g:vim_ctrlp_or_unite = '~/.vimrc.unitvim'
+    endif
+endif
+if filereadable(expand(g:vim_ctrlp_or_unite))
+    exec 'source ' . fnameescape(g:vim_ctrlp_or_unite)
+endif
 "}}}
 
 " 补全相关插件, 语言无关 {{{
@@ -548,9 +554,13 @@ endif
 
 " 异步编译和lint插件 {{{
 if 'yes' ==? g:setting.make_lint_need
-    Plug 'neomake/neomake', {'on': 'NeomakeFile'}
-    nnoremap <unique> <leader>nm :NeomakeFile<CR>
+    Plug 'neomake/neomake', {'on': ['NeomakeFile', 'Neomake', 'NeomakeSh', 'NeomakeInfo',
+                \ 'NeomakeListJobs', 'NeomakeCancelJob', 'NeomakeCalcelJobs']}
+    nnoremap <unique> <Leader>nm :NeomakeFile<CR>
     let g:neomake_verbose = 1
+    let g:neomake_open_list = 2
+    " c and cpp 由ycm插件检查
+    let g:neomake_exclude_ft=['c', 'cpp']
     let g:neomake_c_lint_maker = {
                 \ 'exe': 'clang-tidy',
                 \ 'args': ['%:p', '--option', 'x'],
@@ -563,21 +573,26 @@ if 'yes' ==? g:setting.make_lint_need
                 \ }
     let g:neomake_python_lint_maker = {
                 \ 'exe': 'pep8',
+                \ 'args': ['%:t'],
                 \ 'errorformat': '%f:%l:%c: %m',
                 \ }
+    " statusline
+    " if g:setting.status_line ==? 'airline'
+        " call add(g:airline_extensions, 'neomake')
+    " endif
 endif
 "}}}
 
 "括号补全, endif等补全{{{
 Plug 'jiangmiao/auto-pairs'
 let g:AutoPairsFlyMode = 0
-let g:AutoPairsShortcutBackInsert = '<leader>pb'
+let g:AutoPairsShortcutBackInsert = '<Leader>pb'
 " 上面俩项为flyMode下使用
-let g:AutoPairsShortcutToggle = '<leader>pp'
-let g:AutoPairsShortcutFastWrap = '<leader>pe'
-let g:AutoPairsShortcutJump = '<leader>pn'
+let g:AutoPairsShortcutToggle = '<Leader>pp'
+let g:AutoPairsShortcutFastWrap = '<Leader>pe'
+let g:AutoPairsShortcutJump = '<Leader>pn'
 
-Plug 'tpope/vim-endwise'
+Plug 'tpope/vim-endwise', {'for': ['vim', 'lua', 'snippets', 'sh', 'zsh']}
 "}}}
 
 " Document(查阅文档){{{
@@ -594,11 +609,16 @@ if executable(g:zv_zeal_executable)  " zeal {{{
             \   '<Plug>ZVKeyDocset',
             \   '<Plug>ZVMotion'
             \ ]}
-    nmap gzz <Plug>Zeavim
-    vmap gzz <Plug>ZVVisSelection
-    nmap gZ <Plug>ZVKeyDocset<CR>
-    nmap gz <Plug>ZVMotion
-    nmap <leader>z <Plug>ZVKeyDocset
+    if !exists('g:zv_file_types')
+        let g:zv_file_types = {
+                    \ 'cpp': 'cpp'
+                    \ }
+    endif
+    " nmap gzz <Plug>Zeavim
+    " vmap gzz <Plug>ZVVisSelection
+    " nmap gZ <Plug>ZVKeyDocset<CR>
+    " nmap gz <Plug>ZVMotion
+    " nmap <Leader>z <Plug>ZVKeyDocset
 endif
 " }}}
 
@@ -613,7 +633,7 @@ set helplang=cn
 nnoremap <F1> :call FindWord()<CR>
 function! FindWord() abort "{{{
     let filet = eval('&filetype')
-    if filet ==# 'vim'
+    if (filet ==# 'vim') || (filet ==# 'help')
         let curWord = expand("<cword>")
         execute "h " . curWord
     else

@@ -44,6 +44,11 @@ if executable('rg')
                \ ]
 endif
 let g:ctrlp_extensions = ['tag', 'quickfix', 'line', 'changes', 'bookmarkdir']
+
+if g:setting.status_line ==? 'airline'
+    call add(g:airline_extensions, 'ctrlp')
+endif
+
 nnoremap <Leader>fl :CtrlPBuffer<CR>
 nnoremap <Leader>jf :CtrlPMRU<CR>
 " }}}

@@ -44,9 +44,7 @@ endif
 
 " ==============================================================================
 " language and encoding setup  语言及编码设置{{{
-"/////////////////////////////////////////////////////////////////////////////
 " always use English menu一般使用英文菜单
-" NOTE: this must before filetype off, otherwise it won't work
 set langmenu=none
 
 " use English for anaything in vim-editor.
@@ -94,14 +92,15 @@ endif
 let g:setting = {}
 let g:plugins_file = '.vimrc.vimplug'
 " 全局设置
-let g:setting.color_scheme = 'solarized'
-" 关于更改行的设置(git(vim-gitgutter), git_svn(vim-signify), no)
+let g:setting.color_scheme = 'solarized8_dark_low'
+" 关于更改行的设置(git(vim-fugitive, vim-gitgutter), git_svn(vim-signify), no)
 let g:setting.version_status = 'git_svn'
 " 状态栏(ariline or no), 如果为no, 自定义状态栏
+" 这里的tabline是airline的功能
 let g:setting.status_line = 'airline'
-let g:setting.status_color = 'dark'
-let g:setting.show_tabline = 'no'
-" 使用ctrlp还是使用unit.vim
+let g:setting.status_color = 'base16_google'
+let g:setting.show_tabline = 'yes'
+" 使用ctrlp还是使用unit.vim(denite.nvim)
 " 由于denite出色的特性, 测试用denite替换unite相关插件
 let g:setting.ctrlp_or_unite = 'unitevim'
 " 是否需要开启代码的静态语法检查(neomake插件)
@@ -116,14 +115,10 @@ else
     let g:setting.vimwiki_path = '~/dasea.github.io/'
     let g:setting.private_snippets = '~/snippets'
 endif
-" 语言list{主要决定.vimrc.language文件里面语言选项}
-let g:setting.cpp_enable = 'yes'
-let g:setting.markdown_enable = 'yes'
-let g:setting.python_enable = 'yes'
-let g:setting.plantuml_enable = 'no'
-let g:setting.vim_enable = 'yes'
-let g:setting.php_enbale = 'no'
-let g:setting.org_wiki_enable = 'yes'
+" 浏览器
+let g:setting.global_browser = 'C:/Develop/Mozilla Firefox/firefox.exe'
+" 设置需要支持的语言(目前有python, cpp, markdown, plantuml, vim, php, org)
+let g:language_group = ['cpp', 'markdown', 'python', 'vim', 'org']
 " }}}
 
 " ==============================================================================
@@ -256,6 +251,7 @@ else
         set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ 12
     endif
 endif
+" set ambiwidth=double
 "}}}
 
 " ==============================================================================
@@ -278,9 +274,13 @@ set titlestring=%t\[%{expand(\"%:p:h\")}]
 
 set showfulltag " show tag with function protype.
 
+" 关闭光标闪烁
+set guicursor&
+set guicursor+=a:blinkon0
+
 " 状态栏设置
 set laststatus=2 " always have status-line
-if g:setting.status_line ==? 'no'
+if g:setting.status_line ==? 'no'  " 自定义状态栏{{{
     let s:currentmode={
                 \ 'n':  {'text': 'NORMAL',  'termColor': 60, 'guiColor': '#076678'},
                 \ 'v': {'text': 'VISUAL',  'termColor': 58, 'guiColor': '#D65D0E'},
@@ -327,13 +327,13 @@ if g:setting.status_line ==? 'no'
 
     au WinLeave * call BuildStatusLine(0)
     au WinEnter,VimEnter,BufWinEnter * call BuildStatusLine(1)
-endif
+endif "}}}
 
 " 显示/隐藏菜单栏、工具栏、滚动条，可用 Ctrl + F11 切换
-if g:isGUI
+if g:isGUI "{{{
     if g:iswindows
         au GUIEnter * simalt ~x " Maximize window when enter vim
-        " set rop=type:directx
+        " set rop=type:directx,gamma:1.0,contrast:0.5,level:1,geom:1,renmode:4,taamode:1
     endif
 
     "present the bottom scrollbar when the longest visible line exceed the window
@@ -353,7 +353,7 @@ if g:isGUI
         \set guioptions+=r <Bar>
         \set guioptions+=L <Bar>
     \endif<CR>
-endif
+endif "}}}
 
 set nonumber
 function! ToggleLineNumber() abort " 切换行号 {{{
@@ -365,14 +365,15 @@ function! ToggleLineNumber() abort " 切换行号 {{{
         " exec 'set norelativenumber'
     endif
 endfunction " }}}
-nnoremap <silent> <leader>nc :call ToggleLineNumber()<CR>
+nnoremap <silent> <Leader>nc :call ToggleLineNumber()<CR>
+
 " ==============================================================================
 "  < vimtweak 工具配置 > 请确保以已装了工具
 " ==============================================================================
 " 这里只用于窗口透明与置顶
 " 常规模式下 Ctrl + Up（上方向键） 增加不透明度，Ctrl + Down（下方向键） 减少不透明度
 " <Leader>t 窗口置顶与否切换
-if (g:iswindows && g:isGUI)
+if (g:iswindows && g:isGUI) " {{{
     let g:Current_Alpha = 230
     let g:Top_Most = 0
     call libcallnr("vimtweak.dll","SetAlpha", g:Current_Alpha)
@@ -403,14 +404,12 @@ if (g:iswindows && g:isGUI)
     "快捷键设置
     noremap <c-up> :call Alpha_add()<CR>
     noremap <c-down> :call Alpha_sub()<CR>
-endif
+endif "}}}
 
 "}}}
 
 " ==============================================================================
 " Default colorscheme setup 颜色方案设置{{{
-" g:statuscheme 状态栏配色
-"/////////////////////////////////////////////////////////////////////////////
 if !g:isGUI
     if has("termguicolors")
         " set termguicolors
@@ -418,7 +417,7 @@ if !g:isGUI
     set t_Co=256
 endif
     if strftime("%H") >= 17 || strftime("%H") <= 8
-        set background=light
+        set background=dark
     else
         set background=light
     endif
@@ -433,7 +432,7 @@ function! ToggleBackground() abort
     endif
     exec 'set background=' . curr_back
 endfunction " }}}
-nnoremap <leader>bc :call ToggleBackground()<CR>
+nnoremap <Leader>bc :call ToggleBackground()<CR>
 " }}}
 
 " ==============================================================================
@@ -564,7 +563,6 @@ set smartcase " set smartcase mode on, If there is upper case character in the s
 " Desc: Only do this part when compiled with support for autocommands.
 " ------------------------------------------------------------------
 if has('autocmd')
-
     augroup ex
         au!
 
@@ -588,7 +586,6 @@ if has('autocmd')
         au BufNewFile,BufRead *.avs set syntax=avs " for avs syntax file.
 
         " ------------------------------------------------------------------
-        au FileType * setlocal tabstop=4
         " this will avoid bug in my project with namespace ex,
         " the vim will tree ex:: as modeline.
         au FileType c,cpp,cs,swig set nomodeline
@@ -653,6 +650,10 @@ endif
 " neovim 配置 {{{
 if g:isNvim
     let g:terminal_scrollback_buffer_size = 500
+
+    " Use cursor shape feature
+    let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
+
     " python设置
     let g:python_host_prog = '/usr/bin/python'
     " let g:loader_python_provider=0
@@ -665,10 +666,13 @@ if g:isNvim
     " let g:loaded_ruby_provider = 0
 
     " 搜索替换设置{{{
-    set inccommand=nosplit
+    if exists('&inccommand')
+        set inccommand=nosplit
+    endif
     " }}}
 
     "终端设置{{{
+    nnoremap <Leader>tt :<C-u>terminal<CR>
     tnoremap <ESC> <C-\><C-n>
     augroup me_nvim
         autocmd BufEnter term://* startinsert
@@ -681,22 +685,51 @@ endif
 " Key Mappings 按键映射 {{{
 " ==============================================================================
 "===================================================
-" 取消的系统按键
-nnoremap q <ESC>
-xnoremap q <ESC>
+" 取消的系统按键 {{{
+nnoremap q <Nop>
+xnoremap q <Nop>
+nnoremap ZZ <Nop>
+" }}}
+
+"===================================================
+" 编码的快速转换, utf-8<->cp963; 行结束符格式的转换: dos<->unix{{{
+function! QuickChangeFileencoding() abort
+    let curencode = &fileencoding
+    if curencode ==# 'cp936'
+        execute 'set fileencoding=utf-8'
+    elseif curencode ==# 'utf-8'
+        execute 'set fileencoding=cp936'
+    endif
+endfunction
+nnoremap <Leader>ec :call QuickChangeFileencoding()<CR>
+
+function! QuickChangeFileformat() abort
+    let curencode = &fileformat
+    if curencode ==# 'dos'
+        execute 'set fileformat=unix'
+    elseif curencode ==# 'unix'
+        execute 'set fileformat=dos'
+    endif
+endfunction
+nnoremap <Leader>lc :call QuickChangeFileFormat()<CR>
+"}}}
 
 "===================================================
 " 重新映射leader键，default 为\
 " let mapleader = ","
 " 修改 :
 nnoremap ; :
+
 " 修改esc 键为jk
-" inoremap jk <ESC>
+inoremap jk <ESC>
+
 " 行首和行尾
-nnoremap <Home> ^
+" nnoremap <Home> ^
+nnoremap 0 ^
 nnoremap <End> $
 vnoremap <Home> ^
 vnoremap <End> $
+
 " 结对符之间跳转，助记pair
 nmap <Leader>pa %
 
@@ -708,7 +741,7 @@ nnoremap U <c-r>
 nnoremap <space> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
 " 替换当前当前光标下单词 {{{
-nnoremap <leader>pw :call ReplaceCurrentWord()<CR>
+nnoremap <Leader>pw :call ReplaceCurrentWord()<CR>
 function! ReplaceCurrentWord() abort
     let curWord = expand("<cword>")
     call inputsave()
@@ -729,50 +762,65 @@ endfunction " }}}
 " 常规模式下输入 cM 清除行尾 ^M 符号
 nmap CM :%s/\r$//g<CR>:noh<CR>
 " tab 转空格(tab to space)
-noremap <leader>tts :%ret! 4<CR>
+noremap <Leader>tts :%ret! 4<CR>
 
 "===================================================
 " 将当前光标下单词转换成大写
-noremap <leader>wu viwU
+noremap <Leader>wu viwU
 
 " 高亮当前光标下单词
 " * #
 " 取消当前高亮
-noremap <leader>nh :noh<cr>
+noremap <Leader>nh :noh<cr>
 
 " If you want n to always search forward and N backward, use this:
 nnoremap <expr> n  'Nn'[v:searchforward]
 nnoremap <expr> N  'nN'[v:searchforward]
 
+" 命令行快捷键{{{
 " 命令行历史窗口关闭
 autocmd CmdwinEnter * noremap <buffer> q o<Esc><CR>
 " 命令行下浏览历史
 cnoremap <c-n>  <down>
 cnoremap <c-p>  <up>
+" 左右移动光标
+cnoremap <C-b>          <Left>
+cnoremap <C-f>          <Right>
+" 删除输入的字符
+cnoremap <C-d>          <Del>
+" 头尾
+cnoremap <C-a>          <Home>
+cnoremap <C-e>          <End>
+" 粘贴
+cnoremap <C-y>          <C-r>*
+" <C-g>: 退出.
+cnoremap <C-g>          <C-c>
+" }}}
+
 " 移动行(lu:上移, ld下移) (其他插件替代)
-" nnoremap <leader>ld  :<c-u>execute 'move +'. v:count1<cr>
-" nnoremap <leader>lu  :<c-u>execute 'move -1-'. v:count1<cr>
+" nnoremap <Leader>ld  :<c-u>execute 'move +'. v:count1<cr>
+" nnoremap <Leader>lu  :<c-u>execute 'move -1-'. v:count1<cr>
 " 快速增加空行
-nnoremap <leader>us :put! =''<cr>
-nnoremap <leader>ds :put =''<cr>
+nnoremap <Leader>us :put! =''<cr>
+nnoremap <Leader>ds :put =''<cr>
 " 快速增加空格
-" nnoremap <leader><space>  a<C-R>=" "<CR><ESC>
-" nnoremap <leader><space>  i<C-R>=" "<CR><ESC>
+" nnoremap <Leader><space>  a<C-R>=" "<CR><ESC>
+" nnoremap <Leader><space>  i<C-R>=" "<CR><ESC>
 " 字体大小
 " command! Bigger  :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)+1', '')
 " command! Smaller :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)-1', ''
 
 "===================================================
 " 快速切换窗口
-nnoremap <leader>wk <C-W><Up>
-nnoremap <leader>wj <C-W><Down>
-nnoremap <leader>wh <C-W><Left>
-nnoremap <leader>wl <C-W><Right>
+nnoremap <Leader>wk <C-W><Up>
+nnoremap <Leader>wj <C-W><Down>
+nnoremap <Leader>wh <C-W><Left>
+nnoremap <Leader>wl <C-W><Right>
 " 分割窗口(上, 下, 左, 右)
-nnoremap <leader>kw :<C-u>split<CR><C-W><Up>
-nnoremap <leader>jw :<C-u>split<CR>
-nnoremap <leader>hw :<C-u>vsplit<CR><C-W><Left>
-nnoremap <leader>lw :<C-u>vsplit<CR>
+nnoremap <Leader>kw :<C-u>split<CR><C-W><Up>
+nnoremap <Leader>jw :<C-u>split<CR>
+nnoremap <Leader>hw :<C-u>vsplit<CR><C-W><Left>
+nnoremap <Leader>lw :<C-u>vsplit<CR>
 " 插入模式下的字符移动
 inoremap <M-j> <Down>
 inoremap <M-k> <Up>
@@ -788,15 +836,15 @@ nnoremap <M-;>  A<C-R>=";"<CR><ESC>
 
 "===================================================
 " 当前文件中搜索光标下单词
-nnoremap <leader>lv :lv /<C-r>=expand("<cword>")<CR>/ %<CR>:lw<CR>
+nnoremap <Leader>lv :lv /<C-r>=expand("<cword>")<CR>/ %<CR>:lw<CR>
 " location-list快捷键设置
-nnoremap <leader>ll :lw<CR>
-nnoremap <leader>ln :lne<CR>
-nnoremap <leader>lp :lp<CR>
+nnoremap <Leader>ll :lw<CR>
+nnoremap <Leader>ln :lne<CR>
+nnoremap <Leader>lp :lp<CR>
 " quickfix快捷键设置
-nnoremap <leader>qw :cl<CR>
-nnoremap <leader>qp :cp<CR>
-nnoremap <leader>qn :cn<CR>
+nnoremap <Leader>qw :cl<CR>
+nnoremap <Leader>qp :cp<CR>
+nnoremap <Leader>qn :cn<CR>
 nnoremap <Leader>qm :ccN<CR>
 " quickfix 定义快速关闭快捷键
 autocmd FileType qf noremap <buffer> q :close<CR>
@@ -805,26 +853,26 @@ autocmd FileType qf noremap <buffer> q :close<CR>
 " 编辑vim配置文件，并重新读取配置文件
 " 当.vimrc文件改变时,自动加载
 if g:iswindows
-    nnoremap <leader>ev :e $VIM\.vimrc<cr>
-    exec 'nnoremap <leader>evp :e $VIM\'.g:plugins_file.'<cr>'
-    nnoremap <leader>sv :source $MYVIMRC<cr>
+    nnoremap <Leader>ev :e $VIM\.vimrc<cr>
+    exec 'nnoremap <Leader>evp :e $VIM\'.g:plugins_file.'<cr>'
+    nnoremap <Leader>sv :source $MYVIMRC<cr>
 else
-    nnoremap <leader>ev :e $MYVIMRC<cr>
-    exec 'nnoremap <leader>evp :e ~/'.g:plugins_file.'<cr>'
-    nnoremap <leader>sv :source $MYVIMRC<cr>
+    nnoremap <Leader>ev :e $MYVIMRC<cr>
+    exec 'nnoremap <Leader>evp :e ~/'.g:plugins_file.'<cr>'
+    nnoremap <Leader>sv :source $MYVIMRC<cr>
 endif
 
 "===================================================
 " 保存文件设置
-noremap  <leader>wa :w<CR>
-inoremap <leader>wa <ESC>:w<CR>
-vnoremap <leader>wa <ESC>:w<CR>
-noremap  <leader>ws :wa<CR>
-inoremap <leader>ws <ESC>:wa<CR>
-vnoremap <leader>ws <ESC>:wa<CR>
+noremap  <Leader>wa :w<CR>
+inoremap <Leader>wa <ESC>:w<CR>
+vnoremap <Leader>wa <ESC>:w<CR>
+noremap  <Leader>ws :wa<CR>
+inoremap <Leader>ws <ESC>:wa<CR>
+vnoremap <Leader>ws <ESC>:wa<CR>
 " 重命名文件
 " 关闭当前窗口, 详细请看:help Close
-noremap <leader>mc :close<CR>
+noremap <Leader>mc :close<CR>
 
 " Don't use Ex mode, use Q for formatting
 map Q gq
@@ -851,29 +899,29 @@ if &clipboard ==# 'unnamed'
 else
     " general copy/paste.
     " NOTE: y,p,P could be mapped by other key-mapping
-    map <leader>y "*y
-    map <leader>p "*p
-    map <leader>P "*P
+    map <Leader>y "*y
+    map <Leader>p "*p
+    map <Leader>P "*P
 endif
 
 " copy folder path to clipboard, foo/bar/foobar.c => foo/bar/
-nnoremap <silent> <leader>y1 :let @*=fnamemodify(bufname('%'),":p:h")<CR>
+nnoremap <silent> <Leader>y1 :let @*=fnamemodify(bufname('%'),":p:h")<CR>
 
 " copy file name to clipboard, foo/bar/foobar.c => foobar.c
-nnoremap <silent> <leader>y2 :let @*=fnamemodify(bufname('%'),":p:t")<CR>
+nnoremap <silent> <Leader>y2 :let @*=fnamemodify(bufname('%'),":p:t")<CR>
 
 " copy full path to clipboard, foo/bar/foobar.c => foo/bar/foobar.c
-nnoremap <silent> <leader>y3 :let @*=fnamemodify(bufname('%'),":p")<CR>
+nnoremap <silent> <Leader>y3 :let @*=fnamemodify(bufname('%'),":p")<CR>
 "}}}
 
-" F8 or <leader>/:  Set Search pattern highlight on/off
+" F8 or <Leader>/:  Set Search pattern highlight on/off
 nnoremap <F8> :let @/=""<CR>
-nnoremap <leader>/ :let @/=""<CR>
+nnoremap <Leader>/ :let @/=""<CR>
 " DISABLE: though nohlsearch is standard way in Vim, but it will not erase the
-"          search pattern, which is not so good when use it with exVim's <leader>r
+"          search pattern, which is not so good when use it with exVim's <Leader>r
 "          filter method
 " nnoremap <F8> :nohlsearch<CR>
-" nnoremap <leader>/ :nohlsearch<CR>
+" nnoremap <Leader>/ :nohlsearch<CR>
 
 " easy diff goto
 noremap <C-k> [c
@@ -893,7 +941,7 @@ noremap <Down> gj
 " Then when you put the cursor on or in a word, press "\sw", and
 " the word will be swapped with the next word.  The words may
 " even be separated by punctuation (such as "abc = def").
-nnoremap <silent> <leader>ltr "_yiw:s/\(\%#\w\+\)\(\W\+\)\(\w\+\)/\3\2\1/<cr><c-o>
+nnoremap <silent> <Leader>ltr "_yiw:s/\(\%#\w\+\)\(\W\+\)\(\w\+\)/\3\2\1/<cr><c-o>
 
 "}}}
 

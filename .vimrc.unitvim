@@ -1,13 +1,23 @@
 " 因为unit.vim和ctrlp有许多相同的功能, 所以分开, 可以让大家自由选择
-" 这个主要是unite.vim的相关插件
-" Denite.nvim 设置, 最终是取代unite.vim{{{
-Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins'} " {{{
-nnoremap <silent> <C-p> :<C-u>Denite -auto-resize -mode=insert file_rec<CR>
-nnoremap <silent> <leader>lf :<C-u>Denite -auto-resize -mode=insert file_rec<CR>
-nnoremap <silent> <leader>fl :<C-u>Denite -auto-resize -cursor-wrap -mode=normal buffer<CR>
-nnoremap <silent> <leader>ft :<C-u>Denite -mode=insert -input=`expand('<cword>')` line<CR>
-nnoremap <silent> <leader>fm :<C-u>Denite -auto-resize -mode=insert outline<CR>
-nnoremap <silent> <leader>am :<C-u>Denite -auto-resize -mode=normal menu<CR>
+" 这个主要是unite.vim 和 denite.nvim的相关插件
+" 由于Denite.nvim是python支持, 所以速度比unite.vim快好多, 最终是取代unite.vim{{{
+if g:isNvim
+    Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins'}
+else
+    Plug 'Shougo/denite.nvim'
+endif " {{{
+nnoremap <silent> <C-p>
+            \ :<C-u>Denite -auto-resize -mode=insert file_rec<CR>
+nnoremap <silent> <leader>lf
+            \ :<C-u>Denite -auto-resize -mode=insert file_rec<CR>
+nnoremap <silent> <leader>fl
+            \ :<C-u>Denite -auto-resize -cursor-wrap -mode=normal buffer<CR>
+nnoremap <silent> <leader>ft
+            \ :<C-u>Denite -mode=insert line<CR>
+nnoremap <silent> <leader>fm
+            \ :<C-u>Denite -auto-resize -mode=insert outline<CR>
+nnoremap <silent> <leader>am
+            \ :<C-u>Denite -auto-resize -mode=normal menu<CR>
 
 " menu设置 {{{
 let s:denite_menus = {}
@@ -45,7 +55,7 @@ function! DeniteInit() abort "{{{
     call denite#custom#map('_', '<Esc>', '<denite:enter_mode:normal>', 'noremap')
     call denite#custom#map('insert', '<C-i>', '<denite:input_command_line>', 'noremap')
     call denite#custom#map('insert', '<C-j>', '<denite:move_to_next_line>', 'noremap')
-    call denite#custom#map('insert', '<C-k>', '<denite:move_to_prev_line>', 'noremap')
+    call denite#custom#map('insert', '<C-k>', '<denite:move_to_previous_line>', 'noremap')
     call denite#custom#map('insert', '<Esc>', '<denite:enter_mode:normal>', 'noremap')
 
     " Change matchers.
@@ -58,16 +68,24 @@ function! DeniteInit() abort "{{{
 
     " Ripgrep command on grep source
     " Change file_rec command.
-    if executable('ag')
+    let s:denite_exe_command = 'rg'
+    if !executable(s:denite_exe_command)
+        let s:denite_exe_command = 'ag'
+    endif
+    if s:denite_exe_command ==? 'ag'
         call denite#custom#var('file_rec', 'command',
                     \ ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
         call denite#custom#var('grep', 'command', ['ag'])
         call denite#custom#var('grep', 'default_opts',
                     \ ['-w', '--vimgrep', '--noheading'])
-    elseif executable('rg')
+    elseif s:denite_exe_command ==? 'rg'
+        " https://github.com/BurntSushi/ripgrep
         call denite#custom#var('file_rec', 'command',
-                    \ ['rg', '--files', '--glob', '!.git'])
+                    \ ['rg', '--files', '--glob', '!.git', ''])
         call denite#custom#var('grep', 'command', ['rg'])
+        call denite#custom#var('grep', 'recursive_opts', [])
+        call denite#custom#var('grep', 'final_opts', [])
+        call denite#custom#var('grep', 'separator', ['--'])
         call denite#custom#var('grep', 'default_opts',
                     \ ['--vimgrep', '--no-heading'])
     endif
@@ -77,14 +95,20 @@ function! DeniteInit() abort "{{{
     call denite#custom#var('file_rec/git', 'command',
                 \ ['git', 'ls-files', '-co', '--exclude-standard'])
 
+    " Change options
+    call denite#custom#option('default', 'highlight_mode_insert', 'CursorLine')
+    call denite#custom#option('default', 'highlight_mode_normal', 'CursorLine')
+
     " Change default prompt
-    call denite#custom#option('default', 'prompt', '<> ')
+    call denite#custom#option('default', 'prompt', '>>')
+    " call denite#custom#option('default', 'prompt', '▷')
+    call denite#custom#option('default', 'short_source_names', v:true)
 
     " Change ignore_globs
     call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
                 \ [ '.exvim/', '.git/', '.ropeproject/', '__pycache__/',
                 \   'venv/', 'images/', '*.min.*', 'img/', 'fonts/',
-                \   'build/'])
+                \   'build/', 'Debug/', 'Release/' , 'bin/'])
 endfunction " }}}
 call add(g:init_func_list, function('DeniteInit'))
 " }}}
@@ -97,14 +121,18 @@ Plug 'DaSea/vim-denite-prjmgr' " {{{
 if g:isNvim
     let g:projectmgr_vsc_root_dir = {
                 \ "/mnt/e/Self/05_gitsrc": "git"}
+    let g:projectmgr_vimplug_root_dir = "/home/Feng/.vim/plugged"
 else
     let g:projectmgr_vsc_root_dir = {
-                \ "e:/Self/05_gitsrc": "git"}
+                \ "e:/Self/05_gitsrc": "git"
+                \ }
+    let g:projectmgr_vimplug_root_dir = "c:/Develop/exVim/vimfiles/plugged"
 endif
-nnoremap <silent> <Leader>el :<C-u>Denite -mode=normal prjmgr<CR>
+nnoremap <silent> <Leader>el :<C-u>Denite -auto-resize -mode=insert prjmgr:user<CR>
+nnoremap <silent> <Leader>gl :<C-u>Denite -auto-resize -mode=insert prjmgr:vsc<CR>
+nnoremap <silent> <Leader>ml :<C-u>Denite -auto-resize -mode=insert prjmgr:vimplug<CR>
 " }}}
 "}}}
-
 
 Plug 'Shougo/unite.vim' "  {{{
 " 基本设置
@@ -151,6 +179,11 @@ elseif executable('pt')
     let g:unite_source_grep_recursive_opt = ''
     " let g:unite_source_grep_encoding = 'utf-8'
 endif
+
+if g:setting.status_line ==? 'airline'
+    call add(g:airline_extensions, 'unite')
+endif
+
 " 文件查找
 " nnoremap <silent> <C-p> :<C-u>Unite -no-split -buffer-name=files -start-insert -update-time=100 file_rec<CR>
 " nnoremap <silent> <leader>ft :<C-u>Unite -no-split -buffer-name=files -start-insert file_rec/async:!<CR>
@@ -172,15 +205,15 @@ nnoremap <silent> <leader>ge :Unite grep:.<cr>
 " noremap <silent> <leader>va :Unite grep:$buffers::<C-r><C-w><CR>
 "}}}
 
-" Plug 'tacroe/unite-mark' " {{{
-" nnoremap <leader>vm :Unite mark<CR>
+Plug 'tacroe/unite-mark' " {{{
+nnoremap <leader>vm :Unite mark<CR>
 " }}}
 
 " Plug 'Shougo/unite-outline' " 函数跳转等变量跳转{{{
 " nnoremap <leader>fm :Unite -start-insert -no-split -buffer-name=outline outline<CR>
 " }}}
 
-Plug 'Shougo/vimfiler.vim'  " 替换nertw(文件浏览器) {{{
+Plug 'Shougo/vimfiler.vim' "文件浏览器 {{{
 let g:vimfiler_as_default_explorer = 1
 let g:vimfiler_force_overwrite_statusline = 0
 let g:vimfiler_min_cache_files = 500

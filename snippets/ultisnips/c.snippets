@@ -1,0 +1,202 @@
+###########################################################################
+#                            TextMate Snippets                            #
+###########################################################################
+
+priority -50
+
+# Header
+snippet h_header "h file header"
+/*
+ * Copyright (C) `!v strftime("%Y-%m-%d")` Dasea
+ *
+ * Description: ${1:#:You will get it!}
+ */
+${0}
+endsnippet
+
+snippet c_header "cpp,c source header"
+/*
+ * Copyright (C) `!v strftime("%Y-%m-%d")` Dasea
+ *
+ * Description: ${1:#:You will get it!}
+ */
+#include "${2}.h"
+${0}
+endsnippet
+
+snippet def "#define ..."
+#define $1
+endsnippet
+
+snippet #ifndef "#ifndef ... #define ... #endif"
+#ifndef ${1/([A-Za-z0-9_]+).*/$1/}
+#define ${1:SYMBOL} ${2:value}
+#endif /* ifndef $1 */
+endsnippet
+
+snippet #if "#if #endif" b
+#if ${1:0}
+${VISUAL}$0
+#endif
+endsnippet
+
+snippet mark "#pragma mark (mark)"
+#if 0
+${1:#pragma mark -
+}#pragma mark $2
+#endif
+
+$0
+endsnippet
+
+snippet main "main() (main)"
+#include <stdio.h>
+int main(int argc, char *argv[])
+{
+	${VISUAL}$0
+	return 0;
+}
+endsnippet
+
+snippet for "for loop (for)"
+for (${2:i} = 0; $2 < ${1:count}; ${3:++}$2) {
+	${VISUAL}$0
+}
+endsnippet
+
+snippet fori "for int loop (fori)"
+for (${4:int} ${2:i} = 0; $2 < ${1:count}; ${3:++}$2) {
+	$0
+}
+endsnippet
+
+snippet if "if(condition) {}"
+if (${1:true}) {
+	$0
+}
+endsnippet
+
+snippet eli "else if .. (eli)"
+else if (${1:/* condition */}) {
+	$0
+}
+endsnippet
+
+snippet else "else {}"
+else {
+	$0
+}
+endsnippet
+
+snippet ifel "if(){}else{}"
+if (${1:true}) {
+	$2
+} else {
+	$0
+}
+endsnippet
+
+snippet while "while () {}"
+while (${1:#:condition}) {
+	${0:TARGET}
+}
+endsnippet
+
+snippet do_while "do{}while"
+do {
+	${0:TARGET:code}
+} while (${1:#:condition});
+endsnippet
+
+snippet switch "switch() {}"
+switch(${1:#:var}) {
+case ${2:#:val}: {
+	${3:/* your first selection */}
+}
+break;
+default: {
+	${0:/* No select */}
+}
+break;
+}
+endsnippet
+
+snippet case "case 1:{}break"
+case ${1:/* condition */}: {
+	${2:/* make it diff */}
+}
+${0:break}
+endsnippet
+
+snippet once "Include header once only guard"
+#ifndef ${1:`!p
+if not snip.c:
+	import random, string
+	name = re.sub(r'[^A-Za-z0-9]+','_', snip.fn).upper()
+	rand = ''.join(random.sample(string.ascii_letters+string.digits, 8))
+	snip.rv = ('%s_%s' % (name,rand)).upper()
+else:
+	snip.rv = snip.c`}
+#define $1
+
+${VISUAL}$0
+
+#endif /* end of include guard: $1 */
+endsnippet
+
+snippet fprintf "fprintf ..."
+fprintf(${1:stderr}, "${2:%s}\n"${2/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$3${2/([^%]|%%)*(%.)?.*/(?2:\);)/}
+endsnippet
+
+snippet printf "printf .. (printf)"
+printf("${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
+endsnippet
+
+snippet st "struct"
+struct ${1:`!p snip.rv = (snip.basename or "name") + "_t"`} {
+	${0:/* data */}
+};
+endsnippet
+
+snippet union "union{}"
+union {
+	${0:int a;}
+} u;
+endsnippet
+
+snippet enum "enum {}"
+enum ${1:NAME} {
+	${0:TARGET}
+};
+endsnippet
+
+snippet fun "function definition" b
+${1:void} ${2:function_name}($3)
+{
+	${VISUAL}$0
+}
+endsnippet
+
+snippet fund "function declaration" b
+${1:void} ${2:function_name}($3);
+endsnippet
+
+snippet fopen_rc "fopen(name, mode);"
+FILE* ${1:file} = fopen("${1:PATH}", "r${2:#:b+}");
+${0:TARGET}
+fclose(${1});
+endsnippet
+
+snippet fopen_wc "fopen(name, mode);"
+FILE* ${1:file} = fopen("${1:PATH}", "w${2:#:b+}");
+${0:TARGET}
+fclose(${1});
+endsnippet
+
+snippet fopen_ac "fopen(name, mode)"
+FILE* ${1:file} = fopen("${1:PATH}", "a${2:#:b+}");
+${0:TARGET}
+fclose(${1});
+endsnippet
+
+# vim:ft=snippets:

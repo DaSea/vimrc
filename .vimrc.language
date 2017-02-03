@@ -1,18 +1,36 @@
 " 存放于语言相关的配置, 如果为语法高亮和相关的补全等
 
+Plug 'DaSea/vim-syntax' " 杂7杂8的, 有qml, 有cpp文件中的doxygen, ndk高亮等{{{
+let g:ds_ndk_syntax_enable = 1
+let g:ds_doxygen_syntax_enable = 1
+let g:ds_opengl_syntax_enable = 1
+"}}}
+
 " markdown支持 {{{
-if g:setting.markdown_enable ==? 'yes'
-    Plug 'godlygeek/tabular', {'for': 'md'}
-    Plug 'plasticboy/vim-markdown', {'for': 'md'}
+if index(g:language_group, 'markdown') >= 0
+    Plug 'godlygeek/tabular', {'on': 'Tabularize'}
+    Plug 'plasticboy/vim-markdown', {'for': 'markdown'}
     let g:vim_markdown_folding_disabled=0
     let g:vim_markdown_folding_style_pythonic=1
     let g:vim_markdown_emphasis_multiline=90
     let g:vim_markdown_conceal=0
+    let g:vim_markdown_new_list_item_indent = 2
+
+    " 增加在浏览器中打开当前编辑的文件, 预览markdown, 浏览器安装markdown的viewer插件
+    function! MeMarkdownPreview() abort 
+        let reviewfile = expand("%:p")
+        if g:iswindows
+            exec "silent !start " . g:setting.global_browser . ' ' . reviewfile
+        else
+            call system(g:setting.global_browser . ' ' . reviewfile)
+        endif
+    endfunction
+    nnoremap <silent> <Leader>mp :call MeMarkdownPreview()<CR>
 endif
 "}}}
 
 " 好玩的东西, Plantuml{{{
-if (g:setting.plantuml_enable ==? 'yes') && (g:iswindows)
+if (index(g:language_group, 'plantuml') >= 0) && (g:iswindows)
     Plug 'aklt/plantuml-syntax',{'for': 'plantuml'}
     let g:plantuml_executable_script = 'D:/Develop/Tools/plantuml.jar'
     function! UmlToImage() abort " 由uml等生成图片 {{{
@@ -28,14 +46,24 @@ if (g:setting.plantuml_enable ==? 'yes') && (g:iswindows)
 endif
 " }}}
 
-" cpp/c等{{{
-if 'yes' ==? g:setting.cpp_enable
-    Plug 'DaSea/vim-syntax' " 杂7杂8的, 有qml, 有cpp文件中的doxygen, ndk高亮等{{{
-    let g:ndk_syntax_enable = 1
-    let g:doxygen_syntax_enable = 1
-    "}}}
+" vim 补全{{{
+if (index(g:language_group, 'vim') >= 0) && g:hasNeocomplete
+    Plug 'Shougo/neco-vim'
+    if g:hasNeocomplete
+        if !exists('g:deoplete#sources')
+            let g:deoplete#sources = {}
+        endif
+        let g:deoplete#sources.vim = ['buffer', 'neosnippet', 'file/include', 'vim']
+    else
+        let g:ycm_semantic_triggers = get( g:,'ycm_semantic_triggers', {} )
+        let g:ycm_semantic_triggers.vim = ['$', '&', 're![\w&$<-][\w:#<>-]*']
+    endif
+endif
+"}}}
 
-    Plug 'DaSea/ex-avim',{'for': ['cpp', 'c']} " h与cpp文件的交换{{{
+" cpp/c等{{{
+if index(g:language_group, 'cpp') >= 0
+    Plug 'DaSea/ex-avim',{'on': ['A', 'AV', 'AS']} " h与cpp文件的交换{{{
     " 用于切换C/C++头文件
     " :A     ---切换头文件并独占整个窗口
     " :AV    ---切换头文件并垂直分割窗口
@@ -51,6 +79,11 @@ if 'yes' ==? g:setting.cpp_enable
     nnoremap <silent> <leader>av :AV<CR>
     nnoremap <silent> <leader>as :AS<CR>
     "}}}
+
+    " Plug 'octol/vim-cpp-enhanced-highlight'
+    " let c_no_curly_error=1
+    " let g:cpp_class_scope_highlight = 1
+    " let g:cpp_experimental_simple_template_highlight = 1
 
     if g:isNvim
         Plug 'zchee/deoplete-clang', {'do': ':UpdateRemotePlugins'} " {{{
@@ -68,39 +101,17 @@ if 'yes' ==? g:setting.cpp_enable
         let g:deoplete#sources.cpp = ['buffer', 'neosnippet', 'file/include', 'clang']
         " echo | clang -v -E -x c -
         let g:deoplete#sources#clang#flags = [
-                    \ "-O3",
-                    \ "-cc1",
-                    \ "-triple", "x86_64-pc-linux-gnu",
-                    \ "-disable-free",
-                    \ "-disable-llvm-verifier",
-                    \ "-main-file-name",
-                    \ "-mrelocation-model", "static",
-                    \ "-pic-level", "2",
-                    \ "-mthread-model", "posix",
-                    \ "-mdisable-fp-elim",
-                    \ "-fmath-errno",
-                    \ "-munwind-tables",
-                    \ "-target-cpu", "x86_64",
-                    \ "-dwarf-column-info",
-                    \ "-debugger-tuning=lldb",
-                    \ "-resource-dir", "/usr/lib/llvm-3.8/lib/clang/3.8.0",
-                    \ "-ferror-limit", "19",
-                    \ "-fmessage-length", "103",
-                    \ "-fobjc-runtime=gcc",
+                    \ "-O3", "-cc1", "-x", "c++", "-std=c++11",
                     \ "-I/home/Feng/java/jdk1.8.0_111/include",
                     \ "-I/mnt/D/Develop/Java/android-ndk-r10/platforms/android-12/arch-arm/usr/include"
                     \ ]
         " }}}
-    else
-        " Plug 'FromtonRouge/OmniCppComplete'
-        " autocmd FileType c setlocal omnifunc=omni#c#complete#Main
-        " autocmd FileType cpp setlocal omnifunc=omni#cpp#complete#Main
     endif
 endif
 "}}}
 
 " python{{{
-if ('yes' ==? g:setting.python_enable) && g:isNvim
+if (index(g:language_group, 'python') >= 0) && g:isNvim
     Plug 'zchee/deoplete-jedi', {'do': ':UpdateRemotePlugins'}
     let g:deoplete#sources#jedi#python_path='/usr/bin/python3'  "~/.pyenv/versions/3.4.5/envs/neovim/bin/python'
     " let g:python3_host_prog = '/home/Feng/.pyenv/versions/3.4.5/envs/neovim/bin/python'
@@ -116,7 +127,8 @@ if ('yes' ==? g:setting.python_enable) && g:isNvim
     let g:deoplete#sources#jedi#short_types = 1
     let g:deoplete#sources#jedi#show_docstring = 0
     let g:deoplete#sources#jedi#debug_enabled = 0
-elseif ('yes' ==? g:setting.python_enable)
+elseif (index(g:language_group, 'python') >= 0) && g:hasNeocomplete
+    " 对于ycm 来说, 不需要此插件
     Plug 'davidhalter/jedi-vim',{'for': 'python'}
     let g:jedi#auto_vim_configuration=0
     let g:jedi#popup_select_first=0
@@ -124,7 +136,7 @@ endif
 "}}}
 
 "  Php自动补全{{{
-if 'yes' ==? g:setting.php_enbale
+if index(g:language_group, 'php') >= 0
 " Plug 'shawncplus/phpcomplete.vim',{'for': 'php'}
 " Plug '2072/PHP-Indenting-for-VIm',{'for': 'php'}
 " Plug 'StanAngeloff/php.vim',{'for': 'php'}
@@ -132,18 +144,8 @@ if 'yes' ==? g:setting.php_enbale
 endif
 " }}}
 
-" vim 补全{{{
-if (g:setting.vim_enable ==? 'yes') && g:hasNeocomplete
-    Plug 'Shougo/neco-vim'
-    if !exists('g:deoplete#sources')
-        let g:deoplete#sources = {}
-    endif
-    let g:deoplete#sources.vim = ['buffer', 'neosnippet', 'file/include', 'vim']
-endif
-"}}}
-
 " WIKI, org{{{
-if 'yes' ==? g:setting.org_wiki_enable
+if index(g:language_group, 'org')
     Plug 'jceb/vim-orgmode', {'for': 'org'}
     " Plug 'vim-scripts/utl.vim'  org{{{
     " 快捷键记录:
@@ -156,7 +158,7 @@ if 'yes' ==? g:setting.org_wiki_enable
     " 配置
     " let g:org_todo_keywords=['TODO', 'VERIFY', '|', 'DONE', 'DELEGATED']
     if g:iswindows
-        let g:org_agenda_files = ['E:\\Self\\01_mywiki\\gtd\\gtd.org']
+        let g:org_agenda_files = ['E:/Self/01_mywiki/gtd/gtd.org']
     else
         let g:org_agenda_files = ['/mnt/e/Self/01_mywiki/gtd/gtd.org']
     endif

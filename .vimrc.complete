@@ -6,6 +6,7 @@ if g:isNvim
     let g:deoplete#max_list=30
     let g:deoplete#auto_completion_start_length=2
     let g:deoplete#delimiters = ['/', '.', '::', ':', '#', '->']
+    let g:deoplete#skip_chars = ['(', ')']
     if !exists('g:deoplete#sources')
         let g:deoplete#sources = {}
     endif
@@ -14,7 +15,6 @@ if g:isNvim
     " debug
     " let g:deoplete#enable_profile=1
     " omni function
-    " omni input
     let g:deoplete#omni#input_patterns={}
     let g:deoplete#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
     let g:deoplete#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
@@ -52,6 +52,7 @@ if g:isNvim
     function! DeopleteInit() abort
         " Use head matcher instead of fuzzy matcher
         call deoplete#custom#set('_', 'matchers', ['matcher_head'])
+
         " debug
         " call deoplete#enable_logging('DEBUG', 'deoplete.log')
         " call deoplete#custom#set('jdei', 'debug_enabled', 1)
@@ -64,21 +65,50 @@ else
     if  has('python3')
         Plug 'Valloric/YouCompleteMe' " {{{
         let g:ycm_python_binary_path = 'python'
+        let g:ycm_confirm_extra_conf = 0
+        let g:ycm_show_diagnostics_ui = 0
         " let g:ycm_use_ultisnips_completer=1
         let g:ycm_goto_buffer_command='vertical-spit'
         let g:ycm_log_level='error'
-        " let g:ycm_global_ycm_extra_conf = '/home/egbomrt/.ycm_extra_conf.py'
-        "map gd :YcmCompleter GoTo<CR>
-        " map gi :YcmCompleter GoToImprecise<CR>
+        let g:ycm_echo_current_diagnostic = 1
+        let g:ycm_echo_current_error = 1
+        let g:ycm_filetype_blacklist = {
+                    \ 'tagbar' : 1,
+                    \ 'qf' : 1,
+                    \ 'unite' : 1,
+                    \ 'denite': 1,
+                    \ 'infolog' : 1,
+                    \ 'mail' : 1
+                    \}
+        if g:iswindows
+            let g:ycm_global_ycm_extra_conf = $VIM.'/.ycm_extra_conf.py'
+        else
+            let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
+        endif
+
+        " 按键定义
+        nnoremap sj :YcmCompleter GoTo<CR>
+        nnoremap sk :YcmCompleter GoToImprecise<CR>
         " map <Leader>yY :YcmDiags<cr>
         " map <Leader>yy :YcmForceCompileAndDiagnostics<cr>
         " map <Leader>ys :YcmShowDetailedDiagnostic<cr>
         " map <Leader>yt :YcmCompleter GetType<cr>
+
+        " 状态栏错误集成
+        " if g:setting.status_line ==? 'airline'
+            " call add(g:airline_extensions, 'ycm')
+        " endif
         " }}}
 
         Plug 'SirVer/ultisnips' " snippets {{{
         let g:UltiSnipsUsePythonVersion=3
-        let g:UltiSnipsSnippetsDir=$VIM.'/vimfiles/ultisnips'
+        if g:iswindows
+            let g:UltiSnipsSnippetsDir=g:setting.private_snippets.'/ultisnips'
+            let g:UltiSnipsSnippetDirectories = [g:setting.private_snippets.'/ultisnips/']
+        else
+            let g:UltiSnipsSnippetsDir='~/.vim/ultisnips'
+            let g:UltiSnipsSnippetDirectories = [g:setting.private_snippets.'/ultisnips/']
+        endif
         " 不起作用
         " if !exists('g:UltiSnipsSnippetDirectories')
             " let g:UltiSnipsSnippetDirectories = ['snippets/ultisnips']
