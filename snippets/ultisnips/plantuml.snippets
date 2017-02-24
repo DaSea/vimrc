@@ -1,0 +1,57 @@
+priority -50
+
+snippet sta "@s-@e"
+@startuml
+${0}
+@enduml
+endsnippet
+
+#################################################################
+# 时序图
+#################################################################
+snippet alt "alt ... end"
+alt ${1}
+	${0}
+end
+endsnippet
+
+snippet loop "loop [0-count]"
+loop ${1}
+	${0}
+end
+endsnippet
+
+snippet notel "note left ..."
+note left of ${1}: ${0}
+endsnippet
+
+snippet noter "note right ..."
+note right of ${1}: ${0}
+endsnippet
+
+snippet notev "note over"
+note over ${1}: ${0}
+endsnippet
+
+snippet newp "newpage name"
+newpage ${1}
+${0}
+endsnippet
+
+#################################################################
+# 状态图
+#################################################################
+snippet sta "state ..."
+state ${1} {
+${0}
+}
+endsnippet
+
+snippet staa "state a as b"
+state ${1:state1} as ${0:s1}
+endsnippet
+
+snippet sta12 "state1->state2"
+${1:state1} -${2:down}-> ${3:state2}: ${0}
+endsnippet
+

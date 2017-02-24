@@ -6,6 +6,18 @@ let g:ds_doxygen_syntax_enable = 1
 let g:ds_opengl_syntax_enable = 1
 "}}}
 
+" 打开文件资源管理器, 并选择当前文件 {{{
+function! QuickBrowFileInExpolorer() abort 
+    let reviewfile = expand("%:p")
+    if g:iswindows
+        exec "silent !start explorer.exe /e,/select," . reviewfile
+    else
+        call system('nautilus ' . reviewfile)
+    endif
+endfunction
+nnoremap <Leader>of :call QuickBrowFileInExpolorer()<CR>
+"}}}
+
 " markdown支持 {{{
 if index(g:language_group, 'markdown') >= 0
     Plug 'godlygeek/tabular', {'on': 'Tabularize'}
@@ -17,7 +29,7 @@ if index(g:language_group, 'markdown') >= 0
     let g:vim_markdown_new_list_item_indent = 2
 
     " 增加在浏览器中打开当前编辑的文件, 预览markdown, 浏览器安装markdown的viewer插件
-    function! MeMarkdownPreview() abort 
+    function! MeMarkdownPreview() abort
         let reviewfile = expand("%:p")
         if g:iswindows
             exec "silent !start " . g:setting.global_browser . ' ' . reviewfile
@@ -31,18 +43,25 @@ endif
 
 " 好玩的东西, Plantuml{{{
 if (index(g:language_group, 'plantuml') >= 0) && (g:iswindows)
+    augroup plantuml
+        au!
+        if g:iswindows
+            au BufNewFile,BufRead *.plantuml set fileencoding=cp936
+            au BufNewFile,BufRead *.uml set fileencoding=cp936
+        endif
+    augroup END
     Plug 'aklt/plantuml-syntax',{'for': 'plantuml'}
+    Plug 'scrooloose/vim-slumlord',{'for': 'plantuml'}
+    " 详细的可以参考http://plantuml.com/
+    let g:slumlord_au_created = 0
+    nnoremap <silent> <Leader>um :call slumlord#updatePreview({'write': 1})<CR>
     let g:plantuml_executable_script = 'D:/Develop/Tools/plantuml.jar'
     function! UmlToImage() abort " 由uml等生成图片 {{{
         let cur_uml = expand('%:p')
         let cmd = 'java -jar ' . g:plantuml_executable_script . ' ' . cur_uml
         call system(cmd)
     endfunction " }}}
-    nnoremap <silent> <Leader>utp :call UmlToImage()<CR>
-    Plug 'scrooloose/vim-slumlord',{'for': 'plantuml'}
-    " 详细的可以参考http://plantuml.com/
-    let g:slumlord_au_created = 0
-    nnoremap <silent> <Leader>um :call slumlord#updatePreview({'write': 1})<CR>
+    nnoremap <silent> <Leader>up :call UmlToImage()<CR>
 endif
 " }}}
 

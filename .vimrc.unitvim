@@ -107,8 +107,8 @@ function! DeniteInit() abort "{{{
     " Change ignore_globs
     call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
                 \ [ '.exvim/', '.git/', '.ropeproject/', '__pycache__/',
-                \   'venv/', 'images/', '*.min.*', 'img/', 'fonts/',
-                \   'build/', 'Debug/', 'Release/' , 'bin/'])
+                \   'env/', 'images/', '*.min.*', 'img/', 'fonts/',
+                \   'build/', 'Debug/', 'Release/' , 'bin/', 'obj/'])
 endfunction " }}}
 call add(g:init_func_list, function('DeniteInit'))
 " }}}
@@ -128,7 +128,7 @@ else
                 \ }
     let g:projectmgr_vimplug_root_dir = "c:/Develop/exVim/vimfiles/plugged"
 endif
-nnoremap <silent> <Leader>el :<C-u>Denite -auto-resize -mode=insert prjmgr:user<CR>
+nnoremap <silent> <Leader>el :<C-u>Denite -auto-resize -mode=normal prjmgr:user<CR>
 nnoremap <silent> <Leader>gl :<C-u>Denite -auto-resize -mode=insert prjmgr:vsc<CR>
 nnoremap <silent> <Leader>ml :<C-u>Denite -auto-resize -mode=insert prjmgr:vimplug<CR>
 " }}}
@@ -209,8 +209,8 @@ Plug 'tacroe/unite-mark' " {{{
 nnoremap <leader>vm :Unite mark<CR>
 " }}}
 
-" Plug 'Shougo/unite-outline' " 函数跳转等变量跳转{{{
-" nnoremap <leader>fm :Unite -start-insert -no-split -buffer-name=outline outline<CR>
+Plug 'Shougo/unite-outline' " 函数跳转等变量跳转{{{
+nnoremap <leader>fn :Unite -start-insert -no-split -buffer-name=outline outline<CR>
 " }}}
 
 Plug 'Shougo/vimfiler.vim' "文件浏览器 {{{

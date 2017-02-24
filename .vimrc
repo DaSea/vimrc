@@ -91,14 +91,14 @@ endif
 " 全局配置变量(Dictionnary){{{
 let g:setting = {}
 let g:plugins_file = '.vimrc.vimplug'
-" 全局设置
-let g:setting.color_scheme = 'solarized8_dark_low'
+" 全局设置seoul256-light
+let g:setting.color_scheme = 'space-vim-dark' " solarized8_dark_flat'
 " 关于更改行的设置(git(vim-fugitive, vim-gitgutter), git_svn(vim-signify), no)
-let g:setting.version_status = 'git_svn'
+let g:setting.version_status = 'no'
 " 状态栏(ariline or no), 如果为no, 自定义状态栏
 " 这里的tabline是airline的功能
 let g:setting.status_line = 'airline'
-let g:setting.status_color = 'base16_google'
+let g:setting.status_color = 'atomic' " 'aurora'
 let g:setting.show_tabline = 'yes'
 " 使用ctrlp还是使用unit.vim(denite.nvim)
 " 由于denite出色的特性, 测试用denite替换unite相关插件
@@ -118,7 +118,7 @@ endif
 " 浏览器
 let g:setting.global_browser = 'C:/Develop/Mozilla Firefox/firefox.exe'
 " 设置需要支持的语言(目前有python, cpp, markdown, plantuml, vim, php, org)
-let g:language_group = ['cpp', 'markdown', 'python', 'vim', 'org']
+let g:language_group = ['cpp', 'markdown', 'python', 'vim', 'org', 'plantuml']
 " }}}
 
 " ==============================================================================
@@ -221,10 +221,12 @@ if g:isGUI
     " set guifont
     function! s:set_gui_font()
         if g:iswindows
-            if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
+            " if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
+                " set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h11:cANSI
+            if getfontname('Inziu Iosevka SC') != ''
+                set guifont=Inziu\ Iosevka\ SC:h11:cANSI
+            elseif getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
                 set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h11:cANSI
-            elseif getfontname('Inconsolata-g for Powerline') != ''
-                set guifont=Inconsolata-g\ for\ Powerline:h12:cANSI
             elseif getfontname( 'Microsoft YaHei Mono' ) != ''
                 set guifont=Microsoft\ YaHei\ Mono:h12:cANSI
             elseif getfontname( 'Consolas' ) != ''
@@ -357,12 +359,15 @@ endif "}}}
 
 set nonumber
 function! ToggleLineNumber() abort " 切换行号 {{{
-    if 0 == &number
+    if (0 == &number) && (0 == &relativenumber)
         exec 'set number'
-        " exec 'set relativenumber'
+        exec 'set relativenumber'
+    elseif (1 == &relativenumber) && (1 == &number)
+        exec 'set number'
+        exec 'set norelativenumber'
     else
         exec 'set nonumber'
-        " exec 'set norelativenumber'
+        exec 'set norelativenumber'
     endif
 endfunction " }}}
 nnoremap <silent> <Leader>nc :call ToggleLineNumber()<CR>
@@ -580,10 +585,8 @@ if has('autocmd')
                     \ if line("'\"") > 0 && line("'\"") <= line("$") |
                     \   exe "normal g`\"" |
                     \ endif
-        au BufNewFile,BufEnter * set cpoptions+=d " NOTE: ctags find the tags file from the current path instead of the path of currect file
-        " ensure every file does syntax highlighting (full)
-        " au BufEnter * :syntax sync fromstart
-        au BufNewFile,BufRead *.avs set syntax=avs " for avs syntax file.
+        " NOTE: ctags find the tags file from the current path instead of the path of currect file
+        au BufNewFile,BufEnter * set cpoptions+=d
 
         " ------------------------------------------------------------------
         " this will avoid bug in my project with namespace ex,
@@ -601,6 +604,7 @@ if has('autocmd')
         au FileType help noremap <buffer> q :close<CR>
         au FileType dosbatch setlocal fileencoding=cp936
         au FileType org setlocal tabstop=2
+        au FileType java setlocal nolist
 
         " if edit python scripts, check if have \t.( python said: the programme can only
         " use \t or not, but can't use them together )
@@ -851,7 +855,6 @@ autocmd FileType qf noremap <buffer> q :close<CR>
 
 "===================================================
 " 编辑vim配置文件，并重新读取配置文件
-" 当.vimrc文件改变时,自动加载
 if g:iswindows
     nnoremap <Leader>ev :e $VIM\.vimrc<cr>
     exec 'nnoremap <Leader>evp :e $VIM\'.g:plugins_file.'<cr>'

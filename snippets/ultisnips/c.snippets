@@ -40,6 +40,20 @@ ${VISUAL}$0
 #endif
 endsnippet
 
+snippet #ifdef "#ifdef #endif" b
+#ifdef ${1:0}
+${VISUAL}$0
+#endif
+endsnippet
+
+snippet #ifelse "#ifdef #else #endif" b
+#ifdef ${1:0}
+${2}
+#else
+${VISUAL}$0
+#endif
+endsnippet
+
 snippet mark "#pragma mark (mark)"
 #if 0
 ${1:#pragma mark -
