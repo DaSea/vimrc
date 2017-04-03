@@ -92,7 +92,7 @@ endif
 let g:setting = {}
 let g:plugins_file = '.vimrc.vimplug'
 " 全局设置seoul256-light
-let g:setting.color_scheme = 'space-vim-dark' " solarized8_dark_flat'
+let g:setting.color_scheme = 'NeoSolarized'
 " 关于更改行的设置(git(vim-fugitive, vim-gitgutter), git_svn(vim-signify), no)
 let g:setting.version_status = 'no'
 " 状态栏(ariline or no), 如果为no, 自定义状态栏
@@ -221,9 +221,9 @@ if g:isGUI
     " set guifont
     function! s:set_gui_font()
         if g:iswindows
-            " if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
-                " set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h11:cANSI
-            if getfontname('Inziu Iosevka SC') != ''
+            if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
+                set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h11:cANSI
+            elseif getfontname('Inziu Iosevka SC') != ''
                 set guifont=Inziu\ Iosevka\ SC:h11:cANSI
             elseif getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
                 set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h11:cANSI
@@ -424,7 +424,7 @@ endif
     if strftime("%H") >= 17 || strftime("%H") <= 8
         set background=dark
     else
-        set background=light
+        set background=dark
     endif
 exec 'colorscheme ' . g:setting.color_scheme
 " 切换背景色 {{{
@@ -719,6 +719,13 @@ nnoremap <Leader>lc :call QuickChangeFileFormat()<CR>
 "}}}
 
 "===================================================
+" 重定位输入map
+function! MapToFile()
+    silent exe "redir>map.txt"
+    silent exe "map"
+    silent exe "redir end"
+endfunction
+
 " 重新映射leader键，default 为\
 " let mapleader = ","
 " 修改 :

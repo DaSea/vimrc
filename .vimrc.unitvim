@@ -19,37 +19,17 @@ nnoremap <silent> <leader>fm
 nnoremap <silent> <leader>am
             \ :<C-u>Denite -auto-resize -mode=normal menu<CR>
 
-" menu设置 {{{
-let s:denite_menus = {}
-let s:denite_menus.vim = {
-            \ 'description' : 'vim configure files',
-            \ }
-if g:iswindows
-    let s:denite_menus.vim.file_candidates = [
-                \ ['vimrc', $VIM.'/.vimrc'],
-                \ ['commonPlug', $VIM.'/.vimrc.vimplug'],
-                \ ['unit.vim and denite.nvim', $VIM.'/.vimrc.unitvim'],
-                \ ['complete', $VIM.'/.vimrc.complete'],
-                \ ['language', $VIM.'/.vimrc.language'],
-                \ ['ctrlp', $VIM.'/.vimrc.ctrlp'],
-                \ ['discard', $VIM.'/.vimrc.discard']
-                \ ]
-else
-    let s:denite_menus.vim.file_candidates = [
-                \ ['vimrc', '~/.vimrc'],
-                \ ['commonPlug', '~/.vimrc.vimplug'],
-                \ ['unit.vim and denite.nvim', '~/.vimrc.unitvim'],
-                \ ['complete', '~/.vimrc.complete'],
-                \ ['language', '~/.vimrc.language'],
-                \ ['ctrlp', '~/.vimrc.ctrlp'],
-                \ ['discard', '~/.vimrc.discard']
-                \ ]
+" menu设置, 加载menu文件{{{
+let g:denite_menus = {}
+let s:denite_menu_file = g:exvim_custom_path . './denite_menu.vim'
+if filereadable(expand(s:denite_menu_file))
+    exec 'source ' . fnameescape(s:denite_menu_file)
 endif
 "}}}
 
 function! DeniteInit() abort "{{{
     " menu 设置
-    call denite#custom#var('menu', 'menus', s:denite_menus)
+    call denite#custom#var('menu', 'menus', g:denite_menus)
 
     " Change mappings.
     call denite#custom#map('_', '<Esc>', '<denite:enter_mode:normal>', 'noremap')
@@ -64,7 +44,7 @@ function! DeniteInit() abort "{{{
     call denite#custom#source(
                 \ 'file_rec', 'matchers', ['matcher_fuzzy'])
     " call denite#custom#source(
-    " \ 'file_rec', 'matchers', ['matcher_cpsm'])
+                " \ 'file_rec', 'matchers', ['sorter_sublime'])
 
     " Ripgrep command on grep source
     " Change file_rec command.
@@ -100,8 +80,8 @@ function! DeniteInit() abort "{{{
     call denite#custom#option('default', 'highlight_mode_normal', 'CursorLine')
 
     " Change default prompt
-    call denite#custom#option('default', 'prompt', '>>')
-    " call denite#custom#option('default', 'prompt', '▷')
+    " call denite#custom#option('default', 'prompt', '>>')
+    call denite#custom#option('default', 'prompt', '▷')
     call denite#custom#option('default', 'short_source_names', v:true)
 
     " Change ignore_globs
@@ -111,6 +91,10 @@ function! DeniteInit() abort "{{{
                 \   'build/', 'Debug/', 'Release/' , 'bin/', 'obj/'])
 endfunction " }}}
 call add(g:init_func_list, function('DeniteInit'))
+
+if g:setting.status_line ==? 'airline'
+    call add(g:airline_extensions, 'denite')
+endif
 " }}}
 
 Plug 'Shougo/neomru.vim' " {{{
@@ -210,7 +194,7 @@ nnoremap <leader>vm :Unite mark<CR>
 " }}}
 
 Plug 'Shougo/unite-outline' " 函数跳转等变量跳转{{{
-nnoremap <leader>fn :Unite -start-insert -no-split -buffer-name=outline outline<CR>
+nnoremap <leader>fn :Unite -start-insert -buffer-name=outline outline<CR>
 " }}}
 
 Plug 'Shougo/vimfiler.vim' "文件浏览器 {{{

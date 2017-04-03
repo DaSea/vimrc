@@ -20,7 +20,7 @@ noremap CS :StripWhitespace<CR>
 
 if 'airline' ==? g:setting.status_line
     Plug 'vim-airline/vim-airline'
-    Plug 'vim-airline/vim-airline-themes' " 可以打开, 就有很多选择了, 但是我觉得onedark很好
+    " Plug 'vim-airline/vim-airline-themes'  可以打开, 就有很多选择了, 但是我觉得onedark很好
     " airline状态栏{{{
     let g:airline_powerline_fonts = 1
     let g:airline_theme = g:setting.status_color
@@ -54,7 +54,7 @@ if 'airline' ==? g:setting.status_line
         let g:airline#extensions#tabline#buffers_label = 'B'
         let g:airline#extensions#tabline#tabs_label = 'T'
         let g:airline#extensions#tabline#buffer_idx_mode = 1
-        let g:airline#extensions#tabline#excludes = ['denite', 'unite', 'vimfiler']
+        let g:airline#extensions#tabline#excludes = ['unite', 'vimfiler']
         nmap ,1 <Plug>AirlineSelectTab1
         nmap ,2 <Plug>AirlineSelectTab2
         nmap ,3 <Plug>AirlineSelectTab3
@@ -108,21 +108,16 @@ let g:indentLine_faster = 1
 "}}}
 
 " colorscheme 插件 {{{
-" Plug 'altercation/vim-colors-solarized'
 " ---------------------------------------------------
-Plug 'lifepillar/vim-solarized8'
-let g:solarized_menu = 0
-let g:solarized_bold = 1
-let g:solarized_underline = 1
-let g:solarized_italic = 0
-let g:solarized_termcolors=256
-let g:solarized_termtrans=1
-let g:solarized_visibility="high"
-" let g:solarized_statusline="low"
-" let g:solarized_diffmode="high"
+Plug 'icymind/NeoSolarized'
+let g:neosolarized_contrast = "normal"
+let g:neosolarized_visibility = "normal"
+let g:neosolarized_vertSplitBgTrans = 1
+let g:neosolarized_bold = 1
+let g:neosolarized_underline = 1
+let g:neosolarized_italic = 0
 
-" Plug 'flazz/vim-colorschemes'
-Plug 'liuchengxu/space-vim-dark'
+" Plug 'liuchengxu/space-vim-dark'
 " Plug 'junegunn/seoul256.vim'
 " let g:seoul256_background=234
 " let g:seoul256_light_background=253
@@ -355,13 +350,13 @@ if !executable(g:ctrlsf_ackprg)
     let g:ctrlsf_ackprg = 'rg'
 endif
 " 窗口大小
-let g:ctrlsf_winsize='30%'
+let g:ctrlsf_winsize='50%'
 " 是否在ctrlsf搜索结果打开其他窗口时,关闭搜索结果窗口
 let g:ctrlsf_auto_close = 0
 " 大小写敏感
 let g:ctrlsf_case_sensitive = 'yes'
 " 默认搜索路径, 设置为project则从本文件的工程目录搜索
-let g:ctrlsf_default_root = 'project+wf'
+" let g:ctrlsf_default_root = 'project+wf'
 " 工程目录的顶级文件夹
 " let g:ctrlsf_vcs_folder = ['.exvim', '.git', '.hg', '.svn', '.bzr', '_darcs']
 " make result windows compact
@@ -455,8 +450,8 @@ nnoremap <Leader>df :DoxFile<CR>
 "}}}
 
 " 快速移动(行的移动， 行间移动， 窗口间移动)  {{{
-Plug 'matze/vim-move', {'on': ['<Plug>MoveLineUp', '<Plug>MoveLineDown',
-            \ '<Plug>MoveBlockUp', '<Plug>MoveBlockDown']}
+Plug 'matze/vim-move'
+" {'on': ['<Plug>MoveLineUp', '<Plug>MoveLineDown', '<Plug>MoveBlockUp', '<Plug>MoveBlockDown']}
 " alt + j : 行或块下移; alt+k: 行或块上移;
 
 Plug 't9md/vim-choosewin', {'on': 'ChooseWin'} " 快速在窗口在跳转 {{{

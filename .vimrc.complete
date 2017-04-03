@@ -64,9 +64,9 @@ if g:isNvim
     call add(g:init_func_list, function('DeopleteInit'))
     "}}}
 else
-    inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+    " inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
     function! s:my_cr_function()
-        return (pumvisible() ? "\<C-e>" : "\<CR>" )
+        return (pumvisible() ? "\<C-y>\<C-e>\<CR>" : "\<CR>" )
     endfunction
 
     let g:hasNeocomplete = 0
