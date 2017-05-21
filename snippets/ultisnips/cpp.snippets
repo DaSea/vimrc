@@ -157,6 +157,12 @@ for (${1:auto&& }${2:var} : ${3:container}) {
 }
 endsnippet
 
+snippet for_auto "for(:) {}"
+for (auto ${1:#:it} = ${2:#:var}.begin(); $1 != $2.end(); ++$1) {
+	${0:TARGET}
+}
+endsnippet
+
 snippet for_inter "for(it: != end;++it) {}"
 std::${1:#:vector}<${2:#:int}>::iterator ${4:#:it} = ${3:#:var}.begin();
 for (; $4 != $3.end(); ++$4) {

@@ -18,7 +18,8 @@ nnoremap <silent> <leader>fm
             \ :<C-u>Denite -auto-resize -mode=insert outline<CR>
 nnoremap <silent> <leader>am
             \ :<C-u>Denite -auto-resize -mode=normal menu<CR>
-
+nnoremap <silent> <leader>gw
+            \ :<C-u>Denite grep:::`expand('cword')`
 " menu设置, 加载menu文件{{{
 let g:denite_menus = {}
 let s:denite_menu_file = g:exvim_custom_path . './denite_menu.vim'
@@ -80,8 +81,8 @@ function! DeniteInit() abort "{{{
     call denite#custom#option('default', 'highlight_mode_normal', 'CursorLine')
 
     " Change default prompt
-    " call denite#custom#option('default', 'prompt', '>>')
-    call denite#custom#option('default', 'prompt', '▷')
+    call denite#custom#option('default', 'prompt', '>>>>')
+    " call denite#custom#option('default', 'prompt', '▷')
     call denite#custom#option('default', 'short_source_names', v:true)
 
     " Change ignore_globs
@@ -176,7 +177,7 @@ endif
 nnoremap <silent> <leader>fk :<C-u>Unite -quick-match -buffer-name=buffer buffer<CR>
 " 文件内搜索
 " nnoremap <silent> <leader>gw :<C-u>Unite grep:%:expand("<cword>")<CR>
-nnoremap <silent> <leader>gw :<C-u>UniteWithCursorWord grep<CR>
+" nnoremap <silent> <leader>gw :<C-u>UniteWithCursorWord grep<CR>
 "" grep dictionay
 """ For searching the word in the cursor in the current directory
 nnoremap <silent> <leader>gv :Unite grep:.::<C-R><C-w><CR>

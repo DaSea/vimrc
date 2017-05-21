@@ -98,13 +98,13 @@ let g:setting.version_status = 'no'
 " 状态栏(ariline or no), 如果为no, 自定义状态栏
 " 这里的tabline是airline的功能
 let g:setting.status_line = 'airline'
-let g:setting.status_color = 'atomic' " 'aurora'
+let g:setting.status_color = 'onedark' " 'aurora'
 let g:setting.show_tabline = 'yes'
 " 使用ctrlp还是使用unit.vim(denite.nvim)
-" 由于denite出色的特性, 测试用denite替换unite相关插件
-let g:setting.ctrlp_or_unite = 'unitevim'
+" 由于denite出色的特性, 测试用denite替换unite相关插件, 或者用LeaderF
+let g:setting.ctrlp_or_unite = 'leaderf'
 " 是否需要开启代码的静态语法检查(neomake插件)
-let g:setting.make_lint_need = 'yes'
+let g:setting.make_lint_need = 'no'
 " name
 let g:setting.author_name = 'DaSea'
 " windows与linux使用不同的目录
@@ -118,7 +118,7 @@ endif
 " 浏览器
 let g:setting.global_browser = 'C:/Develop/Mozilla Firefox/firefox.exe'
 " 设置需要支持的语言(目前有python, cpp, markdown, plantuml, vim, php, org)
-let g:language_group = ['cpp', 'markdown', 'python', 'vim', 'org', 'plantuml']
+let g:language_group = ['cpp', 'markdown', 'vim', 'org', 'plantuml']
 " }}}
 
 " ==============================================================================
@@ -221,12 +221,10 @@ if g:isGUI
     " set guifont
     function! s:set_gui_font()
         if g:iswindows
-            if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
-                set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h11:cANSI
-            elseif getfontname('Inziu Iosevka SC') != ''
-                set guifont=Inziu\ Iosevka\ SC:h11:cANSI
-            elseif getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
-                set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h11:cANSI
+            " if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
+                " set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h11:cANSI
+            if getfontname('Inziu Iosevka SC') != ''
+                set guifont=Inziu\ Iosevka\ SC:h14:cANSI
             elseif getfontname( 'Microsoft YaHei Mono' ) != ''
                 set guifont=Microsoft\ YaHei\ Mono:h12:cANSI
             elseif getfontname( 'Consolas' ) != ''

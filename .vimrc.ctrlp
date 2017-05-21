@@ -1,77 +1,94 @@
 " 因为unit.vim和ctrlp有许多相同的功能, 所以分开, 可以让大家自由选择
 " 这里主要记录ctrlp的主要内容
 
-Plug 'ctrlpvim/ctrlp.vim' "{{{
-let g:ctrlp_map = '<c-p>'
-let g:ctrlp_cmd = 'CtrlP'
-let g:ctrlp_switch_buffer = 'Et'
-let g:ctrlp_working_path_mode = 'ra'
-let g:ctrlp_root_markers = ['.git', '.svn', '.exvim']
-let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:30,results:15'
-let g:ctrlp_show_hidden = 1
-let g:ctrlp_use_caching = 1
-let g:ctrlp_clear_cache_on_exit = 0
-" let g:ctrlp_cache_dir = $HOME.'/.cache/ctrlp'
-"let g:ctrlp_open_multiple_files = 'v'
-let g:ctrlp_reuse_window = 'netrw\|help\|quickfix'
-" Set delay to prevent extra search
-let g:ctrlp_lazy_update = 350
-let g:ctrlp_max_files = 0
-let g:ctrlp_mruf_relative = 0
-let g:ctrlp_mruf_save_on_update = 1
-let g:ctrlp_mruf_default_order = 0
-let g:ctrlp_custom_ignore = {
-            \ 'dir':  '\v[\/]\.(git|svn|exvim)$|target',
-            \ 'file': '\v\.(exe|so|dll|ttf|png)$|\-rplugin\~',
-            \ 'link': 'some_bad_symbolic_links',
-            \ }
-" 如果ag可用, 可以用ag取代find(If ag is available use it as filename list generator instead of 'find')
-if exists('ag')
-    set grepprg=ag\ --nogroup\ --nocolor
-    let g:ctrlp_user_command = ['ag %s -i --nocolor --nogroup --hidden
-                \ --ignore out
-                \ --ignore .exvim
-                \ --ignore .git
-                \ --ignore .svn
-                \ -g ""'
-                \ ]
-if executable('rg')
-     let g:ctrlp_user_command = ['rg %s --no-ignore --hidden --files -g ""
-               \ -i !out
-               \ -i !.exvim
-               \ -i !.git
-               \ -i !.svn'
-               \ ]
+if g:setting.ctrlp_or_unite ==? 'ctrlp'
+    Plug 'ctrlpvim/ctrlp.vim' "{{{
+    let g:ctrlp_map = '<c-p>'
+    let g:ctrlp_cmd = 'CtrlP'
+    let g:ctrlp_switch_buffer = 'Et'
+    let g:ctrlp_working_path_mode = 'ra'
+    let g:ctrlp_root_markers = ['.git', '.svn', '.exvim']
+    let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:30,results:15'
+    let g:ctrlp_show_hidden = 1
+    let g:ctrlp_use_caching = 1
+    let g:ctrlp_clear_cache_on_exit = 0
+    " let g:ctrlp_cache_dir = $HOME.'/.cache/ctrlp'
+    "let g:ctrlp_open_multiple_files = 'v'
+    let g:ctrlp_reuse_window = 'netrw\|help\|quickfix'
+    " Set delay to prevent extra search
+    let g:ctrlp_lazy_update = 350
+    let g:ctrlp_max_files = 0
+    let g:ctrlp_mruf_relative = 0
+    let g:ctrlp_mruf_save_on_update = 1
+    let g:ctrlp_mruf_default_order = 0
+    let g:ctrlp_custom_ignore = {
+                \ 'dir':  '\v[\/]\.(git|svn|exvim)$|target',
+                \ 'file': '\v\.(exe|so|dll|ttf|png)$|\-rplugin\~',
+                \ 'link': 'some_bad_symbolic_links',
+                \ }
+    " 如果ag可用, 可以用ag取代find(If ag is available use it as filename list generator instead of 'find')
+    if executable('ag')
+        set grepprg=ag\ --nogroup\ --nocolor
+        let g:ctrlp_user_command = ['ag %s -i --nocolor --nogroup --hidden
+                    \ --ignore out
+                    \ --ignore .exvim
+                    \ --ignore .git
+                    \ --ignore .svn
+                    \ -g ""'
+                    \ ]
+    elseif executable('rg')
+            let g:ctrlp_user_command = ['rg %s --no-ignore --hidden --files -g ""
+                        \ -i !out
+                        \ -i !.exvim
+                        \ -i !.git
+                        \ -i !.svn'
+                        \ ]
+    endif
+    let g:ctrlp_extensions = ['tag', 'quickfix', 'line', 'changes', 'bookmarkdir']
+
+    if g:setting.status_line ==? 'airline'
+        call add(g:airline_extensions, 'ctrlp')
+    endif
+
+    nnoremap <Leader>fl :CtrlPBuffer<CR>
+    nnoremap <Leader>jf :CtrlPMRU<CR>
+    " }}}
+
+    Plug 'FelikZ/ctrlp-py-matcher'  " 匹配{{{
+    let g:ctrlp_match_func = {'match': 'pymatcher#PyMatch'}
+    "}}}
+
+    Plug 'tacahiroy/ctrlp-funky' " outline功能, 文件内函数的快速跳转{{{
+    nnoremap <Leader>fm :CtrlPFunky<Cr>
+    " narrow the list down with a word under cursor
+    nnoremap <Leader>fn :execute 'CtrlPFunky ' . expand('<cword>')<Cr>
+    let g:ctrlp_funky_syntax_highlight = 1
+    " }}}
+
+    Plug 'mattn/ctrlp-mark' " 文件内mark的跳转{{{
+    nnoremap <Leader>vm :execute 'CtrlPMark'<CR>
+    "}}}
+else
+    " Leaderf
+    Plug 'Yggdroot/LeaderF'
+    " let g:Lf_DefaultMode='Fuzzy'
+    " let g:Lf_WindowPosition='fullScreen'
+    let g:Lf_WindowHeight = 0.30
+    let g:Lf_ShowRelativePath=0
+    let g:Lf_WildIgnore = {
+            \ 'dir': ['.svn','.git','.hg', '.exvim', 'obj', 'lib', 'bin'],
+            \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
+            \}
+    " let g:Lf_StlSeparator = { 'left': '▶', 'right': '◀'}
+    let g:Lf_StlSeparator = { 'left': '', 'right': '' }
+    nnoremap <silent> <leader>jf :<C-u>LeaderfMru<CR>
+    nnoremap <silent> <C-p> :<C-u>LeaderfFile<CR>
+    nnoremap <silent> <leader>lf :<C-u>LeaderfFile<CR>
+    nnoremap <silent> <leader>fl :<C-u>LeaderfBuffer<CR>
+    nnoremap <silent> <leader>ft :<C-u>LeaderfLine<CR>
+    nnoremap <silent> <leader>fm :<C-u>LeaderfFunction<CR>
+    let g:vim_ctrlp_or_unite=''
 endif
-let g:ctrlp_extensions = ['tag', 'quickfix', 'line', 'changes', 'bookmarkdir']
-
-if g:setting.status_line ==? 'airline'
-    call add(g:airline_extensions, 'ctrlp')
-endif
-
-nnoremap <Leader>fl :CtrlPBuffer<CR>
-nnoremap <Leader>jf :CtrlPMRU<CR>
-" }}}
-
-Plug 'FelikZ/ctrlp-py-matcher'  " 匹配{{{
-let g:ctrlp_match_func = {'match': 'pymatcher#PyMatch'}
-"}}}
-
-Plug 'tacahiroy/ctrlp-funky' " outline功能, 文件内函数的快速跳转{{{
-nnoremap <Leader>fm :CtrlPFunky<Cr>
-" narrow the list down with a word under cursor
-nnoremap <Leader>fn :execute 'CtrlPFunky ' . expand('<cword>')<Cr>
-let g:ctrlp_funky_syntax_highlight = 1
-" }}}
-
-Plug 'mattn/ctrlp-mark' " 文件内mark的跳转{{{
-nnoremap <Leader>vm :execute 'CtrlPMark'<CR>
-"}}}
-
-" for ctrlp-cmatcher {{{
-"let g:ctrlp_max_files = 0
-"let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
-""}}}
 
 Plug 'scrooloose/nerdtree' " file explorer{{{
 let NERDTreeSortHiddenFirst=1

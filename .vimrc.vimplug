@@ -48,9 +48,9 @@ if 'airline' ==? g:setting.status_line
         call add(g:airline_extensions, 'tabline')
         let g:airline#extensions#tabline#enabled=1
         let g:airline#extensions#tabline#show_splits = 1
-        let g:airline#extensions#tabline#switch_buffers_and_tabs = 1
+        let g:airline#extensions#tabline#switch_buffers_and_tabs = 0
         let g:airline#extensions#tabline#show_buffers = 1
-        let g:airline#extensions#tabline#show_tabs = 1
+        let g:airline#extensions#tabline#show_tabs = 0
         let g:airline#extensions#tabline#buffers_label = 'B'
         let g:airline#extensions#tabline#tabs_label = 'T'
         let g:airline#extensions#tabline#buffer_idx_mode = 1
@@ -92,12 +92,12 @@ if 'airline' ==? g:setting.status_line
     " }}}
 endif
 
-Plug 'Konfekt/FastFold' "{{{
-let g:cpp_folding=1
-let g:php_folding=1
-let g:lua_folding=1
-let g:vimsyn_folding='af'
-let g:c_folding=1
+" Plug 'Konfekt/FastFold' {{{
+" let g:cpp_folding=1
+" let g:php_folding=1
+" let g:lua_folding=1
+" let g:vimsyn_folding='af'
+" let g:c_folding=1
 " }}}
 
 Plug 'Yggdroot/indentLine' "对齐线{{{
@@ -117,7 +117,8 @@ let g:neosolarized_bold = 1
 let g:neosolarized_underline = 1
 let g:neosolarized_italic = 0
 
-" Plug 'liuchengxu/space-vim-dark'
+" Plug 'rakr/vim-one'
+" let g:one_allow_italics = 1
 " Plug 'junegunn/seoul256.vim'
 " let g:seoul256_background=234
 " let g:seoul256_light_background=253
@@ -192,8 +193,9 @@ Plug 'exvim/ex-project'
 let g:ex_project_winpos='left'
 let g:ex_project_winsize=28
 let g:ex_project_winsize_zoom=40
-nnoremap <unique> <silent> <F3> :EXProjectToggle<cr>
+nnoremap <unique> <silent> <F3> :EXProjectToggle<CR>
 nnoremap <unique> <silent> <Leader>pf :EXProjectFind<CR>
+autocmd FileType exproject noremap <buffer> q :EXProjectClose<CR>
 
 Plug 'exvim/ex-gsearch'
 " ---------------------------------------------------
@@ -211,6 +213,7 @@ Plug 'exvim/ex-tags'
 function! ExtagsInit() abort "{{{
     call extags#register_hotkey( 100, 0, '<Leader>ts', ":EXTagsToggle<CR>", 'Toggle tag select window.' )
     call extags#register_hotkey( 101, 0, '<Leader>]', ":EXTagsCWord<CR>", 'Tag select current word.' )
+    call extags#register_hotkey( 2  , 1, 'q', ":EXTagsClose<CR>", 'Close window.' )
     " DISABLE: nnoremap <unique> <Leader>] :exec 'ts ' . expand('<cword>')<CR>
 endfunction "}}}
 call add(g:init_func_list, function('ExtagsInit'))
@@ -347,7 +350,7 @@ Plug 'dyng/ctrlsf.vim',{'on': 'CtrlSF'} "搜索工程下文件{{{
 " 设置CtrlSF使用的搜索工具,默认使用ag,如果没有ag,则考虑使用ack
 let g:ctrlsf_ackprg = 'rg'
 if !executable(g:ctrlsf_ackprg)
-    let g:ctrlsf_ackprg = 'rg'
+    let g:ctrlsf_ackprg = 'ag'
 endif
 " 窗口大小
 let g:ctrlsf_winsize='50%'
@@ -403,7 +406,7 @@ function! Multiple_cursors_after()
 endfunction
 "}}}
 
-Plug 'mbbill/undotree',{'on': 'UndotreeToggle'} " undo 历史树,直观显示,快速选择恢复{{{
+Plug 'mbbill/undotree' " {'on': 'UndotreeToggle'} undo 历史树,直观显示,快速选择恢复{{{
 if has("persistent_undo")
     set undodir=~/.undodir
     set undofile
@@ -450,13 +453,14 @@ nnoremap <Leader>df :DoxFile<CR>
 "}}}
 
 " 快速移动(行的移动， 行间移动， 窗口间移动)  {{{
-Plug 'matze/vim-move'
+" Plug 'matze/vim-move'
 " {'on': ['<Plug>MoveLineUp', '<Plug>MoveLineDown', '<Plug>MoveBlockUp', '<Plug>MoveBlockDown']}
 " alt + j : 行或块下移; alt+k: 行或块上移;
 
 Plug 't9md/vim-choosewin', {'on': 'ChooseWin'} " 快速在窗口在跳转 {{{
-" let g:choosewin_statusline_replace=1
+" let g:choosewin_statusline_replace=0
 " let g:choosewin_overlay_enable=1
+let g:choosewin_label='JKLMNOPQRTUVWYZABCDEFGHI'
 nmap - :ChooseWin<CR>
 " }}}
 
@@ -500,6 +504,15 @@ vnoremap <silent> <Leader>yw :<C-U>call dict#VSearch("complex")<CR>
 nnoremap <silent> <Leader>yr  viw:<C-U>call dict#VSearch("replace")<CR>
 " 可视化模式下，<Leader><Leader>r 即可翻译光标下的单词，并替换为翻译的结果
 vnoremap <silent> <Leader>yr :<C-U>call dict#VSearch("replace")<CR>
+" 添加一个由用户手动输入单词的快捷键
+nnoremap <silent> <Leader>yi :call YouDaoSearchWord()<CR>
+function! YouDaoSearchWord() abort "{{{
+        let curWord = "hello"
+        call inputsave()
+        let translateword = input("Please enter your text to be translated:", curWord)
+        call inputrestore()
+        echohl Error | call dict#Search(translateword, "simple") | echohl None
+endfunction "}}}
 " }}}
 
 Plug 'mbbill/fencview' " (编码检查)auto check Encoding{{{
@@ -507,17 +520,17 @@ let g:fencview_autodetect = 1
 "}}}
 
 " unit.vim 或者 ctrlp相关插件, 及文件管理器{{{
-if g:setting.ctrlp_or_unite ==? 'ctrlp'
-    if exists('g:exvim_custom_path')
-        let g:vim_ctrlp_or_unite = g:exvim_custom_path.'/.vimrc.ctrlp'
-    else
-        let g:vim_ctrlp_or_unite = '~/.vimrc.ctrlp'
-    endif
-else
+if g:setting.ctrlp_or_unite ==? 'unitvim'
     if exists('g:exvim_custom_path')
         let g:vim_ctrlp_or_unite = g:exvim_custom_path.'/.vimrc.unitvim'
     else
         let g:vim_ctrlp_or_unite = '~/.vimrc.unitvim'
+    endif
+else
+    if exists('g:exvim_custom_path')
+        let g:vim_ctrlp_or_unite = g:exvim_custom_path.'/.vimrc.ctrlp'
+    else
+        let g:vim_ctrlp_or_unite = '~/.vimrc.ctrlp'
     endif
 endif
 if filereadable(expand(g:vim_ctrlp_or_unite))
