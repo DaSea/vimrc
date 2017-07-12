@@ -98,11 +98,15 @@ let g:setting.version_status = 'no'
 " 状态栏(ariline or no), 如果为no, 自定义状态栏
 " 这里的tabline是airline的功能
 let g:setting.status_line = 'airline'
-let g:setting.status_color = 'onedark' " 'aurora'
+let g:setting.status_color = 'atomic'
 let g:setting.show_tabline = 'yes'
 " 使用ctrlp还是使用unit.vim(denite.nvim)
 " 由于denite出色的特性, 测试用denite替换unite相关插件, 或者用LeaderF
-let g:setting.ctrlp_or_unite = 'leaderf'
+if g:isNvim
+    let g:setting.ctrlp_or_unite = 'unitvim'
+else
+    let g:setting.ctrlp_or_unite = 'unitvim'
+endif
 " 是否需要开启代码的静态语法检查(neomake插件)
 let g:setting.make_lint_need = 'no'
 " name
@@ -115,15 +119,15 @@ else
     let g:setting.vimwiki_path = '~/dasea.github.io/'
     let g:setting.private_snippets = '~/snippets'
 endif
-" 浏览器
-let g:setting.global_browser = 'C:/Develop/Mozilla Firefox/firefox.exe'
-" 设置需要支持的语言(目前有python, cpp, markdown, plantuml, vim, php, org)
-let g:language_group = ['cpp', 'markdown', 'vim', 'org', 'plantuml']
+" 设置需要支持的语言(目前有python, cpp, markdown, plantuml, vim, php, org, todo)
+let g:language_group = ['cpp', 'python', 'markdown', 'vim', 'todo', 'plantuml']
 " }}}
 
 " ==============================================================================
 " vim-plug steup 插件管理插件设置{{{
 "/////////////////////////////////////////////////////////////////////////////
+" 需要在加载插件前设置，不然map的无效
+let mapleader = "<"
 set nocompatible
 set hidden
 set showtabline=0
@@ -231,7 +235,9 @@ if g:isGUI
                 set guifont=Consolas:h12:cANSI " this is the default visual studio font
             endif
         elseif g:islinux
-            if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
+            if getfontname('Inziu Iosevka SC') != ''
+                set guifont=InziuIosevkaSC\ 12
+            elseif getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
                 set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ 12
             elseif getfontname( 'DejaVu Sans Mono' ) != ''
                 set guifont=DejaVu\ Sans\ Mono\ 12
@@ -415,14 +421,14 @@ endif "}}}
 " Default colorscheme setup 颜色方案设置{{{
 if !g:isGUI
     if has("termguicolors")
-        " set termguicolors
+        set termguicolors
     endif
     set t_Co=256
 endif
     if strftime("%H") >= 17 || strftime("%H") <= 8
         set background=dark
     else
-        set background=dark
+        set background=light
     endif
 exec 'colorscheme ' . g:setting.color_scheme
 " 切换背景色 {{{
@@ -655,6 +661,7 @@ if g:isNvim
 
     " Use cursor shape feature
     let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
+    let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
 
     " python设置
     let g:python_host_prog = '/usr/bin/python'
@@ -725,7 +732,7 @@ function! MapToFile()
 endfunction
 
 " 重新映射leader键，default 为\
-" let mapleader = ","
+" let mapleader = "<"
 " 修改 :
 nnoremap ; :
 

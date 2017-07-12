@@ -7,3 +7,8 @@
 	tool = vimdiff
 [bash-it]
 	hide-status = 1
+[core]
+	editor = vim
+	autocrlf = input
+[help]
+	autocorrect = true

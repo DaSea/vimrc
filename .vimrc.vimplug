@@ -115,6 +115,7 @@ let g:neosolarized_visibility = "normal"
 let g:neosolarized_vertSplitBgTrans = 1
 let g:neosolarized_bold = 1
 let g:neosolarized_underline = 1
+let g:neosolarized_termtrans = 1
 let g:neosolarized_italic = 0
 
 " Plug 'rakr/vim-one'
@@ -507,11 +508,14 @@ vnoremap <silent> <Leader>yr :<C-U>call dict#VSearch("replace")<CR>
 " 添加一个由用户手动输入单词的快捷键
 nnoremap <silent> <Leader>yi :call YouDaoSearchWord()<CR>
 function! YouDaoSearchWord() abort "{{{
-        let curWord = "hello"
-        call inputsave()
-        let translateword = input("Please enter your text to be translated:", curWord)
-        call inputrestore()
-        echohl Error | call dict#Search(translateword, "simple") | echohl None
+    call inputsave()
+    let translateword = input("Please enter your text to be translated:")
+    call inputrestore()
+    if strlen(translateword)==0
+        return
+    endif
+
+    echohl Error | call dict#Search(translateword, "simple") | echohl None
 endfunction "}}}
 " }}}
 

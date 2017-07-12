@@ -22,9 +22,11 @@ nnoremap <silent> <leader>gw
             \ :<C-u>Denite grep:::`expand('cword')`
 " menu设置, 加载menu文件{{{
 let g:denite_menus = {}
-let s:denite_menu_file = g:exvim_custom_path . './denite_menu.vim'
-if filereadable(expand(s:denite_menu_file))
-    exec 'source ' . fnameescape(s:denite_menu_file)
+if exists('g:exvim_custom_path')
+    let s:denite_menu_file = g:exvim_custom_path . '/denite_menu.vim'
+    if filereadable(expand(s:denite_menu_file))
+        exec 'source ' . fnameescape(s:denite_menu_file)
+    endif
 endif
 "}}}
 
@@ -53,22 +55,38 @@ function! DeniteInit() abort "{{{
     if !executable(s:denite_exe_command)
         let s:denite_exe_command = 'ag'
     endif
-    if s:denite_exe_command ==? 'ag'
-        call denite#custom#var('file_rec', 'command',
-                    \ ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
-        call denite#custom#var('grep', 'command', ['ag'])
-        call denite#custom#var('grep', 'default_opts',
-                    \ ['-w', '--vimgrep', '--noheading'])
-    elseif s:denite_exe_command ==? 'rg'
+    if s:denite_exe_command ==? 'rg'
         " https://github.com/BurntSushi/ripgrep
         call denite#custom#var('file_rec', 'command',
-                    \ ['rg', '--files', '--glob', '!.git', ''])
+                    \ ['rg', '--files',
+                    \ '--glob', '!.git', '',
+                    \ '--glob', '!.exvim', '',
+                    \ '--glob', '!.svn', '',
+                    \ '--glob', '!obj', '',
+                    \ '--glob', '!bin', '',
+                    \ '--glob', '!assets', '',
+                    \ '--glob', '!libs', '',
+                    \ '--glob', '!res', ''
+                    \ ])
         call denite#custom#var('grep', 'command', ['rg'])
         call denite#custom#var('grep', 'recursive_opts', [])
         call denite#custom#var('grep', 'final_opts', [])
         call denite#custom#var('grep', 'separator', ['--'])
         call denite#custom#var('grep', 'default_opts',
                     \ ['--vimgrep', '--no-heading'])
+    elseif s:denite_exe_command ==? 'ag'
+        " https://github.com/ggreer/the_silver_searcher
+        call denite#custom#var('file_rec', 'command',
+                    \ ['ag', '--follow', '--nocolor', '--nogroup',
+                    \ '--ignore-dir', 'obj', '',
+                    \ '--ignore-dir', 'bin', '',
+                    \ '--ignore-dir', 'assets', '',
+                    \ '--ignore-dir', 'libs', '',
+                    \ '--ignore-dir', 'res', '',
+                    \ '-g', '.'])
+        call denite#custom#var('grep', 'command', ['ag'])
+        call denite#custom#var('grep', 'default_opts',
+                    \ ['-w', '--vimgrep', '--noheading'])
     endif
 
     " Define alias
@@ -81,7 +99,7 @@ function! DeniteInit() abort "{{{
     call denite#custom#option('default', 'highlight_mode_normal', 'CursorLine')
 
     " Change default prompt
-    call denite#custom#option('default', 'prompt', '>>>>')
+    call denite#custom#option('default', 'prompt', '>>')
     " call denite#custom#option('default', 'prompt', '▷')
     call denite#custom#option('default', 'short_source_names', v:true)
 
@@ -104,14 +122,26 @@ nnoremap <silent> <leader>jf :<C-u>Denite -mode=insert file_mru<CR>
 
 Plug 'DaSea/vim-denite-prjmgr' " {{{
 if g:isNvim
-    let g:projectmgr_vsc_root_dir = {
-                \ "/mnt/e/Self/05_gitsrc": "git"}
-    let g:projectmgr_vimplug_root_dir = "/home/Feng/.vim/plugged"
+    if isdirectory("/media/seasea/work")
+        let g:projectmgr_vsc_root_dir = {
+                    \ "/media/seasea/work/Self/05_gitsrc": "git"}
+        let g:projectmgr_vimplug_root_dir = "/home/seasea/.vim/plugged"
+    else
+        let g:projectmgr_vsc_root_dir = {
+                    \ "/mnt/e/Self/05_gitsrc": "git"}
+        let g:projectmgr_vimplug_root_dir = "/home/Feng/.vim/plugged"
+    endif
 else
-    let g:projectmgr_vsc_root_dir = {
-                \ "e:/Self/05_gitsrc": "git"
-                \ }
-    let g:projectmgr_vimplug_root_dir = "c:/Develop/exVim/vimfiles/plugged"
+    if isdirectory("/media/seasea/work")
+        let g:projectmgr_vsc_root_dir = {
+                    \ "/media/seasea/work/Self/05_gitsrc": "git"}
+        let g:projectmgr_vimplug_root_dir = "/home/seasea/.vim/plugged"
+    else
+        let g:projectmgr_vsc_root_dir = {
+                    \ "e:/Self/05_gitsrc": "git"
+                    \ }
+        let g:projectmgr_vimplug_root_dir = "c:/Develop/exVim/vimfiles/plugged"
+    endif
 endif
 nnoremap <silent> <Leader>el :<C-u>Denite -auto-resize -mode=normal prjmgr:user<CR>
 nnoremap <silent> <Leader>gl :<C-u>Denite -auto-resize -mode=insert prjmgr:vsc<CR>
@@ -228,7 +258,7 @@ let g:vimfiler_ignore_pattern = []
 nnoremap <silent> <leader>fb :VimFilerBufferDir -buffer-name=explorer
             \ -split -direction=aboveleft -simple -winwidth=34 -toggle<CR>
 " 文件浏览器
-nnoremap <F2> :VimFilerExplorer<CR>
+nnoremap <F2> :VimFilerExplorer -winwidth=35<CR>
 autocmd FileType vimfiler nmap <silent><buffer><expr> <CR> vimfiler#smart_cursor_map(
             \ "\<Plug>(vimfiler_expand_tree)",
             \ "\<Plug>(vimfiler_edit_file)")

@@ -92,7 +92,7 @@ endif
 
 Plug 'scrooloose/nerdtree' " file explorer{{{
 let NERDTreeSortHiddenFirst=1
-let NERDTreeQuitOnOpen=1
+let NERDTreeQuitOnOpen=0
 let NERDTreeShowHidden=1
 " let NERDTreeWinSize=35
 " let NERDTreeWinPos = 'left'
@@ -136,8 +136,8 @@ let g:NERDTreeMapRefreshRoot="R"
 " let g:NERDTreeMapUpdir="z?u"
 " let g:NERDTreeMapUpdirKeepOpen=""
 " let g:NERDTreeMapCWD=""
-let g:NERDTreeDirArrowExpandable = '▾'
-let g:NERDTreeDirArrowCollapsible = '▸'
+let g:NERDTreeDirArrowCollapsible = '▾'
+let g:NERDTreeDirArrowExpandable = '▸'
 let NERDTreeIgnore=['.exvim$[[dir]]','.svn$[[dir]]','.git$[[dir]]', '.o$[[file]]']
 nnoremap <F2> :NERDTreeToggle<CR>
 nnoremap <silent> <leader>fb :NERDTreeFind<cr>

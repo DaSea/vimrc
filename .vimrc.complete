@@ -72,7 +72,11 @@ else
     let g:hasNeocomplete = 0
     if  has('python3')
         Plug 'Valloric/YouCompleteMe' " {{{
-        let g:ycm_python_binary_path = 'python'
+        if g:iswindows
+            let g:ycm_python_binary_path = 'python'
+        else
+            let g:ycm_python_binary_path = 'python3'
+        endif
         let g:ycm_confirm_extra_conf = 0
         let g:ycm_show_diagnostics_ui = 0
         " let g:ycm_use_ultisnips_completer=1
@@ -114,7 +118,8 @@ else
             let g:UltiSnipsSnippetsDir=g:setting.private_snippets.'/ultisnips'
             let g:UltiSnipsSnippetDirectories = [g:setting.private_snippets.'/ultisnips/']
         else
-            let g:UltiSnipsSnippetsDir='~/.vim/ultisnips'
+            " let g:UltiSnipsSnippetsDir='~/.vim/ultisnips'
+            let g:UltiSnipsSnippetsDir=g:setting.private_snippets.'/ultisnips'
             let g:UltiSnipsSnippetDirectories = [g:setting.private_snippets.'/ultisnips/']
         endif
         " 不起作用

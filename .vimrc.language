@@ -12,7 +12,7 @@ function! QuickBrowFileInExpolorer() abort
     if g:iswindows
         exec "silent !start explorer.exe /e,/select," . reviewfile
     else
-        call system('nautilus ' . reviewfile)
+        call system('dde-file-manager -d --show-item ' . reviewfile)
     endif
 endfunction
 nnoremap <Leader>of :call QuickBrowFileInExpolorer()<CR>
@@ -32,9 +32,10 @@ if index(g:language_group, 'markdown') >= 0
     function! MeMarkdownPreview() abort
         let reviewfile = expand("%:p")
         if g:iswindows
-            exec "silent !start " . g:setting.global_browser . ' ' . reviewfile
+            let global_browser = 'D:/Develop/Mozilla Firefox/firefox.exe'
+            exec "silent !start " . global_browser . ' ' . reviewfile
         else
-            call system(g:setting.global_browser . ' ' . reviewfile)
+            call system('google-chrome ' . reviewfile)
         endif
     endfunction
     nnoremap <silent> <Leader>mp :call MeMarkdownPreview()<CR>
@@ -55,10 +56,9 @@ if (index(g:language_group, 'plantuml') >= 0) && (g:iswindows)
     " 详细的可以参考http://plantuml.com/
     let g:slumlord_au_created = 0
     nnoremap <silent> <Leader>um :call slumlord#updatePreview({'write': 1})<CR>
-    let g:plantuml_executable_script = 'D:/Develop/Tools/plantuml.jar'
     function! UmlToImage() abort " 由uml等生成图片 {{{
         let cur_uml = expand('%:p')
-        let cmd = 'java -jar ' . g:plantuml_executable_script . ' ' . cur_uml
+        let cmd = 'java -jar ' . g:plantuml_jar_path . ' ' . cur_uml
         call system(cmd)
     endfunction " }}}
     nnoremap <silent> <Leader>up :call UmlToImage()<CR>
@@ -92,7 +92,8 @@ if index(g:language_group, 'cpp') >= 0
         let g:alternateSearchPath =
                     \ "D:\\Develop\\Java\\android-ndk-r11b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include"
     else
-        let g:alternateSearchPath = "/usr/include/c++/5.4.0"
+        " let g:alternateSearchPath = "/usr/include/c++/5.4.0"
+        let g:alternateSearchPath = "/usr/include/c++/6.3.0"
     endif
     nnoremap <silent> <leader>ah :A<CR>
     nnoremap <silent> <leader>av :AV<CR>
@@ -106,8 +107,13 @@ if index(g:language_group, 'cpp') >= 0
 
     if g:isNvim
         Plug 'zchee/deoplete-clang', {'do': ':UpdateRemotePlugins'} " {{{
-        let g:deoplete#sources#clang#libclang_path = '/usr/lib/llvm-3.8/lib/libclang.so.1'
-        let g:deoplete#sources#clang#clang_header = '/usr/lib/llvm-3.8/lib/clang'
+        if isdirectory('/usr/lib/llvm-4.0')
+            let g:deoplete#sources#clang#libclang_path='/usr/lib/llvm-4.0/lib/libclang.so.1'
+            let g:deoplete#sources#clang#clang_header = '/usr/lib/llvm-4.0/lib/clang'
+        else
+            let g:deoplete#sources#clang#libclang_path='/usr/lib/llvm-3.8/lib/libclang.so.1'
+            let g:deoplete#sources#clang#clang_header = '/usr/lib/llvm-3.8/lib/clang'
+        endif
         let g:deoplete#sources#clang#std={'c': 'c11', 'cpp': 'c++1z', 'objc': 'c11', 'objcpp': 'c++1z'}
         " 补全列表的顺序(priority, alphabetical) 默认使用deoplete.nvim的算法
         " let g:deoplete#sources#clang#sort_algo = 'priority'
@@ -120,10 +126,12 @@ if index(g:language_group, 'cpp') >= 0
         let g:deoplete#sources.cpp = ['buffer', 'neosnippet', 'file/include', 'clang']
         " echo | clang -v -E -x c -
         let g:deoplete#sources#clang#flags = [
-                    \ "-O3", "-cc1", "-x", "c++", "-std=c++11",
-                    \ "-I/home/Feng/java/jdk1.8.0_111/include",
-                    \ "-I/mnt/D/Develop/Java/android-ndk-r10/platforms/android-12/arch-arm/usr/include"
+                    \ "-O3", "-cc1", "-x", "c++", "-std=c++11"
                     \ ]
+
+        " TODO: 对于ndk需要
+        "-I/home/Feng/java/jdk1.8.0/include",
+        "-I/mnt/D/Develop/Java/android-ndk-r10/platforms/android-12/arch-arm/usr/include"
         " }}}
     endif
 endif
@@ -191,6 +199,35 @@ if index(g:language_group, 'org')
     " }}}
 endif
 "}}}
+
+" todo : 管理全局todo和当前工程下的todo {{{
+if index(g:language_group, 'todo')
+    Plug 'simonhicks/todo.vim'
+    let g:todo_vim_files = {
+                \   'Todo': '~/.cache/vtodo/todo',
+                \   'Track': '~/.cache/vtodo/track.todo'
+                \ }
+    let g:todo_vim_project_todo = "./project.todo"
+    nnoremap <Leader>tg :silent call todo#toggle('.')<CR>
+    nnoremap <Leader>td :silent Todo<CR>
+    nnoremap <Leader>tp :silent ProjectTodo<CR>
+endif
+" }}}
+"
+" 一个简单的添加笔记，浏览笔记的插件{{{
+Plug 'DaSea/SimpleMdNote.vim'
+if g:iswindows
+    let g:simplemdnote_draft_path = "E:/Self/01_mywiki/dasea.github.io/source/_drafts"
+    let g:simplemdnote_posts_path = "E:/Self/01_mywiki/dasea.github.io/source/_posts"
+else
+    let g:simplemdnote_draft_path="/media/seasea/work/Self/01_mywiki/dasea.github.io/source/_drafts"
+    let g:simplemdnote_posts_path="/media/seasea/work/Self/01_mywiki/dasea.github.io/source/_posts"
+endif
+nnoremap <Leader>sp :silent SNNewPostsNote<CR>
+nnoremap <Leader>sd :silent SNNewDraftNote<CR>
+nnoremap <Leader>pn :silent SNPublishNote<CR>
+nnoremap <Leader>sl :silent SNListNote<CR>
+" }}}
 
 " vim:ts=4:sw=4:sts=4 et fdm=marker:
 
