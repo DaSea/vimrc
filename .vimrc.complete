@@ -1,6 +1,29 @@
 " 设置弹出的补全菜单的个数
 set pumheight=15
 
+if 'yes' ==? g:setting.auto_paramcomplete
+    Plug 'tenfyzhong/CompleteParameter.vim' " 函数参数补全{{{
+    inoremap <silent><expr> ( cmp#pre_complete("(")
+    nnoremap <c-j> <Plug>(complete_parameter#goto_next_parameter)
+    smap <c-j> <Plug>(complete_parameter#goto_next_parameter)
+    imap <c-j> <Plug>(complete_parameter#goto_next_parameter)
+    nnoremap <c-h> <Plug>(complete_parameter#goto_previous_parameter)
+    smap <c-h> <Plug>(complete_parameter#goto_previous_parameter)
+    imap <c-h> <Plug>(complete_parameter#goto_previous_parameter)
+    " 重载函数的时候使用
+    nnoremap <m-d> <Plug>(complete_parameter#overload_down)
+    imap <m-d> <Plug>(complete_parameter#overload_down)
+    smap <m-d> <Plug>(complete_parameter#overload_down)
+    nnoremap <m-u> <Plug>(complete_parameter#overload_up)
+    imap <m-u> <Plug>(complete_parameter#overload_up)
+    smap <m-u> <Plug>(complete_parameter#overload_up)
+    " 在命令行显示函数原形
+    " set noshowmode
+    " set cmdheight=2
+    let g:complete_parameter_echo_signature=0
+endif
+" }}}
+
 if g:isNvim
     let g:hasNeocomplete = 1
     Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'} " {{{
@@ -18,11 +41,12 @@ if g:isNvim
     " debug
     " let g:deoplete#enable_profile=1
     " omni function
-    let g:deoplete#omni#input_patterns={}
-    let g:deoplete#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
-    let g:deoplete#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
-    let g:deoplete#omni#input_patterns.java = '[^. *\t]\.\w*'
-    let g:deoplete#omni#input_patterns.php =  '\h\w*\|[^. \t]->\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?'
+    " let g:deoplete#omni#input_patterns={}
+    " let g:deoplete#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
+    " let g:deoplete#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
+    " let g:deoplete#omni#input_patterns.java = '[^. *\t]\.\w*'
+    " let g:deoplete#omni#input_patterns.php =  '\h\w*\|[^. \t]->\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?'
+    " let g:deoplete#omni#input_patterns.go = '[^. *\t]\.\w*'
     " keymap
     inoremap <silent><expr> <TAB>
                 \ pumvisible() ? "\<C-n>" :
@@ -34,11 +58,6 @@ if g:isNvim
                 \ deoplete#smart_close_popup()."\<C-h>"
     inoremap <expr><C-g>    deoplete#undo_completion()
     inoremap <expr><C-l>    deoplete#refresh()
-    " <CR>: close popup and save indent.
-    inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-    function! s:my_cr_function() abort
-        return deoplete#close_popup() . "\<CR>"
-    endfunction
     function! s:check_back_space() abort "{{{
         let col = col('.') - 1
         let lastChar = getline('.')[col-1]
@@ -64,26 +83,22 @@ if g:isNvim
     call add(g:init_func_list, function('DeopleteInit'))
     "}}}
 else
-    " inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-    function! s:my_cr_function()
-        return (pumvisible() ? "\<C-y>\<C-e>\<CR>" : "\<CR>" )
-    endfunction
-
     let g:hasNeocomplete = 0
-    if  has('python3')
+    if  has('python3') || has('python')
         Plug 'Valloric/YouCompleteMe' " {{{
         if g:iswindows
-            let g:ycm_python_binary_path = 'python'
-        else
             let g:ycm_python_binary_path = 'python3'
+        else
+            let g:ycm_python_binary_path = 'python'
         endif
         let g:ycm_confirm_extra_conf = 0
         let g:ycm_show_diagnostics_ui = 0
-        " let g:ycm_use_ultisnips_completer=1
+        let g:ycm_use_ultisnips_completer=1
         let g:ycm_goto_buffer_command='vertical-spit'
         let g:ycm_log_level='error'
         let g:ycm_echo_current_diagnostic = 1
         let g:ycm_echo_current_error = 1
+        let g:ycm_min_num_of_chars_for_completion = 3
         let g:ycm_filetype_blacklist = {
                     \ 'tagbar' : 1,
                     \ 'qf' : 1,
@@ -92,6 +107,15 @@ else
                     \ 'infolog' : 1,
                     \ 'mail' : 1
                     \}
+        let g:ycm_semantic_triggers = {
+                    \ 'c' : ['->', ' ', '.', ' ', '(', '[', '&'],
+                    \ 'cpp,objcpp' : ['->', '.', ' ', '(', '[', '&', '::'],
+                    \ 'perl' : ['->', '::', ' '],
+                    \ 'php' : ['->', '::', '.'],
+                    \ 'cs,java,javascript,d,vim,python,perl6,scala,vb,elixir,go' : ['.'],
+                    \ 'ruby' : ['.', '::'],
+                    \ 'lua' : ['.', ':']
+                    \ }
         if g:iswindows
             let g:ycm_global_ycm_extra_conf = $VIM.'/.ycm_extra_conf.py'
         else
@@ -113,19 +137,9 @@ else
         " }}}
 
         Plug 'SirVer/ultisnips' " snippets {{{
-        let g:UltiSnipsUsePythonVersion=3
-        if g:iswindows
-            let g:UltiSnipsSnippetsDir=g:setting.private_snippets.'/ultisnips'
-            let g:UltiSnipsSnippetDirectories = [g:setting.private_snippets.'/ultisnips/']
-        else
-            " let g:UltiSnipsSnippetsDir='~/.vim/ultisnips'
-            let g:UltiSnipsSnippetsDir=g:setting.private_snippets.'/ultisnips'
-            let g:UltiSnipsSnippetDirectories = [g:setting.private_snippets.'/ultisnips/']
-        endif
-        " 不起作用
-        " if !exists('g:UltiSnipsSnippetDirectories')
-            " let g:UltiSnipsSnippetDirectories = ['snippets/ultisnips']
-        " endif
+        let g:UltiSnipsUsePythonVersion = 3
+        let g:UltiSnipsSnippetsDir=g:setting.private_snippets.'/ultisnips'
+        let g:UltiSnipsSnippetDirectories = [g:setting.private_snippets.'/ultisnips/']
         let g:UltiSnipsEnableSnipMate=0
         let g:UltiSnipsEditSplit="vertical"
         let g:UltiSnipsExpandTrigger="<C-k>"
@@ -204,19 +218,44 @@ else
 endif
 
 if g:hasNeocomplete
+    inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+    function! s:my_cr_function()
+        return (pumvisible() ? deoplete#close_popup() : "\<CR>")
+        " return deoplete#close_popup() . "\<CR>"
+    endfunction
+else
+    inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+    function! s:my_cr_function() abort
+        return (pumvisible() ? "\<C-y>" : "\<CR>")
+    endfunction
+endif
+
+if g:hasNeocomplete
+    function! SetCppPath() abort "{{{
+        let files = split(glob('/usr/include/c++/6/*'), '\n')
+                    \ + split(glob('/usr/include/x86_64-linux-gnu/qt5/*'), '\n')
+        call filter(files, 'isdirectory(v:val)')
+
+        " Add cpp path.
+        let g:neoinclude#paths['cpp'] = '.,' . join(files, ',')
+        let g:neoinclude#_paths['cpp'] = '.,' . join(files, ',')
+    endfunction"}}}
     Plug 'Shougo/neoinclude.vim' "{{{
     " disable ctags
     " let g:neoinclude#ctags_command = ''
     " 字典,设置路径
+    if !exists('g:neoinclude#paths')
+        let g:neoinclude#paths = {}
+    endif
     if !exists('g:neoinclude#_paths')
         let g:neoinclude#_paths = {}
     endif
     if g:iswindows
-        let g:neoinclude#_paths = {
+        let g:neoinclude#paths = {
                     \ 'cpp': 'D:/Develop/Java/android-ndk-r10/platforms/android-19/arch-arm/usr/include'
                     \ }
     else
-        let g:neoinclude#_paths = {'cpp': '/usr/include'}
+        call SetCppPath()
     endif
     " if !exists('g:neoinclude#_exts')
         " let g:neoinclude#_exts = {}

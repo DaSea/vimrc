@@ -91,24 +91,34 @@ endif
 " 全局配置变量(Dictionnary){{{
 let g:setting = {}
 let g:plugins_file = '.vimrc.vimplug'
-" 全局设置seoul256-light
+" 全局设置seoul256-light, NeoSolarized
+" let g:setting.color_scheme = 'one'
 let g:setting.color_scheme = 'NeoSolarized'
 " 关于更改行的设置(git(vim-fugitive, vim-gitgutter), git_svn(vim-signify), no)
 let g:setting.version_status = 'no'
-" 状态栏(ariline or no), 如果为no, 自定义状态栏
-" 这里的tabline是airline的功能
+" 是否使用vim-devicons
+let g:setting.use_devicons = 'yes'
+" 状态栏(airline, lightline or no), 如果为no, 自定义状态栏
 let g:setting.status_line = 'airline'
 let g:setting.status_color = 'atomic'
+" let g:setting.status_color = 'dark'
 let g:setting.show_tabline = 'yes'
+" 是否使用exVim系列插件
+let g:setting.use_exvim = 'yes'
 " 使用ctrlp还是使用unit.vim(denite.nvim)
 " 由于denite出色的特性, 测试用denite替换unite相关插件, 或者用LeaderF
 if g:isNvim
-    let g:setting.ctrlp_or_unite = 'unitvim'
+    " let g:setting.ctrlp_or_unite = 'unitvim'
+    let g:setting.ctrlp_or_unite = 'leaderf'
 else
-    let g:setting.ctrlp_or_unite = 'unitvim'
+    let g:setting.ctrlp_or_unite = 'leaderf'
 endif
 " 是否需要开启代码的静态语法检查(neomake插件)
 let g:setting.make_lint_need = 'no'
+" 是否需要开启括号补全
+let g:setting.auto_pairs_need = 'yes'
+" 参数补全(tenfyzhong/CompleteParameter.vim)
+let g:setting.auto_paramcomplete = 'no'
 " name
 let g:setting.author_name = 'DaSea'
 " windows与linux使用不同的目录
@@ -119,15 +129,19 @@ else
     let g:setting.vimwiki_path = '~/dasea.github.io/'
     let g:setting.private_snippets = '~/snippets'
 endif
-" 设置需要支持的语言(目前有python, cpp, markdown, plantuml, vim, php, org, todo)
-let g:language_group = ['cpp', 'python', 'markdown', 'vim', 'todo', 'plantuml']
+" 设置需要支持的语言(目前有python, cpp, markdown, plantuml, vim, php, org, lua )
+" let g:language_group = ['cpp', 'python', 'markdown', 'vim', 'todo', 'plantuml', 'go']
+let g:language_group = ['cpp', 'markdown', 'vim', 'org', 'plantuml', 'lua']
 " }}}
 
 " ==============================================================================
 " vim-plug steup 插件管理插件设置{{{
 "/////////////////////////////////////////////////////////////////////////////
 " 需要在加载插件前设置，不然map的无效
-let mapleader = "<"
+if 1==g:islinux " 由于在linux上的按键有问题,使用的是微星的键盘布局
+    let mapleader = "<"
+endif
+
 set nocompatible
 set hidden
 set showtabline=0
@@ -171,7 +185,9 @@ syntax on " required
 " 备份及 历史等设置{{{
 "/////////////////////////////////////////////////////////////////////////////
 " where gf, ^Wf, :find will search
-set path +=.,D:/Develop/Java/android-ndk-r10/platforms/android-14/arch-arm/usr/include,D:/Develop/Java/android-ndk-r10/sources/cxx-stl/gnu-libstdc++/4.6/include
+if g:iswindows
+    set path +=.,D:/Develop/Java/android-ndk-r10/platforms/android-14/arch-arm/usr/include,D:/Develop/Java/android-ndk-r10/sources/cxx-stl/gnu-libstdc++/4.6/include
+endif
 "set backup " make backup file and leave it around
 set nobackup
 
@@ -200,6 +216,7 @@ set shellredir=>%s\ 2>&1
 set history=50 " keep 50 lines of command line history
 set updatetime=1000 " default = 4000
 set autoread " auto read same-file change ( better for vc/vim change )
+set autowriteall
 set maxmempattern=1000 " enlarge maxmempattern from 1000 to ... (2000000 will give it without limit)
 
 "/////////////////////////////////////////////////////////////////////////////
@@ -235,7 +252,11 @@ if g:isGUI
                 set guifont=Consolas:h12:cANSI " this is the default visual studio font
             endif
         elseif g:islinux
-            if getfontname('Inziu Iosevka SC') != ''
+            " if getfontname( 'DejaVuSansMono Nerd Font Mono' ) != ''
+                " set guifont=DejaVuSansMono\ Nerd\ Font\ Mono\ 14
+            if getfontname( 'UbuntuMono Nerd Font Mono' ) != ''
+                set guifont=UbuntuMono\ Nerd\ Font\ Mono\ 14
+            elseif getfontname('Inziu Iosevka SC') != ''
                 set guifont=InziuIosevkaSC\ 12
             elseif getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
                 set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ 12
@@ -281,8 +302,23 @@ set titlestring=%t\[%{expand(\"%:p:h\")}]
 set showfulltag " show tag with function protype.
 
 " 关闭光标闪烁
-set guicursor&
-set guicursor+=a:blinkon0
+if g:isGUI
+    set guicursor&
+    set guicursor+=a:blinkon0
+endif
+" 但是改变光标样式的时候会抖动
+if has('autocmd') && g:isNvim==0
+    " 主要解决genome终端下模式不同光标不同的情况
+    " 如果你想要光标闪烁，则将下方的2改为1,6改为5,4改为3
+    au VimEnter,InsertLeave * silent execute '!echo -ne "\e[2 q"' | redraw!
+    au InsertEnter,InsertChange *
+                \ if v:insertmode == 'i' |
+                \   silent execute '!echo -ne "\e[6 q"' | redraw! |
+                \ elseif v:insertmode == 'r' |
+                \   silent execute '!echo -ne "\e[4 q"' | redraw! |
+                \ endif
+    au VimLeave * silent execute '!echo -ne "\e[ q"' | redraw!
+endif
 
 " 状态栏设置
 set laststatus=2 " always have status-line
@@ -340,6 +376,8 @@ if g:isGUI "{{{
     if g:iswindows
         au GUIEnter * simalt ~x " Maximize window when enter vim
         " set rop=type:directx,gamma:1.0,contrast:0.5,level:1,geom:1,renmode:4,taamode:1
+    else
+        set lines=999 columns=999
     endif
 
     "present the bottom scrollbar when the longest visible line exceed the window
@@ -365,10 +403,10 @@ set nonumber
 function! ToggleLineNumber() abort " 切换行号 {{{
     if (0 == &number) && (0 == &relativenumber)
         exec 'set number'
-        exec 'set relativenumber'
-    elseif (1 == &relativenumber) && (1 == &number)
-        exec 'set number'
         exec 'set norelativenumber'
+    elseif (0 == &relativenumber) && (1 == &number)
+        exec 'set number'
+        exec 'set relativenumber'
     else
         exec 'set nonumber'
         exec 'set norelativenumber'
@@ -425,11 +463,11 @@ if !g:isGUI
     endif
     set t_Co=256
 endif
-    if strftime("%H") >= 17 || strftime("%H") <= 8
-        set background=dark
-    else
-        set background=light
-    endif
+if strftime("%H") >= 15 || strftime("%H") <= 8
+    set background=light
+else
+    set background=light
+endif
 exec 'colorscheme ' . g:setting.color_scheme
 " 切换背景色 {{{
 function! ToggleBackground() abort
@@ -508,9 +546,9 @@ set cursorline  " 高亮当前行
 " ==============================================================================
 " 显示不可打印字符
 "===============================================================================
-set list
+" set list
 " set listchars=tab:▸\ ,eol:¬,trail:⋅,extends:❯,precedes:❮
-set listchars=tab:▸\ ,trail:⋅,extends:❯,precedes:❮
+" set listchars=tab:>-,trail:⋅,extends:>,precedes:<
 set showbreak=↪
 " For conceal markers.
 if has("conceal")
@@ -528,6 +566,8 @@ set fileformats=unix,dos
 "===============================================================================
 " 不显示preview 窗口, 自动完成预览
 set completeopt-=preview
+" set completeopt+=noinsert
+" set completeopt+=noselect
 " set wildmode=list:longest,full
 " set wildmenu "turn on wild menu
 set wildignore=*.o,*.obj,*.exe,*~ "stuff to ignore when tab completing
@@ -602,12 +642,12 @@ if has('autocmd')
         " au FileType cs set comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,f:///,f://
         " au FileType vim set comments=sO:\"\ -,mO:\"\ \ ,eO:\"\",f:\"
         au FileType vim set foldmethod=marker
-        au FileType lua set comments=f:--
+        au FileType lua setlocal tabstop=2
         au FileType qml,python set foldmethod=indent
         au FileType c,cpp set foldmethod=indent
         au FileType help noremap <buffer> q :close<CR>
         au FileType dosbatch setlocal fileencoding=cp936
-        au FileType org setlocal tabstop=2
+        " au FileType org setlocal tabstop=2
         au FileType java setlocal nolist
 
         " if edit python scripts, check if have \t.( python said: the programme can only
@@ -655,7 +695,7 @@ endif
 "}}}
 
 " ==============================================================================
-" neovim 配置 {{{
+" neovim 特殊配置，vim与neovim终端配置 {{{
 if g:isNvim
     let g:terminal_scrollback_buffer_size = 500
 
@@ -686,6 +726,11 @@ if g:isNvim
     augroup me_nvim
         autocmd BufEnter term://* startinsert
     augroup END
+    " }}}
+else
+    "终端设置{{{
+    nnoremap <Leader>tt :<C-u>term ++curwin ++close<CR>
+    tnoremap <ESC> <C-W>N
     " }}}
 endif
 "}}}
@@ -724,7 +769,7 @@ nnoremap <Leader>lc :call QuickChangeFileFormat()<CR>
 "}}}
 
 "===================================================
-" 重定位输入map
+" 重定位输出map到文件
 function! MapToFile()
     silent exe "redir>map.txt"
     silent exe "map"
@@ -732,7 +777,7 @@ function! MapToFile()
 endfunction
 
 " 重新映射leader键，default 为\
-" let mapleader = "<"
+" let mapleader = ","
 " 修改 :
 nnoremap ; :
 
@@ -885,6 +930,9 @@ vnoremap <Leader>wa <ESC>:w<CR>
 noremap  <Leader>ws :wa<CR>
 inoremap <Leader>ws <ESC>:wa<CR>
 vnoremap <Leader>ws <ESC>:wa<CR>
+if g:islinux
+    nnoremap <Leader>rs :w !sudo tee>/dev/null %<CR>
+endif
 " 重命名文件
 " 关闭当前窗口, 详细请看:help Close
 noremap <Leader>mc :close<CR>
@@ -902,9 +950,16 @@ nnoremap dl "_dd
 nnoremap dc "_dw
 " 删除单个不放入寄存器
 nnoremap x "_x
+" set paste
 " define the copy/paste judged by clipboard
 " set clipboard+=unnamed
-set clipboard=unnamed
+if g:islinux
+    if has('unnamedplus')
+        set clipboard=unnamedplus
+    else
+        set clipboard+=unnamed
+    endif
+endif
 " if has('unnamedplus')
 " set clipboard+=unnamedplus
 " endif

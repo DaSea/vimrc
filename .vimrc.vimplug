@@ -18,78 +18,16 @@ let g:better_whitespace_filetypes_blacklist = ['denite', 'unite', 'vimfiler', 'c
 noremap CS :StripWhitespace<CR>
 "}}}
 
-if 'airline' ==? g:setting.status_line
-    Plug 'vim-airline/vim-airline'
-    " Plug 'vim-airline/vim-airline-themes'  可以打开, 就有很多选择了, 但是我觉得onedark很好
-    " airline状态栏{{{
-    let g:airline_powerline_fonts = 1
-    let g:airline_theme = g:setting.status_color
-    let g:airline_left_sep = ''
-    let g:airline_left_alt_sep = ''
-    let g:airline_right_sep = ''
-    let g:airline_right_alt_sep = ''
-    " let g:airline_left_sep = '▶'
-    " let g:airline_left_alt_sep = '❯'
-    " let g:airline_right_sep = '◀'
-    " let g:airline_right_alt_sep = '❮'
-    if !exists('g:airline_symbols')
-        let g:airline_symbols = {}
+if g:setting.status_line !=? 'no'
+    if exists('g:exvim_custom_path')
+        let g:vim_statusline = g:exvim_custom_path.'/.vimrc.statusline'
+    else
+        let g:vim_statusline = '~/.vimrc.statusline'
     endif
-    let g:airline_symbols.branch = ''
-    let g:airline_symbols.readonly = ''
-    let g:airline_symbols.linenr = ''
-    let g:airline_detect_modified=1
-    let g:airline_detect_crypt=0
-    let g:airline_detect_spell=0
-    let g:airline_detect_iminsert=0
-    let g:airline_inactive_collapse=0
-    let g:airline_extensions = ['quickfix']
-    if g:setting.show_tabline ==? 'yes' " {{{
-        call add(g:airline_extensions, 'tabline')
-        let g:airline#extensions#tabline#enabled=1
-        let g:airline#extensions#tabline#show_splits = 1
-        let g:airline#extensions#tabline#switch_buffers_and_tabs = 0
-        let g:airline#extensions#tabline#show_buffers = 1
-        let g:airline#extensions#tabline#show_tabs = 0
-        let g:airline#extensions#tabline#buffers_label = 'B'
-        let g:airline#extensions#tabline#tabs_label = 'T'
-        let g:airline#extensions#tabline#buffer_idx_mode = 1
-        let g:airline#extensions#tabline#excludes = ['unite', 'vimfiler']
-        nmap ,1 <Plug>AirlineSelectTab1
-        nmap ,2 <Plug>AirlineSelectTab2
-        nmap ,3 <Plug>AirlineSelectTab3
-        nmap ,4 <Plug>AirlineSelectTab4
-        nmap ,5 <Plug>AirlineSelectTab5
-        nmap ,6 <Plug>AirlineSelectTab6
-        nmap ,7 <Plug>AirlineSelectTab7
-        nmap ,8 <Plug>AirlineSelectTab8
-        nmap ,9 <Plug>AirlineSelectTab9
-        nmap <Leader>k <Plug>AirlineSelectPrevTab
-        nmap <Leader>j <Plug>AirlineSelectNextTab
-        let g:airline#extensions#tabline#buffer_nr_format = '%s: '
-        let g:airline#extensions#tabline#fnamemod = ':t:.'
-        let g:airline#extensions#tabline#fnametruncate = 0
-        let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
-    endif "}}}
-    " 各个部分的设置简化
-    if g:isGUI
-        let g:airline_section_c = '%t'
+
+    if filereadable(expand(g:vim_statusline))
+        exec 'source ' . fnameescape(g:vim_statusline)
     endif
-    let g:airline_section_z = '%l%{g:airline_symbols.linenr}%L'
-    let g:airline_mode_map = {
-                \ '__' : '-',
-                \ 'n'  : 'N',
-                \ 'i'  : 'I',
-                \ 'R'  : 'R',
-                \ 'c'  : 'C',
-                \ 'v'  : 'v',
-                \ 'V'  : 'VL',
-                \ '' : 'VB',
-                \ 's'  : 's',
-                \ 'S'  : 'S',
-                \ '' : 'S',
-                \ }
-    " }}}
 endif
 
 " Plug 'Konfekt/FastFold' {{{
@@ -110,8 +48,8 @@ let g:indentLine_faster = 1
 " colorscheme 插件 {{{
 " ---------------------------------------------------
 Plug 'icymind/NeoSolarized'
-let g:neosolarized_contrast = "normal"
-let g:neosolarized_visibility = "normal"
+" let g:neosolarized_contrast = "low"
+" let g:neosolarized_visibility = "low"
 let g:neosolarized_vertSplitBgTrans = 1
 let g:neosolarized_bold = 1
 let g:neosolarized_underline = 1
@@ -120,9 +58,7 @@ let g:neosolarized_italic = 0
 
 " Plug 'rakr/vim-one'
 " let g:one_allow_italics = 1
-" Plug 'junegunn/seoul256.vim'
-" let g:seoul256_background=234
-" let g:seoul256_light_background=253
+" let g:one_allow_underline=1
 
 " 个人收集的一些主题
 " Plug 'DaSea/vim-personcolors'
@@ -165,11 +101,18 @@ endfunction " }}}
 " }}}
 "}}}
 
-" ex系列插件, 工程管理 {{{
-Plug 'DaSea/ex-config'
-" Fork 'exvim/ex-config', change '.exvim.project_name' to '.exvim'
-" ---------------------------------------------------
-nnoremap <unique> <Leader>ve :call exconfig#edit_cur_vimentry ()<CR>
+" ex系列插件 {{{
+if g:setting.use_exvim ==? 'yes'
+    if exists('g:exvim_custom_path')
+        let g:vim_explug = g:exvim_custom_path.'/.vimrc.explug'
+    else
+        let g:vim_explug = '~/.vimrc.explug'
+    endif
+
+    if filereadable(expand(g:vim_explug))
+        exec 'source ' . fnameescape(g:vim_explug)
+    endif
+endif
 
 Plug 'DaSea/ex-utility'
 " ---------------------------------------------------
@@ -182,81 +125,6 @@ nmap <unique> <silent> <Leader><Esc> :EXgp<CR><ESC>
 " 定义运行qml文件的脚本
 " nnoremap <Leader>mr :call system("qmlscene". expand("%"))<CR>
 
-Plug 'exvim/ex-aftercolors'
-" ---------------------------------------------------
-
-Plug 'DaSea/ex-vimentry'
-"Fork 'exvim/ex-vimentry', and change default template
-" ---------------------------------------------------
-
-Plug 'exvim/ex-project'
-" ---------------------------------------------------
-let g:ex_project_winpos='left'
-let g:ex_project_winsize=28
-let g:ex_project_winsize_zoom=40
-nnoremap <unique> <silent> <F3> :EXProjectToggle<CR>
-nnoremap <unique> <silent> <Leader>pf :EXProjectFind<CR>
-autocmd FileType exproject noremap <buffer> q :EXProjectClose<CR>
-
-Plug 'exvim/ex-gsearch'
-" ---------------------------------------------------
-let g:ex_gsearch_ignore_case = 0
-function! ExgsearchInit() abort "{{{
-    call exgsearch#register_hotkey( 100, 0, '<Leader>gs', ":EXGSearchToggle<CR>", 'Toggle global search window.' )
-    call exgsearch#register_hotkey( 101, 0, '<Leader>gg', ":EXGSearchCWord<CR>", 'Search current word.' )
-    call exgsearch#register_hotkey( 102, 0, '<Leader><S-f>', ":GS ", 'Shortcut for :GS' )
-    call exgsearch#register_hotkey( 2, 1, 'q', ":EXGSearchClose<CR>" , 'Close window.')
-endfunction "}}}
-call add(g:init_func_list, function('ExgsearchInit'))
-
-Plug 'exvim/ex-tags'
-" ---------------------------------------------------
-function! ExtagsInit() abort "{{{
-    call extags#register_hotkey( 100, 0, '<Leader>ts', ":EXTagsToggle<CR>", 'Toggle tag select window.' )
-    call extags#register_hotkey( 101, 0, '<Leader>]', ":EXTagsCWord<CR>", 'Tag select current word.' )
-    call extags#register_hotkey( 2  , 1, 'q', ":EXTagsClose<CR>", 'Close window.' )
-    " DISABLE: nnoremap <unique> <Leader>] :exec 'ts ' . expand('<cword>')<CR>
-endfunction "}}}
-call add(g:init_func_list, function('ExtagsInit'))
-
-Plug 'exvim/ex-symbol'
-" ---------------------------------------------------
-function! Exsymbol() abort "{{{
-    call exsymbol#register_hotkey( 100, 0, '<Leader>ss', ":EXSymbolList<CR>", 'List all symbols.' )
-    call exsymbol#register_hotkey( 101, 0, '<Leader>sq', ":EXSymbolOpen<CR>", 'Open symbols window.' )
-    call exsymbol#register_hotkey( 102, 0, '<Leader>sg', ":EXSymbolCWord<CR>", 'List symbols contains current word.' )
-
-    if g:isGUI
-        if g:ismac
-            call exsymbol#register_hotkey( 102, 0, 'Ò', ":EXSymbolList<CR>:redraw<CR>/", 'List all symbols and stay in search mode.' )
-        else
-            call exsymbol#register_hotkey( 102, 0, '<M-L>', ":EXSymbolList<CR>:redraw<CR>/", 'List all symbols and stay in search mode.' )
-        endif
-    endif
-endfunction "}}}
-call add(g:init_func_list, function('Exsymbol'))
-let g:ex_symbol_select_cmd = 'TS'
-
-Plug 'exvim/ex-cscope'
-" ---------------------------------------------------
-function! Excscope() abort "{{{
-    call excscope#register_hotkey( 100, 0, '<Leader>cd', ":EXCSToggle<CR>", 'Toggle cscope window.' )
-endfunction "}}}
-call add(g:init_func_list, function('Excscope'))
-
-Plug 'exvim/ex-qfix'
-" ---------------------------------------------------
-function! Exqfix() abort "{{{
-    call exqfix#register_hotkey( 100, 0, '<Leader>qf', ":EXQFixToggle<CR>", 'Toggle quickfix window.' )
-    call exqfix#register_hotkey( 101, 0, '<Leader>qq', ":EXQFixPaste<CR>", 'Open quickfix window and paste error list from register *.' )
-endfunction "}}}
-call add(g:init_func_list, function('Exqfix'))
-
-" Plug 'exvim/ex-hierarchy'
-" 生成继承关系图
-" ---------------------------------------------------
-" nnoremap <unique> <Leader>hv :EXHierarchyCWord<CR>
-
 Plug 'exvim/ex-showmarks'
 " ex-showmarks: invoke by m... or <Leader>mm, <Leader>ma
 " ---------------------------------------------------
@@ -268,7 +136,6 @@ let g:showmarks_ignore_type = 'hqm' " Ignore help, quickfix, non-modifiable buff
 " Hilight lower & upper marks
 let g:showmarks_hlline_lower = 1
 let g:showmarks_hlline_upper = 0
-
 
 " Plug 'exvim/ex-visincr'
 " ex-visincr: invoke when select text and type ':II'
@@ -283,16 +150,56 @@ Plug 'exvim/ex-easyhl'
 " 自动高亮当前光标下单词
 " let g:ex_easyhl_auto_cursorhl = 1
 
-Plug 'exvim/ex-searchcompl', {'for': 'exvim'}
-" invoke by /
-" ---------------------------------------------------
-
-" Plug 'DaSea/ex-prjlist'
+Plug 'DaSea/ex-prjlist' " {{{
 " 已经用新的插件vim-denite-prjmgr 替代(依赖于denite.nvim)
 " ---------------------------------------------------
-" let g:exprj_list_cache_directory = 'D:/Develop/cache'
-" let g:exprj_list_win_pos = "botright"
-" let g:exprj_list_win_szie = 30
+if g:isNvim
+    if isdirectory("/media/seasea/work")
+        let g:exprjlist_vsc_root_dir = {
+                    \ "/media/seasea/work/Self/05_gitsrc": "git"}
+        let g:exprjlist_vimplug_root_dir = "/home/seasea/.vim/plugged"
+    else
+        let g:exprjlist_vsc_root_dir = {
+                    \ "/mnt/e/Self/05_gitsrc": "git"}
+        let g:exprjlist_vimplug_root_dir = "/home/Feng/.vim/plugged"
+    endif
+else
+    if isdirectory("/media/seasea/work")
+        let g:exprjlist_vsc_root_dir = {
+                    \ "/media/seasea/work/Self/05_gitsrc": "git"}
+        let g:exprjlist_vimplug_root_dir = "/home/seasea/.vim/plugged"
+    else
+        let g:exprjlist_vsc_root_dir = {
+                    \ "e:/Self/05_gitsrc": "git"
+                    \ }
+        let g:exprjlist_vimplug_root_dir = "c:/Develop/exVim/vimfiles/plugged"
+    endif
+endif
+function! ExprjlistSelect(type) abort " 选择denite或本身的 {{{
+    if a:type==1
+        if exists(":Denite")
+            exe "Denite -auto-resize -mode=insert exprjlist:user"
+        else
+            exe "EXPrjCommonDirList"
+        endif
+    elseif a:type==2
+        if exists(":Denite")
+            exe "Denite -auto-resize -mode=insert exprjlist:vsc"
+        else
+            exe "EXPrjVerDirList"
+        endif
+    elseif a:type==3
+        if exists(":Denite")
+            exe "Denite -auto-resize -mode=insert exprjlist:vimplug"
+        else
+            exe "EXPrjPlugDirLIst"
+        endif
+    endif
+endfunction " }}}
+nnoremap <silent> <Leader>el :call ExprjlistSelect(1)<CR>
+nnoremap <silent> <Leader>gl :call ExprjlistSelect(2)<CR>
+nnoremap <silent> <Leader>ml :call ExprjlistSelect(3)<CR>
+" }}}
 " }}}
 
 " 版本控制(git,svn)及修改状态显示{{{
@@ -407,12 +314,16 @@ function! Multiple_cursors_after()
 endfunction
 "}}}
 
-Plug 'mbbill/undotree' " {'on': 'UndotreeToggle'} undo 历史树,直观显示,快速选择恢复{{{
+Plug 'dkprice/vim-easygrep', {'on': ['Grep', 'GrepOptions', 'GrepAdd', 'GrepRoot', 'GrepProgram']}" {{{
+let g:EasyGrepPerlStyle=1
+" }}}
+
+" undo 历史树,直观显示,快速选择恢复{{{
 if has("persistent_undo")
-    set undodir=~/.undodir
+    Plug 'mbbill/undotree', {'on': 'UndotreeToggle'}
+    set undodir=~/.cache/undodir
     set undofile
-endif
-"}}}
+endif "}}}
 "}}}
 
 "  快速注释, 及生成函数及文件注释{{{
@@ -433,6 +344,8 @@ let g:NERDRemoveExtraSpaces = 1
 let g:NERDCustomDelimiters = {
             \ 'vimentry': { 'left': '--' },
             \ }
+" 自定义的注释格式切换样式
+" let g:NERDAltDelims_c= {'left': '//', 'leftAlt': '/*', 'rightAlt': '*/' }
 "}}}
 
 "生成文件注释和函数注释{{{
@@ -596,15 +509,20 @@ endif
 "}}}
 
 "括号补全, endif等补全{{{
-Plug 'jiangmiao/auto-pairs'
-let g:AutoPairsFlyMode = 0
-let g:AutoPairsShortcutBackInsert = '<Leader>pb'
-" 上面俩项为flyMode下使用
-let g:AutoPairsShortcutToggle = '<Leader>pp'
-let g:AutoPairsShortcutFastWrap = '<Leader>pe'
-let g:AutoPairsShortcutJump = '<Leader>pn'
-
-Plug 'tpope/vim-endwise', {'for': ['vim', 'lua', 'snippets', 'sh', 'zsh']}
+if 'yes' ==? g:setting.auto_pairs_need
+    Plug 'jiangmiao/auto-pairs'
+    " let g:AutoPairsFlyMode = 0
+    " let g:AutoPairsShortcutBackInsert = '<Leader>pb'
+    " 上面俩项为flyMode下使用
+    let g:AutoPairsShortcutToggle = '<Leader>pp'
+    let g:AutoPairsShortcutFastWrap = '<Leader>pe'
+    let g:AutoPairsShortcutJump = '<Leader>pn'
+    if 'yes' ==? g:setting.auto_paramcomplete
+        let g:AutoPairs = {'[':']', '{':'}',"'":"'",'"':'"', '`':'`'}
+        inoremap <buffer><silent> ) <C-R>=AutoPairsInsert(')')<CR>
+    endif
+endif
+Plug 'tpope/vim-endwise', {'for': ['python', 'vim', 'lua', 'sh', 'zsh']}
 "}}}
 
 " Document(查阅文档){{{
@@ -653,6 +571,30 @@ function! FindWord() abort "{{{
     endif
 endfunction "}}}
 "}}}
+
+" fcitx设置(对linux有效) {{{
+if g:islinux
+    " 退出插入模式的时候自动进入英文状态，但是重新进入插入模式时又会进入英文状态
+    Plug 'h-youhei/vim-fcitx'
+endif
+" }}}
+"
+if 'yes' ==? g:setting.use_devicons
+    Plug 'ryanoasis/vim-devicons' " 显示优美的，如果，电脑不行可以不用{{{
+    let g:webdevicons_enable = 1
+    let g:webdevicons_enable_nerdtree = 1
+    " adding the custom source to unite
+    let g:webdevicons_enable_unite = 1
+    let g:webdevicons_enable_denite = 1
+    let g:webdevicons_enable_vimfiler = 1
+    " adding to vim-airline's tabline
+    let g:webdevicons_enable_airline_tabline = 1
+    " adding to vim-airline's statusline
+    let g:webdevicons_enable_airline_statusline = 1
+    let g:WebDevIconsUnicodeDecorateFileNodes = 1
+    let g:WebDevIconsOS = 'unix'
+    " }}}
+endif
 
 " TEST {{{
 " " test-loading

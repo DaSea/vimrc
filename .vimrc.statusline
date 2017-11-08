@@ -1,0 +1,259 @@
+" 状态栏插件：包括vim-airline和lightline.vim
+if 'airline' ==? g:setting.status_line
+    Plug 'vim-airline/vim-airline'
+    " Plug 'vim-airline/vim-airline-themes'
+    " airline状态栏{{{
+    let g:airline_powerline_fonts = 1
+    let g:airline_theme = g:setting.status_color
+    " let g:airline_left_sep = ''
+    " let g:airline_left_alt_sep = ''
+    " let g:airline_right_sep = ''
+    " let g:airline_right_alt_sep = ''
+    " testing rounded separators (extra-powerline-symbols):
+    let g:airline_left_sep = "\uE0C0"
+    let g:airline_right_sep = "\uE0C2"
+    let g:airline_left_alt_sep = "\uE0C1"
+    let g:airline_right_alt_sep = "\uE0C3"
+    " let g:airline_left_sep = '▶'
+    " let g:airline_left_alt_sep = '❯'
+    " let g:airline_right_sep = '◀'
+    " let g:airline_right_alt_sep = '❮'
+    if !exists('g:airline_symbols')
+        let g:airline_symbols = {}
+    endif
+    let g:airline_symbols.branch = ''
+    let g:airline_symbols.readonly = ''
+    let g:airline_symbols.linenr = ''
+    let g:airline_detect_modified=1
+    let g:airline_detect_crypt=0
+    let g:airline_detect_spell=0
+    let g:airline_detect_iminsert=0
+    let g:airline_inactive_collapse=0
+    let g:airline_highlighting_cache=0
+    let g:airline_extensions = ['quickfix']
+    if g:setting.show_tabline ==? 'yes' " {{{
+        call add(g:airline_extensions, 'tabline')
+        let g:airline#extensions#tabline#enabled=1
+        let g:airline#extensions#tabline#show_splits = 0
+        let g:airline#extensions#tabline#switch_buffers_and_tabs = 0
+        let g:airline#extensions#tabline#show_buffers = 1
+        let g:airline#extensions#tabline#show_tabs = 0
+        let g:airline#extensions#tabline#buffers_label = 'B'
+        let g:airline#extensions#tabline#tabs_label = 'T'
+        let g:airline#extensions#tabline#buffer_idx_mode = 1
+        let g:airline#extensions#tabline#excludes = ['nerdtree', 'unite', 'vimfiler', 'exproject']
+        let g:airline#extensions#tabline#show_close_button = 0
+        let g:airline#extensions#tabline#close_symbol = 'X'
+        " 下面设置无效
+        " let g:airline#extensions#tabline#left_sep="\uEOC4"
+        " let g:airline#extensions#tabline#left_alt_sep="\uE0C6"
+        " let g:airline#extensions#tabline#right_sep="\uE0C5"
+        " let g:airline#extensions#tabline#right_alt_sep="\uEOC7"
+        nmap ,1 <Plug>AirlineSelectTab1
+        nmap ,2 <Plug>AirlineSelectTab2
+        nmap ,3 <Plug>AirlineSelectTab3
+        nmap ,4 <Plug>AirlineSelectTab4
+        nmap ,5 <Plug>AirlineSelectTab5
+        nmap ,6 <Plug>AirlineSelectTab6
+        nmap ,7 <Plug>AirlineSelectTab7
+        nmap ,8 <Plug>AirlineSelectTab8
+        nmap ,9 <Plug>AirlineSelectTab9
+        nmap <Leader>a <Plug>AirlineSelectPrevTab
+        nmap <Leader>d <Plug>AirlineSelectNextTab
+        let g:airline#extensions#tabline#buffer_nr_format = '%s: '
+        let g:airline#extensions#tabline#fnamemod = ':t:.'
+        let g:airline#extensions#tabline#fnametruncate = 0
+        let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+        let g:airline#extensions#tabline#buffer_min_count = 1
+        let airline#extensions#tabline#ignore_bufadd_pat =
+                    \ '\c\vgundo|undotree|vimfiler|tagbar|nerd_tree|exproject'
+    endif "}}}
+    " 各个部分的设置简化
+    " let g:airline_section_c = '%-0.50{getcwd()}'
+    " let g:airline_section_c = g:project_name . ': %t%m'
+    " let g:airline_section_z = '%l%{g:airline_symbols.linenr}%L'
+    let g:airline_section_z = '%l%{g:airline_symbols.linenr}%L'
+    let g:airline_mode_map = {
+                \ '__' : '-',
+                \ 'n'  : 'N',
+                \ 'i'  : 'I',
+                \ 'R'  : 'R',
+                \ 'c'  : 'C',
+                \ 'v'  : 'v',
+                \ 'V'  : 'VL',
+                \ '' : 'VB',
+                \ 's'  : 's',
+                \ 'S'  : 'S',
+                \ '' : 'S',
+                \ }
+    " }}}
+else
+    set showtabline=2
+    Plug 'itchyny/lightline.vim'
+    Plug 'taohex/lightline-buffer' " lightline 状态栏{{{
+    " ---------------------------------------------------
+    let g:lightline ={
+                \ 'colorscheme': 'PaperColor_light',
+                \ 'component':{
+                \ 'readonly': '%{&readonly?"":""}',
+                \ 'lineinfo': '%l%v',
+                \ },
+                \ 'active': {
+                \ 'left': [ ['mode'], ['filename', 'modified' ] ],
+                \ 'right': [ [ 'lineinfo' ], [ 'fileformat', 'fileencoding', 'filetype' ] ]
+                \ },
+                \ 'inactive': {
+                \ 'left': [['filename']],
+                \ 'right': [['lineinfo']]
+                \},
+                \ 'tabline': {
+                \ 'left': [ [ 'bufferinfo' ], [ 'bufferbefore', 'buffercurrent', 'bufferafter' ] ],
+                \ 'right': [ [ 'close' ] ],
+                \ },
+                \ 'component_expand': {
+                \ 'buffercurrent': 'lightline#buffer#buffercurrent2',
+                \ },
+                \ 'component_type': {
+                \ 'buffercurrent': 'tabsel',
+                \ },
+                \ 'component_function': {
+                \ 'bufferbefore': 'lightline#buffer#bufferbefore',
+                \ 'bufferafter': 'lightline#buffer#bufferafter',
+                \ 'bufferinfo': 'lightline#buffer#bufferinfo',
+                \   'modified': 'LightLineModified',
+                \   'fugitive': 'LightLineFugitive',
+                \   'filename': 'LightLineFilename',
+                \   'mode': 'LightLineMode',
+                \   'filetype': 'LightLineFiletype',
+                \   'fileencoding': 'LightLineFileencoding',
+                \   'fileformat': 'LightLineFileformat'
+                \ },
+                \ 'separator': {'left': "\uE0C0", 'right': "\uE0C2"},
+                \ 'subseparator': {'left': "\uE0C1", 'right': "\uE0C3"}
+                \ }
+
+    " lightline.vim配置{{{
+    let g:lightline.mode_map = {
+                \ 'n' : 'N',
+                \ 'i' : 'I',
+                \ 'R' : 'R',
+                \ 'v' : 'V',
+                \ 'V' : 'VL',
+                \ "\<C-v>": 'VB',
+                \ 'c' : 'CMD',
+                \ 's' : 'SE',
+                \ 'S' : 'SL',
+                \ "\<C-s>": 'SB',
+                \ 't': 'TERM',
+                \ }
+
+    function! LightLineFugitive()
+        if winwidth(0) > 70
+            if exists('*fugitive#head')
+                let githead = fugitive#head()
+                return strlen(githead) ? ''.'['.githead.']': ''
+            endif
+        endif
+        return ''
+    endfunction
+
+    function! LightLineFilename()
+        let fname = expand('%:t')
+        return '' != fname ? fname : '[No Name]'
+        " return &ft == 'vimfiler' ? vimfiler#get_status_string() :
+        " \ &ft == 'unite' ? unite#get_status_string() :
+        " \ &ft == 'vimshell' ? vimshell#get_status_string() :
+        " \ ('' != fname ? fname : '[No Name]')
+    endfunction
+
+    function! LightLineMode()
+        return  winwidth(0) > 60 ? lightline#mode() : ''
+    endfunction
+
+    function! LightLineModified()
+        if winwidth(0) > 70
+            if &filetype == "help"
+                return ""
+            elseif &modified
+                return "*"
+            elseif &modifiable
+                return "+"
+            else
+                return "?"
+            endif
+        else
+            return ''
+        endif
+    endfunction
+
+    function! LightLineFileformat()
+        if exists("*WebDevIconsGetFileFormatSymbol")
+            return winwidth(0) > 70 ? WebDevIconsGetFileFormatSymbol() : ''
+        else
+            return winwidth(0) > 70 ? &fileformat : ''
+        endif
+    endfunction
+
+    function! LightLineFiletype()
+        if exists("*WebDevIconsGetFileTypeSymbol")
+            return winwidth(0) > 70 ? (strlen(&filetype) ? WebDevIconsGetFileTypeSymbol() : 'Unknown') : ''
+        else
+            return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'Unkown') : ''
+        endif
+    endfunction
+
+    function! LightLineFileencoding()
+        return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
+    endfunction
+    " }}}
+
+    " lightline-bufferline配置{{{
+    function! s:tabline(range, active, onefn)
+        let [t, l, x, y, z, u, d] = [tabpagenr(), tabpagenr('$'), [], [], [], '...', min([max([winwidth(0) / 40, 2]), 8])]
+        let [l, x, y, z, u, d] = [a:range[-1], [], [], [], '...', min([max([winwidth(0) / 40, 2]), 8])]
+        for i in range(1, l)
+            for i in a:range
+                call add(i<t?(x):i==t?(y):z, '%'.i.'T%{lightline#onetab('.i.','.(i==t).')}'.(i==l?'%T':''))
+                call add(i<a:active?(x):i==a:active?(y):z, '%'.i.'T%{lightline#one'.a:onefn.'('.i.','.(i==a:active).')}'.(i==l?'%T':''))
+            endfor
+        endfor
+        let [a, b, c] = [len(x), len(z), d * 2]
+        let [a, b, c] = [len(x), len(z), d * 2]
+        return [a>d&&b>d ? extend(add(x[:d/2-1],u),x[-(d+1)/2:]) : a+b<=c||a<=d ? x : extend(add(x[:(c-b)/2-1],u),x[-(c-b+1)/2:]), y,
+        return [a>d&&b>d ? extend(add(x[:d/2-1],u),x[-(d+1)/2:]) : a+b<=c||a<=d ? x : extend(add(x[:(c-b)/2-1],u),x[-(c-b+1)/2:]), y,
+                    \ a>d&&b>d ? extend(add(z[:(d+1)/2-1],u),z[-d/2:]) : a+b<=c||b<=d ? z : extend(add(z[:(c-a+1)/2-1],u),z[-(c-a)/2:])]
+                    \ a>d&&b>d ? extend(add(z[:(d+1)/2-1],u),z[-d/2:]) : a+b<=c||b<=d ? z : extend(add(z[:(c-a+1)/2-1],u),z[-(c-a)/2:])]
+    endfunction
+
+    function! LightLineBuffers()
+        let bufnrs = filter(range(1, bufnr('$')), 'buflisted(v:val)')
+        return s:tabline(bufnrs, bufnr('%'), 'buffer')
+    endfunction
+
+    if 0
+        let g:lightline_buffer_logo = ' '
+        let g:lightline_buffer_readonly_icon = ''
+        let g:lightline_buffer_modified_icon = '✭'
+        let g:lightline_buffer_git_icon = ' '
+        let g:lightline_buffer_ellipsis_icon = '..'
+        let g:lightline_buffer_expand_left_icon = '◀ '
+        let g:lightline_buffer_expand_right_icon = ' ▶'
+        let g:lightline_buffer_active_buffer_left_icon = ''
+        let g:lightline_buffer_active_buffer_right_icon = ''
+        let g:lightline_buffer_separator_icon = '  '
+
+        " lightline-buffer function settings
+        let g:lightline_buffer_show_bufnr = 1
+        let g:lightline_buffer_rotate = 0
+        let g:lightline_buffer_fname_mod = ':t'
+        let g:lightline_buffer_excludes = ['vimfiler']
+
+        let g:lightline_buffer_maxflen = 30
+        let g:lightline_buffer_maxfextlen = 3
+        let g:lightline_buffer_minflen = 16
+        let g:lightline_buffer_minfextlen = 3
+        let g:lightline_buffer_reservelen = 20
+    endif
+    " }}}
+    "}}}
+endif

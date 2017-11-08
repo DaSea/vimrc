@@ -1,9 +1,16 @@
 " 存放于语言相关的配置, 如果为语法高亮和相关的补全等
+" 生成tags {{{
+Plug 'jsfaint/gen_tags.vim', {'on': ['GenCtags', 'GenGTAGS']}
+" let g:gen_tags#ctags_opts = []
+let g:gen_tags#ctags_use_cache_dir=1
+let g:gen_tags#ctags_auto_gen=0
+let g:gen_tags#gtags_auto_gen=0
+" }}}
 
 Plug 'DaSea/vim-syntax' " 杂7杂8的, 有qml, 有cpp文件中的doxygen, ndk高亮等{{{
 let g:ds_ndk_syntax_enable = 1
 let g:ds_doxygen_syntax_enable = 1
-let g:ds_opengl_syntax_enable = 1
+let g:ds_opengl_syntax_enable = 0
 "}}}
 
 " 打开文件资源管理器, 并选择当前文件 {{{
@@ -35,7 +42,8 @@ if index(g:language_group, 'markdown') >= 0
             let global_browser = 'D:/Develop/Mozilla Firefox/firefox.exe'
             exec "silent !start " . global_browser . ' ' . reviewfile
         else
-            call system('google-chrome ' . reviewfile)
+            let global_browser = '/opt/firefox/firefox'
+            call system(global_browser . ' ' . reviewfile)
         endif
     endfunction
     nnoremap <silent> <Leader>mp :call MeMarkdownPreview()<CR>
@@ -43,7 +51,7 @@ endif
 "}}}
 
 " 好玩的东西, Plantuml{{{
-if (index(g:language_group, 'plantuml') >= 0) && (g:iswindows)
+if (index(g:language_group, 'plantuml') >= 0)
     augroup plantuml
         au!
         if g:iswindows
@@ -92,17 +100,17 @@ if index(g:language_group, 'cpp') >= 0
         let g:alternateSearchPath =
                     \ "D:\\Develop\\Java\\android-ndk-r11b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include"
     else
-        " let g:alternateSearchPath = "/usr/include/c++/5.4.0"
-        let g:alternateSearchPath = "/usr/include/c++/6.3.0"
+        let g:alternateSearchPath = "/usr/include/c++/6"
     endif
     nnoremap <silent> <leader>ah :A<CR>
     nnoremap <silent> <leader>av :AV<CR>
     nnoremap <silent> <leader>as :AS<CR>
     "}}}
 
-    " Plug 'octol/vim-cpp-enhanced-highlight'
-    " let c_no_curly_error=1
-    " let g:cpp_class_scope_highlight = 1
+    Plug 'octol/vim-cpp-enhanced-highlight'
+    let c_no_curly_error=1
+    let g:cpp_class_scope_highlight = 1
+    let g:cpp_class_decl_hightlight = 1
     " let g:cpp_experimental_simple_template_highlight = 1
 
     if g:isNvim
@@ -126,7 +134,21 @@ if index(g:language_group, 'cpp') >= 0
         let g:deoplete#sources.cpp = ['buffer', 'neosnippet', 'file/include', 'clang']
         " echo | clang -v -E -x c -
         let g:deoplete#sources#clang#flags = [
-                    \ "-O3", "-cc1", "-x", "c++", "-std=c++11"
+                    \ "-O3", "-cc1", "-x", "c++", "-std=c++11",
+                    \'-isystem',
+                    \ '/usr/include',
+                    \ '-isystem',
+                    \ '/usr/include/c++/6',
+                    \ '-isystem',
+                    \ '/usr/include/x86_64-linux-gnu/qt5/QtWidgets',
+                    \ '-isystem',
+                    \ '/usr/include/x86_64-linux-gnu/qt5/QtGui',
+                    \ '-isystem',
+                    \ '/usr/include/x86_64-linux-gnu/qt5/QtCore',
+                    \ '-isystem',
+                    \ '/usr/include/x86_64-linux-gnu/qt5/QtNetwork',
+                    \ '-I',
+                    \ '.'
                     \ ]
 
         " TODO: 对于ndk需要
@@ -162,6 +184,19 @@ elseif (index(g:language_group, 'python') >= 0) && g:hasNeocomplete
 endif
 "}}}
 
+" go{{{
+if (index(g:language_group, 'go') >= 0) && g:isNvim
+    Plug 'zchee/deoplete-go', {'do': ':UpdateRemotePlugins'}
+    let g:deoplete#sources#go#gocode_binary = $GOBIN.'/gocode'
+    let g:deoplete#sources#go#align_class=1
+    let g:deoplete#sources#go#package_dot=1
+    let g:deoplete#sources#go#sort_class=['package', 'func', 'type', 'var', 'const']
+    let g:deoplete#sources#go#use_cache=1
+    let g:deoplete#sources#go#json_directory='/home/seasea/.vim/plugged/deoplete-go/data/json/1.8.3/linux_amd64'
+    let g:deoplete#sources.go = ['buffer', 'neosnippet', 'file/include', 'go']
+endif
+"}}}
+
 "  Php自动补全{{{
 if index(g:language_group, 'php') >= 0
 " Plug 'shawncplus/phpcomplete.vim',{'for': 'php'}
@@ -171,8 +206,30 @@ if index(g:language_group, 'php') >= 0
 endif
 " }}}
 
+" lua 相关{{{
+if index(g:language_group, 'lua') >= 0
+    Plug 'xolox/vim-misc'
+    Plug 'xolox/vim-lua-ftplugin'
+    let g:lua_check_syntax = 0
+    let g:lua_complete_omni = 1
+    let g:lua_complete_dynamic = 0
+    let g:lua_define_completion_mappings = 0
+    if g:isNvim
+        if !exists('g:deoplete#omni#input_patterns')
+            let g:deoplete#omni#input_patterns = {}
+        endif
+        let g:deoplete#omni#input_patterns.lua = '\w+|[^. *\t][.:]\w*'
+
+        if !exists('g:deoplete#omni#functions')
+            let g:deoplete#omni#functions = {}
+        endif
+        let g:deoplete#omni#functions.lua = 'xolox#lua#omnifunc'
+    endif
+endif
+"}}}
+
 " WIKI, org{{{
-if index(g:language_group, 'org')
+if index(g:language_group, 'org') >= 0
     Plug 'jceb/vim-orgmode', {'for': 'org'}
     " Plug 'vim-scripts/utl.vim'  org{{{
     " 快捷键记录:
@@ -181,13 +238,14 @@ if index(g:language_group, 'org')
     " >> << 可以升降heading的等级; >ar <ar : 可以升降subtree的等级
     " <leader>cl , <leader>CL 插入plainlist, \cn,\cc,\cN:切换,插入checkbox
     " \si, \sa : 插入时间;  \ct: TODO 之间切换状态; \st,\ft: tag
+    autocmd FileType org let maplocalleader="<"
 
     " 配置
     " let g:org_todo_keywords=['TODO', 'VERIFY', '|', 'DONE', 'DELEGATED']
     if g:iswindows
         let g:org_agenda_files = ['E:/Self/01_mywiki/gtd/gtd.org']
     else
-        let g:org_agenda_files = ['/mnt/e/Self/01_mywiki/gtd/gtd.org']
+        let g:org_agenda_files = ['/media/seasea/work/Self/01_mywiki/gtd/gtd.org']
     endif
     " 打开todo文件
     nnoremap <leader>oo :call OpenOrgToDoFile()<CR>
@@ -200,20 +258,6 @@ if index(g:language_group, 'org')
 endif
 "}}}
 
-" todo : 管理全局todo和当前工程下的todo {{{
-if index(g:language_group, 'todo')
-    Plug 'simonhicks/todo.vim'
-    let g:todo_vim_files = {
-                \   'Todo': '~/.cache/vtodo/todo',
-                \   'Track': '~/.cache/vtodo/track.todo'
-                \ }
-    let g:todo_vim_project_todo = "./project.todo"
-    nnoremap <Leader>tg :silent call todo#toggle('.')<CR>
-    nnoremap <Leader>td :silent Todo<CR>
-    nnoremap <Leader>tp :silent ProjectTodo<CR>
-endif
-" }}}
-"
 " 一个简单的添加笔记，浏览笔记的插件{{{
 Plug 'DaSea/SimpleMdNote.vim'
 if g:iswindows
@@ -227,6 +271,11 @@ nnoremap <Leader>sp :silent SNNewPostsNote<CR>
 nnoremap <Leader>sd :silent SNNewDraftNote<CR>
 nnoremap <Leader>pn :silent SNPublishNote<CR>
 nnoremap <Leader>sl :silent SNListNote<CR>
+" }}}
+
+" 自己写的用于控制音乐切换的小插件 {{{
+Plug 'DaSea/SimpleMusicCtrl.vim'
+" SMCNext SMCPlay SMCPrev
 " }}}
 
 " vim:ts=4:sw=4:sts=4 et fdm=marker:

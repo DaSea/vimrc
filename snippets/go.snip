@@ -3,14 +3,15 @@ source go.vim
 snippet     helloworld
 abbr        package main\nimport fmt...
 options     head
-  package main
+  package ${1:main}
 
   import (
-    "fmt"
+    "${2:fmt}"
   )
 
   func main() {
     fmt.Printf("Hello, world\n")
+    ${0:TARGET}
   }
 
 snippet     func

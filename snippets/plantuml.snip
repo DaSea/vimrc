@@ -1,0 +1,93 @@
+snippet start
+    @startuml
+    ${0}
+    @enduml
+
+
+#################################################################
+# 时序图
+#################################################################
+snippet seqcallshi
+    ${1} -> ${2}: ${0}
+
+snippet seqcallxu
+    ${1} --> ${2}: ${0}
+
+snippet seqcallrshi
+    ${1} <- ${2}: ${0}
+
+snippet seqcallrxu
+    ${1} <-- ${2}: ${0}
+
+snippet seqcallself
+    ${1} --> $1: ${0}
+
+snippet seqalt
+    alt ${1}
+        ${0}
+    end
+
+snippet seqaltelse
+    alt ${1}
+        ${2}
+    else
+        ${0}
+    end
+
+snippet seqloop
+    loop ${1}
+        ${0}
+    end
+
+
+snippet notel
+    note left of ${1}: ${0}
+
+
+snippet noter
+    note right of ${1}: ${0}
+
+
+snippet notev
+    note over ${1}: ${0}
+
+
+snippet newp
+    newpage ${1}
+    ${0}
+
+
+#################################################################
+# 状态图
+#################################################################
+snippet sta
+    state ${1} {
+        ${0}
+    }
+
+snippet staa
+    state ${1:state1} as ${0:s1}
+
+
+snippet sta12
+    ${1:state1} -${2:down}-> ${3:state2}: ${0}
+
+
+#################################################################
+# 类图
+#################################################################
+snippet     classinherit
+abbr        class_inherit
+    ${1} <|-- ${2}
+    ${0}
+
+snippet     classhecheng
+abbr        class_composition
+    ${1} *-- ${2}
+    ${0}
+
+snippet     classjuhe
+abbr        class_aggregation
+    ${1} o-- ${2}
+    ${0}
+
