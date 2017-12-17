@@ -90,18 +90,37 @@ endif
 " ==============================================================================
 " 全局配置变量(Dictionnary){{{
 let g:setting = {}
+" 分隔符：具体看https://github.com/ryanoasis/powerline-extra-symbols
+" 1. 三角符号; 2. 火焰符号; 3. 圆角符号; 4. 左斜; 5. 左斜; 6. 波纹; 7. 点
+" [0, 1, 2, 3] = [left, left sub, right, right sub]
+let g:separator_list = [
+            \ ["\ue0b0", "\ue0b1", "\ue0b2", "\ue0b3"],
+            \ ["\ue0c0", "\ue0c1", "\ue0c2", "\ue0c3"],
+            \ ["\ue0b4", "\ue0b5", "\ue0b6", "\ue0b7"],
+            \ ["\ue0b8", "\ue0b9", "\ue0ba", "\ue0bb"],
+            \ ["\ue0bc", "\ue0bd", "\ue0be", "\ue0bf"],
+            \ ["\ue0c8", "\ue0c9", "\ue0ca", "\ue0cb"],
+            \ ["\ue0c4", "\ue0c6", "\ue0c5", "\ue0c7"]
+            \ ]
+" 定义全局的分割符
+let separator_index = 3
+let g:setting.left_separator = g:separator_list[separator_index][0]
+let g:setting.left_sub_separator = g:separator_list[separator_index][1]
+let g:setting.right_separator = g:separator_list[separator_index][2]
+let g:setting.right_sub_separator = g:separator_list[separator_index][3]
 let g:plugins_file = '.vimrc.vimplug'
 " 全局设置seoul256-light, NeoSolarized
-" let g:setting.color_scheme = 'one'
+" let g:setting.color_scheme = 'gruvbox'
 let g:setting.color_scheme = 'NeoSolarized'
 " 关于更改行的设置(git(vim-fugitive, vim-gitgutter), git_svn(vim-signify), no)
 let g:setting.version_status = 'no'
 " 是否使用vim-devicons
 let g:setting.use_devicons = 'yes'
 " 状态栏(airline, lightline or no), 如果为no, 自定义状态栏
-let g:setting.status_line = 'airline'
-let g:setting.status_color = 'atomic'
-" let g:setting.status_color = 'dark'
+" let g:setting.status_line = 'airline'
+let g:setting.status_line = 'lightline'
+" let g:setting.status_color = 'gruvbox'
+let g:setting.status_color = 'dark'
 let g:setting.show_tabline = 'yes'
 " 是否使用exVim系列插件
 let g:setting.use_exvim = 'yes'
@@ -464,7 +483,7 @@ if !g:isGUI
     set t_Co=256
 endif
 if strftime("%H") >= 15 || strftime("%H") <= 8
-    set background=light
+    set background=dark
 else
     set background=light
 endif

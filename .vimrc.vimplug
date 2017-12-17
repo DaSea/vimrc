@@ -60,6 +60,11 @@ let g:neosolarized_italic = 0
 " let g:one_allow_italics = 1
 " let g:one_allow_underline=1
 
+Plug 'morhetz/gruvbox'
+let g:gruvbox_contrast_dark='hard'
+let g:gruvbox_contrast_light='hard'
+let g:gruvbox_vert_split='purple'
+
 " 个人收集的一些主题
 " Plug 'DaSea/vim-personcolors'
 "}}}
@@ -154,25 +159,26 @@ Plug 'DaSea/ex-prjlist' " {{{
 " 已经用新的插件vim-denite-prjmgr 替代(依赖于denite.nvim)
 " ---------------------------------------------------
 if g:isNvim
-    if isdirectory("/media/seasea/work")
+    if isdirectory("/media/work")
         let g:exprjlist_vsc_root_dir = {
-                    \ "/media/seasea/work/Self/05_gitsrc": "git"}
+                    \ "/media/work/Self/05_gitsrc": "git"}
         let g:exprjlist_vimplug_root_dir = "/home/seasea/.vim/plugged"
     else
+        " wsl
         let g:exprjlist_vsc_root_dir = {
                     \ "/mnt/e/Self/05_gitsrc": "git"}
         let g:exprjlist_vimplug_root_dir = "/home/Feng/.vim/plugged"
     endif
 else
-    if isdirectory("/media/seasea/work")
+    if isdirectory("/media/work")
         let g:exprjlist_vsc_root_dir = {
-                    \ "/media/seasea/work/Self/05_gitsrc": "git"}
+                    \ "/media/work/Self/05_gitsrc": "git"}
         let g:exprjlist_vimplug_root_dir = "/home/seasea/.vim/plugged"
     else
         let g:exprjlist_vsc_root_dir = {
                     \ "e:/Self/05_gitsrc": "git"
                     \ }
-        let g:exprjlist_vimplug_root_dir = "c:/Develop/exVim/vimfiles/plugged"
+        let g:exprjlist_vimplug_root_dir = "D:/Develop/exVim/vimfiles/plugged"
     endif
 endif
 function! ExprjlistSelect(type) abort " 选择denite或本身的 {{{

@@ -245,7 +245,7 @@ if index(g:language_group, 'org') >= 0
     if g:iswindows
         let g:org_agenda_files = ['E:/Self/01_mywiki/gtd/gtd.org']
     else
-        let g:org_agenda_files = ['/media/seasea/work/Self/01_mywiki/gtd/gtd.org']
+        let g:org_agenda_files = ['/media/work/Self/01_mywiki/gtd/gtd.org']
     endif
     " 打开todo文件
     nnoremap <leader>oo :call OpenOrgToDoFile()<CR>
@@ -264,8 +264,8 @@ if g:iswindows
     let g:simplemdnote_draft_path = "E:/Self/01_mywiki/dasea.github.io/source/_drafts"
     let g:simplemdnote_posts_path = "E:/Self/01_mywiki/dasea.github.io/source/_posts"
 else
-    let g:simplemdnote_draft_path="/media/seasea/work/Self/01_mywiki/dasea.github.io/source/_drafts"
-    let g:simplemdnote_posts_path="/media/seasea/work/Self/01_mywiki/dasea.github.io/source/_posts"
+    let g:simplemdnote_draft_path="/media/work/Self/01_mywiki/dasea.github.io/source/_drafts"
+    let g:simplemdnote_posts_path="/media/work/Self/01_mywiki/dasea.github.io/source/_posts"
 endif
 nnoremap <Leader>sp :silent SNNewPostsNote<CR>
 nnoremap <Leader>sd :silent SNNewDraftNote<CR>

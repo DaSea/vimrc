@@ -1,20 +1,28 @@
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:/usr/local/bin:/sbin:$PATH
-export PATH=$HOME/mtools/bin:$PATH
+export PATH=$HOME/mtools/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH=/home/seasea/.oh-my-zsh
+export ZSH=$HOME/.oh-my-zsh
+
+export LANG="zh_CN.UTF-8"
+export LC_ALL="zh_CN.UTF-8"
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-DEFAULT_USER=$USER
-
-# simple
-# ZSH_THEME="agnoster"
+# ZSH_THEME="robbyrussell"
 # ZSH_THEME="mgnzh"
-# ZSH_THEME="magnoster"
-ZSH_THEME="mgnzh"
+ZSH_THEME="powerlevel9k/powerlevel9k"
+if [[ "$ZSH_THEME" == "powerlevel9k/powerlevel9k" ]]; then
+    source $HOME/.powerlevel9k.zshrc
+fi
+
+# Set list of themes to load
+# Setting this variable when ZSH_THEME=random
+# cause zsh load theme from this variable instead of
+# looking in ~/.oh-my-zsh/themes/
+# An empty array have no effect
+# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -39,7 +47,7 @@ DISABLE_AUTO_UPDATE="true"
 ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
+COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
@@ -49,20 +57,18 @@ ENABLE_CORRECTION="true"
 # Uncomment the following line if you want to change the command execution time
 # stamp shown in the history command output.
 # The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# HIST_STAMPS="mm/dd/yyyy"
+HIST_STAMPS="yyyy-mm-dd"
 
 # Would you like to use another custom folder than $ZSH/custom?
-ZSH_CUSTOM=/home/seasea/.mshell/zsh
+ZSH_CUSTOM=$HOME/.mshell/zsh
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(mgit malias zsh-syntax-highlighting sudo autojump dirhistory colorize colored-man-pages cp)
-
-# zsh-syntax-highlighting: https://github.com/zsh-users/zsh-syntax-highlighting
-# ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
-
+plugins=(
+  git sudo autojump fast-syntax-highlighting exa deepin vi-mode
+)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -70,32 +76,19 @@ source $ZSH/oh-my-zsh.sh
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='vim'
 else
-  export EDITOR='nvim --noplugin'
+  export EDITOR='nvim'
 fi
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
 # ssh
-export SSH_KEY_PATH="~/.ssh/id_rsa"
+export SSH_KEY_PATH="~/.ssh/rsa_id"
 
-# echo "-----------------------------------------------------------"
-# echo "|                                                         |"
-# echo "|   'hello world' o  ^--^                                 |"
-# echo "|                  o (oo)\=======                         |"
-# echo "|                    (__)\       )\/\                     |"
-# echo "|                        ||----w |                        |"
-# echo "|                        ||     ||                        |"
-# echo "|                                                         |"
-# echo "|                                                         |"
-# echo "-----------------------------------------------------------"
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
@@ -104,6 +97,13 @@ export SSH_KEY_PATH="~/.ssh/id_rsa"
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-# alias sudo='sudo env PATH=$PATH'
+#
+alias td='todo.sh'
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="/home/seasea/.sdkman"
+[[ -s "/home/seasea/.sdkman/bin/sdkman-init.sh" ]] && source "/home/seasea/.sdkman/bin/sdkman-init.sh"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

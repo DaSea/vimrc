@@ -4,7 +4,7 @@
 [color]
 	ui = true
 [merge]
-	tool = vimdiff
+	tool = meld
 [bash-it]
 	hide-status = 1
 [core]

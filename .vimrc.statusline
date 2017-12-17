@@ -5,19 +5,10 @@ if 'airline' ==? g:setting.status_line
     " airline状态栏{{{
     let g:airline_powerline_fonts = 1
     let g:airline_theme = g:setting.status_color
-    " let g:airline_left_sep = ''
-    " let g:airline_left_alt_sep = ''
-    " let g:airline_right_sep = ''
-    " let g:airline_right_alt_sep = ''
-    " testing rounded separators (extra-powerline-symbols):
-    let g:airline_left_sep = "\uE0C0"
-    let g:airline_right_sep = "\uE0C2"
-    let g:airline_left_alt_sep = "\uE0C1"
-    let g:airline_right_alt_sep = "\uE0C3"
-    " let g:airline_left_sep = '▶'
-    " let g:airline_left_alt_sep = '❯'
-    " let g:airline_right_sep = '◀'
-    " let g:airline_right_alt_sep = '❮'
+    let g:airline_left_sep = g:setting.left_separator
+    let g:airline_right_sep = g:setting.right_separator
+    let g:airline_left_alt_sep = g:setting.left_sub_separator
+    let g:airline_right_alt_sep = g:setting.right_sub_separator
     if !exists('g:airline_symbols')
         let g:airline_symbols = {}
     endif
@@ -44,11 +35,6 @@ if 'airline' ==? g:setting.status_line
         let g:airline#extensions#tabline#excludes = ['nerdtree', 'unite', 'vimfiler', 'exproject']
         let g:airline#extensions#tabline#show_close_button = 0
         let g:airline#extensions#tabline#close_symbol = 'X'
-        " 下面设置无效
-        " let g:airline#extensions#tabline#left_sep="\uEOC4"
-        " let g:airline#extensions#tabline#left_alt_sep="\uE0C6"
-        " let g:airline#extensions#tabline#right_sep="\uE0C5"
-        " let g:airline#extensions#tabline#right_alt_sep="\uEOC7"
         nmap ,1 <Plug>AirlineSelectTab1
         nmap ,2 <Plug>AirlineSelectTab2
         nmap ,3 <Plug>AirlineSelectTab3
@@ -88,65 +74,19 @@ if 'airline' ==? g:setting.status_line
                 \ }
     " }}}
 else
-    set showtabline=2
+    " tabline用那个
+    " 1时， 使用vim-buffline;
+    " 2时，使用lightline-buffer
+    let lightline_tabline=2
     Plug 'itchyny/lightline.vim'
-    Plug 'taohex/lightline-buffer' " lightline 状态栏{{{
+    " lightline 状态栏{{{
     " ---------------------------------------------------
-    let g:lightline ={
-                \ 'colorscheme': 'PaperColor_light',
-                \ 'component':{
-                \ 'readonly': '%{&readonly?"":""}',
-                \ 'lineinfo': '%l%v',
-                \ },
-                \ 'active': {
-                \ 'left': [ ['mode'], ['filename', 'modified' ] ],
-                \ 'right': [ [ 'lineinfo' ], [ 'fileformat', 'fileencoding', 'filetype' ] ]
-                \ },
-                \ 'inactive': {
-                \ 'left': [['filename']],
-                \ 'right': [['lineinfo']]
-                \},
-                \ 'tabline': {
-                \ 'left': [ [ 'bufferinfo' ], [ 'bufferbefore', 'buffercurrent', 'bufferafter' ] ],
-                \ 'right': [ [ 'close' ] ],
-                \ },
-                \ 'component_expand': {
-                \ 'buffercurrent': 'lightline#buffer#buffercurrent2',
-                \ },
-                \ 'component_type': {
-                \ 'buffercurrent': 'tabsel',
-                \ },
-                \ 'component_function': {
-                \ 'bufferbefore': 'lightline#buffer#bufferbefore',
-                \ 'bufferafter': 'lightline#buffer#bufferafter',
-                \ 'bufferinfo': 'lightline#buffer#bufferinfo',
-                \   'modified': 'LightLineModified',
-                \   'fugitive': 'LightLineFugitive',
-                \   'filename': 'LightLineFilename',
-                \   'mode': 'LightLineMode',
-                \   'filetype': 'LightLineFiletype',
-                \   'fileencoding': 'LightLineFileencoding',
-                \   'fileformat': 'LightLineFileformat'
-                \ },
-                \ 'separator': {'left': "\uE0C0", 'right': "\uE0C2"},
-                \ 'subseparator': {'left': "\uE0C1", 'right': "\uE0C3"}
-                \ }
+    set noshowmode
+    set showtabline=2
+    " set shortmess+=c
+    let g:lightline = {}
 
     " lightline.vim配置{{{
-    let g:lightline.mode_map = {
-                \ 'n' : 'N',
-                \ 'i' : 'I',
-                \ 'R' : 'R',
-                \ 'v' : 'V',
-                \ 'V' : 'VL',
-                \ "\<C-v>": 'VB',
-                \ 'c' : 'CMD',
-                \ 's' : 'SE',
-                \ 'S' : 'SL',
-                \ "\<C-s>": 'SB',
-                \ 't': 'TERM',
-                \ }
-
     function! LightLineFugitive()
         if winwidth(0) > 70
             if exists('*fugitive#head')
@@ -158,7 +98,8 @@ else
     endfunction
 
     function! LightLineFilename()
-        let fname = expand('%:t')
+        " let fname = expand('%:t')
+        let fname = expand('%:p:.')
         return '' != fname ? fname : '[No Name]'
         " return &ft == 'vimfiler' ? vimfiler#get_status_string() :
         " \ &ft == 'unite' ? unite#get_status_string() :
@@ -207,31 +148,107 @@ else
     endfunction
     " }}}
 
+    " vim-buffline配置 {{{
+    if lightline_tabline == 1
+        Plug 'bling/vim-bufferline'
+        let g:lightline = {
+                    \ 'colorscheme': 'one',
+                    \ 'tabline': {
+                    \   'left': [ ['bufferline'] ]
+                    \ },
+                    \ 'component_expand': {
+                    \   'bufferline': 'LightlineBufferline',
+                    \ },
+                    \ 'component_type': {
+                    \   'bufferline': 'tabsel',
+                    \ },
+                    \ 'component':{
+                    \ 'readonly': '%{&readonly?"":""}',
+                    \ 'lineinfo': '%l%v',
+                    \ },
+                    \ 'active': {
+                    \ 'left': [ ['mode'], ['filename', 'modified' ] ],
+                    \ 'right': [ [ 'lineinfo' ], [ 'fileformat', 'fileencoding', 'filetype' ] ]
+                    \ },
+                    \ 'inactive': {
+                    \ 'left': [['filename']],
+                    \ 'right': [['lineinfo']]
+                    \},
+                    \ 'component_function': {
+                    \   'modified': 'LightLineModified',
+                    \   'fugitive': 'LightLineFugitive',
+                    \   'filename': 'LightLineFilename',
+                    \   'mode': 'LightLineMode',
+                    \   'filetype': 'LightLineFiletype',
+                    \   'fileencoding': 'LightLineFileencoding',
+                    \   'fileformat': 'LightLineFileformat'
+                    \ },
+                    \ 'separator': {'left': g:setting.left_separator, 'right': g:setting.right_separator},
+                    \ 'subseparator': {'left': g:setting.left_sub_separator, 'right': g:setting.right_sub_separator}
+                    \ }
+        function! LightlineBufferline()
+            call bufferline#refresh_status()
+            return [g:bufferline_status_info.before, g:bufferline_status_info.current, g:bufferline_status_info.after]
+        endfunction
+
+        let g:bufferline_echo = 0
+        let g:bufferline_active_buffer_right=''
+        let g:bufferline_active_buffer_left=''
+        let g:bufferline_fname_mod = ':t'
+        let g:bufferline_solo_highlight = 1
+        let g:bufferline_excludes = [
+                    \ 'nerdtree', 'unite', 'vimfiler'
+                    \ ]
+    endif
+    " }}}
+
     " lightline-bufferline配置{{{
-    function! s:tabline(range, active, onefn)
-        let [t, l, x, y, z, u, d] = [tabpagenr(), tabpagenr('$'), [], [], [], '...', min([max([winwidth(0) / 40, 2]), 8])]
-        let [l, x, y, z, u, d] = [a:range[-1], [], [], [], '...', min([max([winwidth(0) / 40, 2]), 8])]
-        for i in range(1, l)
-            for i in a:range
-                call add(i<t?(x):i==t?(y):z, '%'.i.'T%{lightline#onetab('.i.','.(i==t).')}'.(i==l?'%T':''))
-                call add(i<a:active?(x):i==a:active?(y):z, '%'.i.'T%{lightline#one'.a:onefn.'('.i.','.(i==a:active).')}'.(i==l?'%T':''))
-            endfor
-        endfor
-        let [a, b, c] = [len(x), len(z), d * 2]
-        let [a, b, c] = [len(x), len(z), d * 2]
-        return [a>d&&b>d ? extend(add(x[:d/2-1],u),x[-(d+1)/2:]) : a+b<=c||a<=d ? x : extend(add(x[:(c-b)/2-1],u),x[-(c-b+1)/2:]), y,
-        return [a>d&&b>d ? extend(add(x[:d/2-1],u),x[-(d+1)/2:]) : a+b<=c||a<=d ? x : extend(add(x[:(c-b)/2-1],u),x[-(c-b+1)/2:]), y,
-                    \ a>d&&b>d ? extend(add(z[:(d+1)/2-1],u),z[-d/2:]) : a+b<=c||b<=d ? z : extend(add(z[:(c-a+1)/2-1],u),z[-(c-a)/2:])]
-                    \ a>d&&b>d ? extend(add(z[:(d+1)/2-1],u),z[-d/2:]) : a+b<=c||b<=d ? z : extend(add(z[:(c-a+1)/2-1],u),z[-(c-a)/2:])]
-    endfunction
-
-    function! LightLineBuffers()
-        let bufnrs = filter(range(1, bufnr('$')), 'buflisted(v:val)')
-        return s:tabline(bufnrs, bufnr('%'), 'buffer')
-    endfunction
-
-    if 0
-        let g:lightline_buffer_logo = ' '
+    if lightline_tabline == 2
+        Plug 'taohex/lightline-buffer'
+        let g:lightline = {
+                    \ 'colorscheme': 'Dracula',
+                    \ 'tabline': {
+                    \   'left': [ [ 'bufferinfo' ], [ 'bufferbefore', 'buffercurrent', 'bufferafter' ] ], 
+                    \   'right': [ [ 'close' ], ]
+                    \ },
+                    \ 'component_expand': {
+                    \   'buffercurrent': 'lightline#buffer#buffercurrent2',
+                    \   'bufferafter': 'lightline#buffer#bufferafter',
+                    \   'bufferbefore': 'lightline#buffer#bufferbefore'
+                    \ },
+                    \ 'component_type': {
+                    \   'buffercurrent': 'tabsel',
+                    \   'bufferafter': 'raw',
+                    \   'bufferbefore': 'raw'
+                    \ },
+                    \ 'component':{
+                    \ 'readonly': '%{&readonly?"":""}',
+                    \ 'lineinfo': '%l%v',
+                    \ },
+                    \ 'active': {
+                    \ 'left': [ ['mode'], ['filename', 'modified' ] ],
+                    \ 'right': [ [ 'lineinfo' ], [ 'fileformat', 'fileencoding', 'filetype' ] ]
+                    \ },
+                    \ 'inactive': {
+                    \ 'left': [['filename']],
+                    \ 'right': [['lineinfo']]
+                    \},
+                    \ 'component_function': {
+                    \   'bufferinfo': 'LightLineBufferInfo',
+                    \   'modified': 'LightLineModified',
+                    \   'fugitive': 'LightLineFugitive',
+                    \   'filename': 'LightLineFilename',
+                    \   'mode': 'LightLineMode',
+                    \   'filetype': 'LightLineFiletype',
+                    \   'fileencoding': 'LightLineFileencoding',
+                    \   'fileformat': 'LightLineFileformat'
+                    \ },
+                    \ 'separator': {'left': g:setting.left_separator, 'right': g:setting.right_separator},
+                    \ 'subseparator': {'left': g:setting.left_sub_separator, 'right': g:setting.right_sub_separator}
+                    \ }
+        let g:lightline_buffer_status_info = {}
+        let g:lightline_buffer_logo = "\uf17c"
+        " let g:lightline_buffer_logo = ' '
         let g:lightline_buffer_readonly_icon = ''
         let g:lightline_buffer_modified_icon = '✭'
         let g:lightline_buffer_git_icon = ' '
@@ -240,20 +257,43 @@ else
         let g:lightline_buffer_expand_right_icon = ' ▶'
         let g:lightline_buffer_active_buffer_left_icon = ''
         let g:lightline_buffer_active_buffer_right_icon = ''
-        let g:lightline_buffer_separator_icon = '  '
+        " let g:lightline_buffer_separator_icon = '  '
 
         " lightline-buffer function settings
         let g:lightline_buffer_show_bufnr = 1
         let g:lightline_buffer_rotate = 0
         let g:lightline_buffer_fname_mod = ':t'
-        let g:lightline_buffer_excludes = ['vimfiler']
+        let g:lightline_buffer_excludes = [
+                    \ 'nerdtree', 'unite', 'vimfiler'
+                    \ ]
 
         let g:lightline_buffer_maxflen = 30
         let g:lightline_buffer_maxfextlen = 3
         let g:lightline_buffer_minflen = 16
         let g:lightline_buffer_minfextlen = 3
         let g:lightline_buffer_reservelen = 20
+
+        function! LightLineBufferInfo() abort "{{{
+            if tabpagenr('$') > 1
+                return g:lightline_buffer_logo . tabpagenr() .'/'.tagpagenr('$')
+            endif
+            return g:lightline_buffer_logo
+        endfunction " }}}
     endif
+
+    let g:lightline.mode_map = {
+                \ 'n' : 'N',
+                \ 'i' : 'I',
+                \ 'R' : 'R',
+                \ 'v' : 'V',
+                \ 'V' : 'VL',
+                \ "\<C-v>": 'VB',
+                \ 'c' : 'CMD',
+                \ 's' : 'SE',
+                \ 'S' : 'SL',
+                \ "\<C-s>": 'SB',
+                \ 't': 'TERM',
+                \ }
     " }}}
     "}}}
 endif

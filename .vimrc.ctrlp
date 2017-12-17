@@ -96,9 +96,10 @@ else
             \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
             \}
     let g:Lf_MruFileExclude = ['*.so']
-    " let g:Lf_StlSeparator = { 'left': '▶', 'right': '◀'}
-    " let g:Lf_StlSeparator = { 'left': "\uE0C0", 'right': "\uE0C2" }
-    let g:Lf_StlSeparator = { 'left': "\uE0C8", 'right': "\uE0CA" }
+    let g:Lf_StlSeparator = {
+                \ 'left': g:setting.left_separator,
+                \ 'right': g:setting.right_separator
+                \ }
     nnoremap <silent> <leader>jf :<C-u>LeaderfMru<CR>
     nnoremap <silent> <C-p> :<C-u>LeaderfFile<CR>
     nnoremap <silent> <leader>lf :<C-u>LeaderfFile<CR>
