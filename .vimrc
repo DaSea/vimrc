@@ -321,10 +321,17 @@ set titlestring=%t\[%{expand(\"%:p:h\")}]
 set showfulltag " show tag with function protype.
 
 " 关闭光标闪烁
-if g:isGUI
-    set guicursor&
-    set guicursor+=a:blinkon0
+if g:isNvim
+    set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
+                \,a:blinkwait700-blinkoff400-blinkon300-Cursor/lCursor
+                \,sm:block-blinkwait400-blinkoff400-blinkon400
+else
+    if g:isGUI
+        set guicursor&
+        set guicursor+=a:blinkon0
+    endif
 endif
+
 " 但是改变光标样式的时候会抖动
 if has('autocmd') && g:isNvim==0
     " 主要解决genome终端下模式不同光标不同的情况
