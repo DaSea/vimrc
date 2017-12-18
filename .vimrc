@@ -150,7 +150,7 @@ else
 endif
 " 设置需要支持的语言(目前有python, cpp, markdown, plantuml, vim, php, org, lua )
 " let g:language_group = ['cpp', 'python', 'markdown', 'vim', 'todo', 'plantuml', 'go']
-let g:language_group = ['cpp', 'markdown', 'vim', 'org', 'plantuml', 'lua']
+let g:language_group = ['cpp', 'markdown', 'vim', 'org', 'plantuml']
 " }}}
 
 " ==============================================================================

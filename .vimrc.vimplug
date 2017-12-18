@@ -434,7 +434,8 @@ function! YouDaoSearchWord() abort "{{{
         return
     endif
 
-    echohl Error | call dict#Search(translateword, "simple") | echohl None
+    " echohl Error | call dict#Search(translateword, "simple") | echohl None
+    call dict#Search(translateword, "simple")
 endfunction "}}}
 " }}}
 

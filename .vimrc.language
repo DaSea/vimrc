@@ -251,7 +251,6 @@ if index(g:language_group, 'org') >= 0
     nnoremap <leader>oo :call OpenOrgToDoFile()<CR>
     function! OpenOrgToDoFile() abort "{{{
         let gtdFile = g:org_agenda_files[0]
-        echomsg gtdFile
         silent! execute 'edit! ' . gtdFile
     endfunction " }}}
     " }}}

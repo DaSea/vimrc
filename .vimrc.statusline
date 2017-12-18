@@ -98,8 +98,15 @@ else
     endfunction
 
     function! LightLineFilename()
-        " let fname = expand('%:t')
-        let fname = expand('%:p:.')
+        let fname=""
+        if winwidth(0) > 84
+            let fname = expand('%:p:.')
+        elseif winwidth(0) > 56
+            " 取后面a/b/name.cpp
+            let fname = expand("%:t")
+        else
+            let fname = expand('%:t')
+        endif
         return '' != fname ? fname : '[No Name]'
         " return &ft == 'vimfiler' ? vimfiler#get_status_string() :
         " \ &ft == 'unite' ? unite#get_status_string() :
@@ -108,22 +115,19 @@ else
     endfunction
 
     function! LightLineMode()
-        return  winwidth(0) > 60 ? lightline#mode() : ''
+        " return  winwidth(0) > 60 ? lightline#mode() : ''
+        return  lightline#mode()
     endfunction
 
     function! LightLineModified()
-        if winwidth(0) > 70
-            if &filetype == "help"
-                return ""
-            elseif &modified
-                return "*"
-            elseif &modifiable
-                return "+"
-            else
-                return "?"
-            endif
+        if &filetype == "help"
+            return ""
+        elseif &modified
+            return "*"
+        elseif &modifiable
+            return "+"
         else
-            return ''
+            return "?"
         endif
     endfunction
 
@@ -294,6 +298,21 @@ else
                 \ "\<C-s>": 'SB',
                 \ 't': 'TERM',
                 \ }
+    " }}}
+
+    " 由于lightline的tabline没有用,1 ,2等跳转buffer的功能,
+    " 所以只能简单加个快捷键自己输入buffer的nr跳转{{{
+    nnoremap <silent> ,b :call LightlineJumpBuffer()<CR>
+    function! LightlineJumpBuffer() abort " 跳转到buffer {{{
+        call inputsave()
+        let buffern = input("Please enter buffer number:")
+        call inputrestore()
+        if strlen(buffern)==0
+            return
+        endif
+
+        execute "buffer " . buffern
+    endfunction " }}}
     " }}}
     "}}}
 endif
