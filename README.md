@@ -1,6 +1,7 @@
 **主要保存使用的vim/neovim配置，zsh, bash, tmux等配置**
 
 ## vim
+已经移动到[dotfiles](https://github.com/DaSea/dotfiles/tree/master/vim)
 
 ### 各个文件的作用
 * .vimrc 主要的入口
