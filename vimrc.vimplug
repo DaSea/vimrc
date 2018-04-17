@@ -1,0 +1,672 @@
+" vim-plug插件管理器使用的配置文件 {{{
+" man.vim: invoked by :Man {name}
+source $VIMRUNTIME/ftplugin/man.vim
+
+" 插件初始化函数list
+let g:init_func_list = []
+"}}}
+
+"========================================================================================
+" 使用到的插件的配置(The setting of the used plugin)
+"========================================================================================
+" 界面显示相关{{{
+Plug 'ntpeters/vim-better-whitespace' "显示行尾多余空格并快速删除{{{
+" 显示行尾空格(better)
+" ----------------------------------------------------
+let g:better_whitespace_filetypes_blacklist = ['denite', 'unite', 'vimfiler', 'ctrlp', 'org',
+            \ 'markdown', 'java']
+noremap CS :StripWhitespace<CR>
+"}}}
+
+if g:setting.status_line !=? 'no'
+    if exists('g:exvim_custom_path')
+        let g:vim_statusline = g:exvim_custom_path.'/.vimrc.statusline'
+    else
+        let g:vim_statusline = '~/.vimrc.statusline'
+    endif
+
+    if filereadable(expand(g:vim_statusline))
+        exec 'source ' . fnameescape(g:vim_statusline)
+    endif
+endif
+
+Plug 'mhinz/vim-startify',{'on': 'Startify'} " 开始界面,可以显示MRU, Session等{{{
+"开始欢迎界面
+nnoremap <F4> :Startify<CR>
+" set session path
+let g:startify_session_dir = '/home/seasea/.vim/session'
+let g:startify_list_order = [
+            \ ['   MRU:'],
+            \ 'files',
+            \ ['   MRU(Dir):'],
+            \ 'dir',
+            \ ['   Sessions:'],
+            \ 'sessions',
+            \ ['   Bookmarks:'],
+            \ 'bookmarks',
+            \ ]
+let g:startify_custom_header = [
+            \ '   -----------------------------------------------------------',
+            \ "   |     Vim是个慈善软件,如需了解,请阅读':help uganda'       |",
+            \ '   |                                                         |',
+            \ '   |                 o  ^--^                                 |',
+            \ '   |                  o (oo)\=======                         |',
+            \ '   |                    (__)\       )\/\                     |',
+            \ '   |                        ||----w |                        |',
+            \ '   |                        ||     ||                        |',
+            \ '   |                                                         |',
+            \ '   |                                                         |',
+            \ '   -----------------------------------------------------------',
+            \ ]
+let g:startify_custom_footer = ['', "   可以做到,相信自己! ", '']
+"}}}
+
+" Plug 'Konfekt/FastFold' {{{
+" let g:cpp_folding=1
+" let g:php_folding=1
+" let g:lua_folding=1
+" let g:vimsyn_folding='af'
+" let g:c_folding=1
+" }}}
+
+Plug 'Yggdroot/indentLine' "对齐线{{{
+" ---------------------------------------------------
+let g:indentLine_color_gui = '#FF4040'
+let g:indentLine_char = '┊'
+let g:indentLine_faster = 1
+"}}}
+
+" colorscheme 插件 {{{
+" ---------------------------------------------------
+Plug 'icymind/NeoSolarized'
+let g:neosolarized_contrast = "low"
+" let g:neosolarized_visibility = "high"
+let g:neosolarized_vertSplitBgTrans = 0
+let g:neosolarized_bold = 1
+let g:neosolarized_underline = 1
+let g:neosolarized_termtrans = 1
+let g:neosolarized_italic = 0
+
+" Plug 'nightsense/vimspectr'
+" let g:vimspectrCursorLineNr = 'on'
+" let g:vimspectrMuteLineNr = 'on'
+" let g:vimspectrLineNr = 'on'
+" let g:vimspectrItalicComment = 'on'
+" let g:vimspectrMuteStatusLine = 'on'
+
+" Plug 'rakr/vim-one'
+" let g:one_allow_italics = 1
+" let g:one_allow_underline=1
+
+" Plug 'joshdick/onedark.vim'
+" let g:onedark_terminal_italics=1
+
+Plug 'morhetz/gruvbox'
+let g:gruvbox_contrast_dark='sorft'
+let g:gruvbox_contrast_light='soft'
+let g:gruvbox_vert_split='purple'
+
+" Plug 'kristijanhusak/vim-hybrid-material'
+" let g:enable_bold_font=1
+" let g:enable_italic_font=1
+
+
+" 个人收集的一些主题
+" Plug 'DaSea/vim-personcolors'
+"}}}
+
+" buffer窗口的大小的改变{{{
+" 宽度与高度相等
+nnoremap W= <C-W>=
+" 宽度的变化
+nnoremap WA :call WinWidthChange(10, 0)<CR>
+nnoremap WS :call WinWidthChange(10, 1)<CR>
+" 高度的变化
+nnoremap HA :call WinHeightChange(10, 0)<CR>
+nnoremap HS :call WinHeightChange(10, 1)<CR>
+
+" 宽度改变->(increment: 要增加或减少的宽度, add_sub: 0, 增加, 1, 减少){{{
+function! WinWidthChange(increment, add_sub) abort
+    let cur_width = winwidth(0)
+    if 0 == a:add_sub
+        let cur_width = cur_width + a:increment
+    else
+        let cur_width = cur_width - a:increment
+    endif
+    " 如果小于最小宽度, 大于最大宽度, 就不会有什么变化了
+    silent exe "normal " . cur_width ."\<C-W>|"
+endfunction " }}}
+
+" 高度改变->(increment: 要增加或减少的高度; add_sub: 0, 增加, 1, 减少) {{{
+function! WinHeightChange(increment, add_sub) abort
+    let cur_height = winheight(0)
+    if 0 == a:add_sub
+        let cur_height = cur_height + a:increment
+    else
+        let cur_height = cur_height - a:increment
+    endif
+
+    " 如果小于最小高度, 或大于最大高度, 就不会有反应了
+    silent exe "normal " . cur_height ."\<C-W>_"
+endfunction " }}}
+" }}}
+"}}}
+
+" ex系列插件 {{{
+if g:setting.use_exvim ==? 'yes'
+    if exists('g:exvim_custom_path')
+        let g:vim_explug = g:exvim_custom_path.'/.vimrc.explug'
+    else
+        let g:vim_explug = '~/.vimrc.explug'
+    endif
+
+    if filereadable(expand(g:vim_explug))
+        exec 'source ' . fnameescape(g:vim_explug)
+    endif
+endif
+
+Plug 'DaSea/ex-utility'
+" ---------------------------------------------------
+nnoremap <unique> <silent> <Leader>ad :EXbd<CR>
+nnoremap <unique> <silent> <Leader>an :EXbn<CR>
+nnoremap <unique> <silent> <Leader>ap :EXbp<CR>
+nnoremap <unique> <silent> <C-Tab> :EXbalt<CR>
+nnoremap <unique> <silent> <Leader><Tab> :EXsw<CR>
+nmap <unique> <silent> <Leader><Esc> :EXgp<CR><ESC>
+" 定义运行qml文件的脚本
+" nnoremap <Leader>mr :call system("qmlscene". expand("%"))<CR>
+
+Plug 'exvim/ex-showmarks'
+" ex-showmarks: invoke by m... or <Leader>mm, <Leader>ma
+" ---------------------------------------------------
+" TODO: bootleq/ShowMarks on github is well organized in code, but have lots
+" bugs, consider merge his code and fixes the bugs
+let g:showmarks_enable = 1
+let g:showmarks_include = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+let g:showmarks_ignore_type = 'hqm' " Ignore help, quickfix, non-modifiable buffers
+" Hilight lower & upper marks
+let g:showmarks_hlline_lower = 1
+let g:showmarks_hlline_upper = 0
+
+" Plug 'exvim/ex-visincr'
+" ex-visincr: invoke when select text and type ':II'
+" ---------------------------------------------------
+
+Plug 'exvim/ex-matchit'
+" ex-matchit: invoke by %
+" ---------------------------------------------------
+
+Plug 'DaSea/ex-easyhl'
+" ---------------------------------------------------
+" 自动高亮当前光标下单词
+" let g:ex_easyhl_auto_cursorhl = 1
+
+Plug 'DaSea/ex-prjlist' " {{{
+" 已经用新的插件vim-denite-prjmgr 替代(依赖于denite.nvim)
+" ---------------------------------------------------
+if g:isNvim
+    if isdirectory("/media/work")
+        let g:exprjlist_vsc_root_dir = {
+                    \ "/media/work/Self/05_gitsrc": "git"}
+        let g:exprjlist_vimplug_root_dir = "/home/seasea/.vim/plugged"
+    else
+        " wsl
+        let g:exprjlist_vsc_root_dir = {
+                    \ "/mnt/e/Self/05_gitsrc": "git"}
+        let g:exprjlist_vimplug_root_dir = "/home/Feng/.vim/plugged"
+    endif
+else
+    if isdirectory("/media/work")
+        let g:exprjlist_vsc_root_dir = {
+                    \ "/media/work/Self/05_gitsrc": "git"}
+        let g:exprjlist_vimplug_root_dir = "/home/seasea/.vim/plugged"
+    else
+        let g:exprjlist_vsc_root_dir = {
+                    \ "e:/Self/05_gitsrc": "git"
+                    \ }
+        let g:exprjlist_vimplug_root_dir = "D:/Develop/exVim/vimfiles/plugged"
+    endif
+endif
+function! ExprjlistSelect(type) abort " 选择denite或本身的 {{{
+    if a:type==1
+        if exists(":Denite")
+            exe "Denite -auto-resize -mode=insert exprjlist:user"
+        else
+            exe "EXPrjCommonDirList"
+        endif
+    elseif a:type==2
+        if exists(":Denite")
+            exe "Denite -auto-resize -mode=insert exprjlist:vsc"
+        else
+            exe "EXPrjVerDirList"
+        endif
+    elseif a:type==3
+        if exists(":Denite")
+            exe "Denite -auto-resize -mode=insert exprjlist:vimplug"
+        else
+            exe "EXPrjPlugDirLIst"
+        endif
+    endif
+endfunction " }}}
+nnoremap <silent> <Leader>el :call ExprjlistSelect(1)<CR>
+nnoremap <silent> <Leader>gl :call ExprjlistSelect(2)<CR>
+nnoremap <silent> <Leader>ml :call ExprjlistSelect(3)<CR>
+" }}}
+" }}}
+
+" 版本控制(git,svn)及修改状态显示{{{
+" 使用git
+if g:setting.version_status ==? 'git'
+    Plug 'tpope/vim-fugitive' "{{{
+    "}}}
+endif
+
+" =================================================================
+" 显示与版本控制中的文件的差异
+if g:setting.version_status ==? 'git'
+    Plug 'airblade/vim-gitgutter' "{{{
+    nmap ]h <Plug>GitGutterNextHunk
+    nmap [h <Plug>GitGutterPrevHunk
+    let g:gitgutter_realtime = 0
+    let g:gitgutter_eager = 0
+    if g:setting.status_line ==? 'airline'
+        call add(g:airline_extensions, 'hunks')
+    endif
+    "}}}
+endif
+
+if g:setting.version_status ==? 'git_svn'
+    Plug 'mhinz/vim-signify' "{{{
+    " let g:signify_disable_by_default = 1
+    let g:signify_cursorhold_insert     = 0
+    let g:signify_cursorhold_normal     = 1
+    let g:signify_update_on_bufenter    = 0
+    let g:signify_update_on_focusgained = 1
+    let g:signify_vcs_list = [ 'git', 'svn' ]
+    let g:signify_skip_filetype = {
+                \ 'denite': 1, 'vimfiler': 1,
+                \ 'unite': 1, 'exproject': 1
+                \ }
+
+    if g:setting.status_line ==? 'airline'
+        call add(g:airline_extensions, 'hunks')
+    endif
+    "}}}
+endif
+"}}}
+
+ " 主要为了在状态栏显示当前行所在函数{{{
+function! HiEchoCurrentTag() abort " 命令行高亮输出当前所在tag {{{
+    echohl Error | echo tagbar#currenttag("%s", "Unknown Function") | echohl None
+endfunction " }}}
+Plug 'majutsushi/tagbar' " {'on': 'TagbarToggle'}
+nnoremap <Leader>tm :call HiEchoCurrentTag()<CR>
+nnoremap <Leader>tb :TagbarToggle<CR>
+" }}}
+
+"文件内容搜索和替换, undotree{{{
+Plug 'dyng/ctrlsf.vim',{'on': 'CtrlSF'} "搜索工程下文件{{{
+"---------------------------------------------------------------------
+" 设置CtrlSF使用的搜索工具,默认使用ag,如果没有ag,则考虑使用ack
+let g:ctrlsf_ackprg = 'rg'
+if !executable(g:ctrlsf_ackprg)
+    let g:ctrlsf_ackprg = 'ag'
+endif
+" 窗口大小
+let g:ctrlsf_winsize='50%'
+" 是否在ctrlsf搜索结果打开其他窗口时,关闭搜索结果窗口
+let g:ctrlsf_auto_close = 0
+" 大小写敏感
+let g:ctrlsf_case_sensitive = 'yes'
+" 默认搜索路径, 设置为project则从本文件的工程目录搜索
+" let g:ctrlsf_default_root = 'project+wf'
+" 工程目录的顶级文件夹
+" let g:ctrlsf_vcs_folder = ['.exvim', '.git', '.hg', '.svn', '.bzr', '_darcs']
+" make result windows compact
+let g:ctrlsf_indent = 2
+" width or height
+" 显示的上下文函数
+let g:ctrlsf_context = '-B 0 -A 0'
+" 高亮匹配行: o->打开的目标文件;p->预览文件
+let g:ctrlsf_selected_line_hl = 'op'
+nnoremap <F5> :CtrlSFToggle<CR>
+nnoremap <Leader>sw :call CtrlsfCurWord(expand("<cword>"))<CR>
+function! CtrlsfCurWord(word) abort
+    " 需要修改为根据exvim工程文件类型进行搜索
+    let s:type = &filetype
+    if ("c" == s:type) && (g:ctrlsf_ackprg !=? 'rg')
+        let s:type = "cc"
+    endif
+    let s:filetype = '-filetype '.s:type
+    " -w whole word;
+    execute "CtrlSF ".s:filetype.' -R \b'. a:word .'\b'
+endfunction
+"}}}
+
+Plug 'terryma/vim-multiple-cursors' "多项选择{{{
+"---------------------------------------------------------------------
+let g:multi_cursor_use_default_mapping = 0
+let g:multi_cursor_start_word_key = '<F6>'
+let g:multi_cursor_next_key = '<C-j>'
+let g:multi_cursor_prev_key = '<C-k>'
+let g:multi_cursor_skip_key = '<C-x>'
+let g:multi_cursor_quit_key = '<ESC>'
+" Called once right before you start selecting multiple cursors
+function! Multiple_cursors_before()
+    if exists(':NeoCompleteLock')==2
+        exe 'NeoCompleteLock'
+    elseif exists('g:deoplete#disable_auto_complete')
+        let g:deoplete#disable_auto_complete = 1
+    endif
+endfunction
+
+" Called once only when the multiple selection is canceled (default <Esc>)
+function! Multiple_cursors_after()
+    if exists(':NeoCompleteUnlock')==2
+        exe 'NeoCompleteUnlock'
+    elseif exists('g:deoplete#disable_auto_complete')
+        let g:deoplete#disable_auto_complete = 0
+    endif
+endfunction
+"}}}
+
+Plug 'dkprice/vim-easygrep', {'on': ['Grep', 'GrepOptions', 'GrepAdd', 'GrepRoot', 'GrepProgram']}" {{{
+let g:EasyGrepPerlStyle=1
+" }}}
+
+" undo 历史树,直观显示,快速选择恢复{{{
+if has("persistent_undo")
+    Plug 'mbbill/undotree', {'on': 'UndotreeToggle'}
+    set undodir=~/.cache/undodir
+    set undofile
+endif "}}}
+"}}}
+
+"  快速注释, 及生成函数及文件注释{{{
+Plug 'scrooloose/nerdcommenter' " 快速注释{{{
+" Invoke by <Leader>c<space>, <Leader>cl, <Leader>cu, <F11> or <C-F11>
+" ---------------------------------------------------
+" 我主要用于C/C++代码注释(其它的也行)
+" 以下为插件默认快捷键，其中的说明是以C/C++为例的，其它语言类似
+" <Leader>ci 以每行一个 /* */ 注释选中行(选中区域所在行)，再输入则取消注释
+" <Leader>cm 以一个 /* */ 注释选中行(选中区域所在行)，再输入则称重复注释
+" <Leader>cc 以每行一个 /* */ 注释选中行或区域，再输入则称重复注释
+" <Leader>cu 取消选中区域(行)的注释，选中区域(行)内至少有一个 /* */
+" <Leader>ca 在/*...*/与//这两种注释方式中切换（其它语言可能不一样了）
+" <Leader>cA 行尾注释
+" 注释的时候加个空格
+let g:NERDSpaceDelims = 1
+let g:NERDRemoveExtraSpaces = 1
+let g:NERDCustomDelimiters = {
+            \ 'vimentry': { 'left': '--' },
+            \ }
+" 自定义的注释格式切换样式
+" let g:NERDAltDelims_c= {'left': '//', 'leftAlt': '/*', 'rightAlt': '*/' }
+"}}}
+
+"生成文件注释和函数注释{{{
+Plug 'DaSea/DoxygenToolkit.vim', {'on': ['DoxFunc', 'DoxFile']}
+" ---------------------------------------------------
+" let g:DoxygenToolkit_commentType = "C++"
+let g:DoxygenToolkit_briefTag_pre="@brief  "
+let g:DoxygenToolkit_paramTag_pre="@param  "
+let g:DoxygenToolkit_returnTag="@return "
+" let g:DoxygenToolkit_blockHeader="--------------------------------------------------------------------------"
+" let g:DoxygenToolkit_blockFooter="--------------------------------------------------------------------------"
+let g:DoxygenToolkit_authorName=g:setting.author_name
+let g:DoxygenToolkit_licenseTag="None"
+let g:DoxygenToolkit_compactDoc="no"
+" map
+nnoremap <Leader>di :DoxFunc<CR>
+nnoremap <Leader>df :DoxFile<CR>
+"}}}
+"}}}
+
+" 快速移动(行的移动， 行间移动， 窗口间移动)  {{{
+" Plug 'matze/vim-move'
+" {'on': ['<Plug>MoveLineUp', '<Plug>MoveLineDown', '<Plug>MoveBlockUp', '<Plug>MoveBlockDown']}
+" alt + j : 行或块下移; alt+k: 行或块上移;
+
+Plug 'DaSea/SimpleJumpToLine.vim'
+nnoremap <Leader>jj :SLineJump<CR>
+
+Plug 't9md/vim-choosewin', {'on': 'ChooseWin'} " 快速在窗口在跳转 {{{
+" let g:choosewin_statusline_replace=0
+" let g:choosewin_overlay_enable=1
+let g:choosewin_label='JKLMNOPQRTUVWYZABCDEFGHI'
+nmap - :ChooseWin<CR>
+" }}}
+
+Plug 'Lokaltog/vim-easymotion' " {{{
+let g:EasyMotion_smartcase = 1
+let g:EasyMotion_startofline=0
+" map <Leader>e <Plug>(easymotion-prefix)
+map <Leader><Leader>/ <Plug>(easymotion-sn)
+omap <Leader><Leader>/ <Plug>(easymotion-tn)
+map <Leader><Leader>j <Plug>(easymotion-j)
+map <Leader><Leader>k <Plug>(easymotion-k)
+map <Leader><Leader>l <Plug>(easymotion-lineforward)
+map <Leader><Leader>h <Plug>(easymotion-linebackward)
+map <Leader><Leader>w <Plug>(easymotion-jumptoanywhere)
+map <Leader><Leader>s <Plug>(easymotion-lineanywhere)
+map <Leader><Leader>. <Plug>(easymotion-repeat)
+"}}}
+"}}}
+
+Plug 'moll/vim-bbye', {'on': 'Bdelete'} "主要界面关闭buffer引起的窗口乱的问题{{{
+noremap <Leader>mq :Bdelete<CR>
+inoremap <Leader>mq <ESC>:Bdelete<CR>
+vnoremap <Leader>mq <ESC>:Bdelete<CR>
+"}}}
+
+Plug 'DaSea/uncrustify.vim', {'on': 'Uncrustify'} " 代码格式化:{{{
+nnoremap <Leader>ff :Uncrustify<CR>
+vnoremap <Leader>ff :'<,'>Uncrustify<CR>
+"}}}
+
+Plug 'iamcco/dict.vim' " 有道翻译{{{
+" 普通模式下，<Leader>d 即可翻译光标下的文本，并在命令行回显
+nnoremap <silent> <Leader>yd :call dict#Search(expand("<cword>"), "simple")<CR>
+" 可视化模式下，<Leader>d 即可翻译选中的文本，并在命令行回显
+vnoremap <silent> <Leader>yd  :<C-U>call dict#VSearch("simple")<CR>
+" 普通模式下，<Leader>w 即可翻译光标下的文本，并且在Dict新窗口显示
+nnoremap <silent> <Leader>yw  :call dict#Search(expand("<cword>"), "complex")<CR>
+" 可视化模式下，<Leader>w 即可翻译选中的文本，并且在Dict新窗口显示
+vnoremap <silent> <Leader>yw :<C-U>call dict#VSearch("complex")<CR>
+" 普通模式下，<Leader><Leader>r 即可翻译光标下的单词，并替换为翻译的结果
+nnoremap <silent> <Leader>yr  viw:<C-U>call dict#VSearch("replace")<CR>
+" 可视化模式下，<Leader><Leader>r 即可翻译光标下的单词，并替换为翻译的结果
+vnoremap <silent> <Leader>yr :<C-U>call dict#VSearch("replace")<CR>
+" 添加一个由用户手动输入单词的快捷键
+nnoremap <silent> <Leader>yi :call YouDaoSearchWord()<CR>
+function! YouDaoSearchWord() abort "{{{
+    call inputsave()
+    let translateword = input("Input Word:")
+    call inputrestore()
+    if strlen(translateword)==0
+        return
+    endif
+
+    " echohl Error | call dict#Search(translateword, "simple") | echohl None
+    call dict#Search(translateword, "simple")
+endfunction "}}}
+" }}}
+
+Plug 'mbbill/fencview' " (编码检查)auto check Encoding{{{
+let g:fencview_autodetect = 1
+"}}}
+
+" unit.vim 或者 ctrlp相关插件, 及文件管理器{{{
+if g:setting.ctrlp_or_unite ==? 'unitvim'
+    if exists('g:exvim_custom_path')
+        let g:vim_ctrlp_or_unite = g:exvim_custom_path.'/.vimrc.unitvim'
+    else
+        let g:vim_ctrlp_or_unite = '~/.vimrc.unitvim'
+    endif
+else
+    if exists('g:exvim_custom_path')
+        let g:vim_ctrlp_or_unite = g:exvim_custom_path.'/.vimrc.ctrlp'
+    else
+        let g:vim_ctrlp_or_unite = '~/.vimrc.ctrlp'
+    endif
+endif
+if filereadable(expand(g:vim_ctrlp_or_unite))
+    exec 'source ' . fnameescape(g:vim_ctrlp_or_unite)
+endif
+"}}}
+
+" 补全相关插件, 语言无关 {{{
+if exists('g:exvim_custom_path')
+    let g:vim_complete_path = g:exvim_custom_path.'/.vimrc.complete'
+else
+    let g:vim_complete_path = '~/.vimrc.complete'
+endif
+if filereadable(expand(g:vim_complete_path))
+    exec 'source ' . fnameescape(g:vim_complete_path)
+endif
+"}}}
+
+" 加载语言相关插件{{{
+if exists('g:exvim_custom_path')
+    let g:vim_language_path = g:exvim_custom_path.'/.vimrc.language'
+else
+    let g:vim_language_path = '~/.vimrc.language'
+endif
+if filereadable(expand(g:vim_language_path))
+    exec 'source ' . fnameescape(g:vim_language_path)
+endif
+" }}}
+
+" 异步编译和lint插件 {{{
+if 'yes' ==? g:setting.make_lint_need
+    Plug 'neomake/neomake', {'on': ['NeomakeFile', 'Neomake', 'NeomakeSh', 'NeomakeInfo',
+                \ 'NeomakeListJobs', 'NeomakeCancelJob', 'NeomakeCalcelJobs']}
+    nnoremap <unique> <Leader>nm :NeomakeFile<CR>
+    let g:neomake_verbose = 1
+    let g:neomake_open_list = 2
+    " c and cpp 由ycm插件检查
+    let g:neomake_exclude_ft=['c', 'cpp']
+    let g:neomake_c_lint_maker = {
+                \ 'exe': 'clang-tidy',
+                \ 'args': ['%:p', '--option', 'x'],
+                \ 'errorformat': '%f:%l:%c: %m',
+                \ }
+    let g:neomake_cpp_lint_maker = {
+                \ 'exe': 'clang-tidy',
+                \ 'args': ['%:p', '--option', 'x'],
+                \ 'errorformat': '%f:%l:%c: %m',
+                \ }
+    let g:neomake_python_lint_maker = {
+                \ 'exe': 'pep8',
+                \ 'args': ['%:t'],
+                \ 'errorformat': '%f:%l:%c: %m',
+                \ }
+    " statusline
+    " if g:setting.status_line ==? 'airline'
+        " call add(g:airline_extensions, 'neomake')
+    " endif
+endif
+"}}}
+
+"括号补全, endif等补全{{{
+if 'yes' ==? g:setting.auto_pairs_need
+    Plug 'jiangmiao/auto-pairs'
+    " let g:AutoPairsFlyMode = 0
+    " let g:AutoPairsShortcutBackInsert = '<Leader>pb'
+    " 上面俩项为flyMode下使用
+    let g:AutoPairsShortcutToggle = '<Leader>pp'
+    let g:AutoPairsShortcutFastWrap = '<Leader>pe'
+    let g:AutoPairsShortcutJump = '<Leader>pn'
+    if 'yes' ==? g:setting.auto_paramcomplete
+        let g:AutoPairs = {'[':']', '{':'}',"'":"'",'"':'"', '`':'`'}
+        inoremap <buffer><silent> ) <C-R>=AutoPairsInsert(')')<CR>
+    endif
+endif
+Plug 'tpope/vim-endwise', {'for': ['python', 'vim', 'lua', 'sh', 'zsh']}
+"}}}
+
+" Document(查阅文档){{{
+
+" zeal 文档工具查看
+let g:zv_zeal_executable = has('win32') ?
+            \ 'D:/Develop/zeal/zeal.exe' :
+            \ '/usr/bin/zeal'
+if executable(g:zv_zeal_executable)  " zeal {{{
+    Plug 'KabbAmine/zeavim.vim' , {'on': [
+            \   'Zeavim', 'Docset',
+            \   '<Plug>Zeavim',
+            \   '<Plug>ZVVisSelection',
+            \   '<Plug>ZVKeyDocset',
+            \   '<Plug>ZVMotion'
+            \ ]}
+    if !exists('g:zv_file_types')
+        let g:zv_file_types = {
+                    \ 'cpp': 'cpp'
+                    \ }
+    endif
+    " nmap gzz <Plug>Zeavim
+    " vmap gzz <Plug>ZVVisSelection
+    " nmap gZ <Plug>ZVKeyDocset<CR>
+    " nmap gz <Plug>ZVMotion
+    " nmap <Leader>z <Plug>ZVKeyDocset
+endif
+" }}}
+
+Plug 'asins/vimcdoc' "vim documentation{{{
+" < VIM中文帮助文档:>
+" 设定doc文档目录
+let helptags=$VIM."/vimfiles/doc"
+set helplang=cn
+"}}}
+
+" 查看当前单词的帮助
+nnoremap <F1> :call FindWord()<CR>
+function! FindWord() abort "{{{
+    let filet = eval('&filetype')
+    if (filet ==# 'vim') || (filet ==# 'help')
+        let curWord = expand("<cword>")
+        execute "h " . curWord
+    else
+        execute 'Zeavim'
+    endif
+endfunction "}}}
+"}}}
+
+" fcitx设置(对linux有效) {{{
+if g:islinux
+    " 退出插入模式的时候自动进入英文状态，但是重新进入插入模式时又会进入英文状态
+    Plug 'h-youhei/vim-fcitx'
+endif
+" }}}
+"
+if 'yes' ==? g:setting.use_devicons
+    Plug 'ryanoasis/vim-devicons' " 显示优美的，如果，电脑不行可以不用{{{
+    let g:webdevicons_enable = 1
+    let g:webdevicons_enable_nerdtree = 1
+    " adding the custom source to unite
+    let g:webdevicons_enable_unite = 1
+    let g:webdevicons_enable_denite = 1
+    let g:webdevicons_enable_vimfiler = 1
+    " adding to vim-airline's tabline
+    let g:webdevicons_enable_airline_tabline = 1
+    " adding to vim-airline's statusline
+    let g:webdevicons_enable_airline_statusline = 1
+    let g:WebDevIconsUnicodeDecorateFileNodes = 1
+    let g:WebDevIconsOS = 'unix'
+    " }}}
+endif
+
+" TEST {{{
+" " test-loading
+" echomsg "test-loading: .vimrc"
+" keizazcbflrkvbvy
+" vsxin:
+"}}}
+
+function! PluginLoadFinished() abort "{{{
+    for Fn in g:init_func_list
+        call Fn()
+    endfor
+endfunction "}}}
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:

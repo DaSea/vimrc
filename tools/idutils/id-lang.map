@@ -1,0 +1,133 @@
+# Welcome to the mkid language mapper.
+#
+# The format of each line is:
+#
+#		<pattern> <language> [options]
+#
+# Filenames are matched top-to-bottom against the patterns, and the
+# first match is chosen.  The special language `IGNORE' means that
+# this file should be ignored by mkid.  The options are
+# language-specific command-line options to mkid.
+#
+# If a file name doesn't match any pattern, it is assigned the default
+# language.  The default language may be specified here with the
+# special pattern `**', or overridden from the mkid command-line with
+# the `--default-lang=LANG' option.
+#
+# The special pattern `***' means to include the named file that
+# immediately follows.  If no file is named, then the default system
+# language mapper file (i.e., this file) is included.
+
+# Default language
+**			    IGNORE	# Although this is listed first,
+				        # the default language pattern is
+				        # logically matched last.
+
+# Backup files
+*~			            IGNORE
+*.bak			        IGNORE
+*.bk[0-9]		        IGNORE
+
+# SCCS files
+[sp].*			        IGNORE
+
+# C dependencies created by automake
+*/.deps/*		        IGNORE
+
+# ignore svn file
+*/.svn/*		        IGNORE
+*.svn-base              IGNORE
+
+# ignore git file
+.git/*		            IGNORE
+
+# ignore vimentry files
+.exvim.*/*              IGNORE
+
+# c/cpp header
+*.h			    text
+*.h++           text
+*.h.in			text
+*.H			    text
+*.hh			text
+*.hp			text
+*.hpp			text
+*.hxx			text
+*.inl           text
+
+# c/cpp srouce
+*.c			    text
+*.C			    text
+*.cc			text
+*.cp			text
+*.cpp			text
+*.cxx			text
+
+# csharp
+*.cs			text
+
+# objective-c/matlab/octave
+*.m             text
+
+# shader
+*.hlsl          text
+*.vsh           text
+*.psh           text
+*.fx            text
+*.fxh           text
+*.cg            text
+*.shd           text
+
+# asmble
+*.asm           text
+*.ASM           text
+*.s             text
+*.S             text
+
+# python
+*.py            text
+*.pyx           text
+*.pxd           text
+*.scons         text
+
+# ruby
+*.rb            text
+
+# javascript/typescript/coffee-script
+*.js            text
+*.as            text
+*.ts            text
+*.coffee        text
+
+# lua
+*.lua           text
+
+# max-script
+*.ms            text
+
+# perl
+*.pl            text
+*.pm            text
+
+# vim
+*.vim           text
+
+# html
+*.html          text
+*.htm           text
+*.shtml         text
+*.stm           text
+
+# xml
+*.xml           text
+*.mms           text
+*.glm           text
+
+# json
+*.json          text
+
+# misc file
+*.l			    text
+*.lex			text
+*.y			    text
+*.yacc			text
