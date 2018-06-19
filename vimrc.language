@@ -77,12 +77,7 @@ endif
 " vim 补全{{{
 if (index(g:language_group, 'vim') >= 0) && g:hasNeocomplete
     Plug 'Shougo/neco-vim'
-    if g:hasNeocomplete
-        if !exists('g:deoplete#sources')
-            let g:deoplete#sources = {}
-        endif
-        let g:deoplete#sources.vim = ['buffer', 'neosnippet', 'file/include', 'vim']
-    else
+    if 0 == g:hasNeocomplete
         let g:ycm_semantic_triggers = get( g:,'ycm_semantic_triggers', {} )
         let g:ycm_semantic_triggers.vim = ['$', '&', 're![\w&$<-][\w:#<>-]*']
     endif
@@ -115,44 +110,39 @@ if index(g:language_group, 'cpp') >= 0
     " let g:cpp_experimental_simple_template_highlight = 1
 
     if g:isNvim
-        Plug 'arakashic/chromatica.nvim' " 语法高亮 {{{
+        Plug 'arakashic/chromatica.nvim', {'for': ['cpp', 'c']} " 语法高亮 {{{
         let g:chromatica#enable_at_startup=1
-        let g:chromatica#libclang_path='/usr/lib/llvm-4.0/lib'
+        " let g:chromatica#libclang_path='/usr/lib/libclang.so'
         " }}}
 
-        Plug 'zchee/deoplete-clang', {'do': ':UpdateRemotePlugins'} " {{{
+        Plug 'zchee/deoplete-clang', {'do': ':UpdateRemotePlugins', 'for':['cpp', 'c']} " {{{
         if isdirectory('/usr/lib/llvm-4.0')
             let g:deoplete#sources#clang#libclang_path='/usr/lib/llvm-4.0/lib/libclang.so.1'
             let g:deoplete#sources#clang#clang_header = '/usr/lib/llvm-4.0/lib/clang'
         else
-            let g:deoplete#sources#clang#libclang_path='/usr/lib/llvm-3.8/lib/libclang.so.1'
-            let g:deoplete#sources#clang#clang_header = '/usr/lib/llvm-3.8/lib/clang'
+            let g:deoplete#sources#clang#libclang_path='/usr/lib/libclang.so'
+            let g:deoplete#sources#clang#clang_header = '/usr/lib/clang'
         endif
         let g:deoplete#sources#clang#std={'c': 'c11', 'cpp': 'c++1z', 'objc': 'c11', 'objcpp': 'c++1z'}
         " 补全列表的顺序(priority, alphabetical) 默认使用deoplete.nvim的算法
         " let g:deoplete#sources#clang#sort_algo = 'priority'
         " 
         " let g:deoplete#sources#clang#clang_complete_database=$HOME.'/src/github.com/neovim/neovim/build'
-        if !exists('g:deoplete#sources')
-            let g:deoplete#sources = {}
-        endif
-        let g:deoplete#sources.c = ['buffer', 'neosnippet', 'file/include', 'clang']
-        let g:deoplete#sources.cpp = ['buffer', 'neosnippet', 'file/include', 'clang']
         " echo | clang -v -E -x c -
         let g:deoplete#sources#clang#flags = [
                     \ "-O3", "-cc1", "-x", "c++", "-std=c++11",
                     \'-isystem',
                     \ '/usr/include',
                     \ '-isystem',
-                    \ '/usr/include/c++/6',
+                    \ '/usr/include/c++/8.1.0',
                     \ '-isystem',
-                    \ '/usr/include/x86_64-linux-gnu/qt5/QtWidgets',
+                    \ '/usr/include/qt/QtWidgets',
                     \ '-isystem',
-                    \ '/usr/include/x86_64-linux-gnu/qt5/QtGui',
+                    \ '/usr/include/qt/QtGui',
                     \ '-isystem',
-                    \ '/usr/include/x86_64-linux-gnu/qt5/QtCore',
+                    \ '/usr/include/qt/QtCore',
                     \ '-isystem',
-                    \ '/usr/include/x86_64-linux-gnu/qt5/QtNetwork',
+                    \ '/usr/include/qt/QtNetwork',
                     \ '-I',
                     \ '.'
                     \ ]
@@ -168,15 +158,9 @@ endif
 " python{{{
 if (index(g:language_group, 'python') >= 0) && g:isNvim
     Plug 'zchee/deoplete-jedi', {'do': ':UpdateRemotePlugins'}
-    let g:deoplete#sources#jedi#python_path='/usr/bin/python3'  "~/.pyenv/versions/3.4.5/envs/neovim/bin/python'
-    " let g:python3_host_prog = '/home/Feng/.pyenv/versions/3.4.5/envs/neovim/bin/python'
-    " let g:deoplete#ignore_sources = {}
-    " let g:deoplete#ignore_sources.python =
-                " \ ['buffer', 'dictionary', 'tag', 'syntax', 'neosnippet']
-    if !exists('g:deoplete#sources')
-        let g:deoplete#sources = {}
+    if g:islinux
+        let g:deoplete#sources#jedi#python_path='/usr/bin/python3'
     endif
-    let g:deoplete#sources.python = ['buffer', 'neosnippet', 'file/include', 'jedi']
     let g:deoplete#sources#jedi#statement_length = 0
     let g:deoplete#sources#jedi#enable_cache = 1
     let g:deoplete#sources#jedi#short_types = 1
@@ -193,13 +177,14 @@ endif
 " go{{{
 if (index(g:language_group, 'go') >= 0) && g:isNvim
     Plug 'zchee/deoplete-go', {'do': ':UpdateRemotePlugins'}
-    let g:deoplete#sources#go#gocode_binary = $GOBIN.'/gocode'
+    if g:islinux
+        let g:deoplete#sources#go#gocode_binary = $GOBIN.'/gocode'
+        let g:deoplete#sources#go#json_directory='/home/seasea/.vim/plugged/deoplete-go/data/json/1.8.3/linux_amd64'
+    endif
     let g:deoplete#sources#go#align_class=1
     let g:deoplete#sources#go#package_dot=1
     let g:deoplete#sources#go#sort_class=['package', 'func', 'type', 'var', 'const']
     let g:deoplete#sources#go#use_cache=1
-    let g:deoplete#sources#go#json_directory='/home/seasea/.vim/plugged/deoplete-go/data/json/1.8.3/linux_amd64'
-    let g:deoplete#sources.go = ['buffer', 'neosnippet', 'file/include', 'go']
 endif
 "}}}
 
@@ -221,15 +206,11 @@ if index(g:language_group, 'lua') >= 0
     let g:lua_complete_dynamic = 0
     let g:lua_define_completion_mappings = 0
     if g:isNvim
-        if !exists('g:deoplete#omni#input_patterns')
-            let g:deoplete#omni#input_patterns = {}
+        if g:hasNeocomplete
+            call deoplete#custom#var('omni', 'input_patterns', {
+                        \ 'ruby': 'xolox#lua#omnifunc'
+                        \ })
         endif
-        let g:deoplete#omni#input_patterns.lua = '\w+|[^. *\t][.:]\w*'
-
-        if !exists('g:deoplete#omni#functions')
-            let g:deoplete#omni#functions = {}
-        endif
-        let g:deoplete#omni#functions.lua = 'xolox#lua#omnifunc'
     endif
 endif
 "}}}

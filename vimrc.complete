@@ -28,25 +28,6 @@ if g:isNvim
     let g:hasNeocomplete = 1
     Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'} " {{{
     let g:deoplete#enable_at_startup = 1
-    let g:deoplete#enable_smart_case=1
-    let g:deoplete#max_list=30
-    let g:deoplete#auto_completion_start_length=2
-    let g:deoplete#delimiters = ['/', '.', '::', ':', '#', '->']
-    let g:deoplete#skip_chars = ['(', ')']
-    if !exists('g:deoplete#sources')
-        let g:deoplete#sources = {}
-    endif
-    let g:deoplete#sources._ = ['buffer', 'neosnippet', 'file/include']
-    let g:deoplete#ignore_sources = ['tag']
-    " debug
-    " let g:deoplete#enable_profile=1
-    " omni function
-    " let g:deoplete#omni#input_patterns={}
-    " let g:deoplete#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
-    " let g:deoplete#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
-    " let g:deoplete#omni#input_patterns.java = '[^. *\t]\.\w*'
-    " let g:deoplete#omni#input_patterns.php =  '\h\w*\|[^. \t]->\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?'
-    " let g:deoplete#omni#input_patterns.go = '[^. *\t]\.\w*'
     " keymap
     inoremap <silent><expr> <TAB>
                 \ pumvisible() ? "\<C-n>" :
@@ -64,8 +45,8 @@ if g:isNvim
         let invalid = 0
         if lastChar =~ '\s'
             let invalid = 1
-        elseif (-1 == index(g:deoplete#delimiters, lastChar))
-            let invalid = 1
+            " elseif (-1 == index(g:deoplete#delimiters, lastChar))
+            " let invalid = 1
         endif
         return !col || invalid
     endfunction"}}}
@@ -74,8 +55,36 @@ if g:isNvim
     function! DeopleteInit() abort
         " Use head matcher instead of fuzzy matcher
         call deoplete#custom#source('_', 'matchers', ['matcher_head'])
-
+		call deoplete#custom#option('omni_patterns', {
+                    \ 'java': '[^. *\t]\.\w*',
+                    \ 'c': '[^.[:digit:] *\t]\%(\.\|->\)\w*',
+                    \ 'cpp': '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*',
+                    \ 'go': '[^. *\t]\.\w*',
+                    \ 'php': '\h\w*\|[^. \t]->\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?',
+                    \ 'lua': '\w+|[^. *\t][.:]\w*'
+                    \})
+        call deoplete#custom#option({
+                    \ 'auto_complete_delay': 200,
+                    \ 'smart_case': v:true,
+                    \ })
+        call deoplete#custom#option("delimiters",['/', '.', '::', ':', '#', '->'])
+		call deoplete#custom#option('sources', {
+                    \ '_': ['buffer'],
+                    \ 'cpp': ['buffer', 'neosnippet', 'file/include', 'clang'],
+                    \ 'c': ['buffer', 'neosnippet', 'file/include', 'clang'],
+                    \ 'python': ['buffer', 'neosnippet', 'file/include', 'jedi'],
+                    \ 'vim': ['buffer', 'neosnippet', 'file/include', 'vim'],
+                    \ 'go': ['buffer', 'neosnippet', 'file/include', 'go']
+                    \})
+		call deoplete#custom#var('omni', 'input_patterns', {
+		    \ 'ruby': ['[^. *\t]\.\w*', '[a-zA-Z_]\w*::'],
+		    \ 'java': '[^. *\t]\.\w*',
+		    \ 'php': '\w+|[^. \t]->\w*|\w+::\w*',
+		    \})
+        call deoplete#custom#option('smart_case', v:true)
+        call deoplete#custom#option('ignore_sources', {'_': ['tags']})
         " debug
+		" call deoplete#custom#option('profile', v:true)
         " call deoplete#enable_logging('DEBUG', 'deoplete.log')
         " call deoplete#custom#source('jdei', 'debug_enabled', 1)
         " call deoplete#custom#source('clang', 'debug_enabled', 1)
@@ -111,7 +120,7 @@ else
                     \ 'infolog' : 1,
                     \ 'mail' : 1
                     \}
-        et g:ycm_filetype_whitelist = {
+        let g:ycm_filetype_whitelist = {
                     \ "c":1, "cpp":1, "python":1, "sh":1,
                     \ "zsh":1, "markdown":1, "lua":1,
                     \ "vim":1, "java":1

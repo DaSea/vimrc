@@ -116,7 +116,7 @@ let g:setting.tab_right_separator = g:separator_list[tab_separator_index][2]
 let g:setting.tab_right_sub_separator = g:separator_list[tab_separator_index][3]
 let g:plugins_file = '.vimrc.vimplug'
 " 全局设置seoul256-light, NeoSolarized
-let g:setting.color_scheme = 'gruvbox'
+let g:setting.color_scheme = 'onedark'
 " let g:setting.color_scheme = 'NeoSolarized'
 " 关于更改行的设置(git(vim-fugitive, vim-gitgutter), git_svn(vim-signify), no)
 let g:setting.version_status = 'no'
@@ -735,18 +735,16 @@ if g:isNvim
     let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
     let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
 
+    " python设置
+    let g:loaded_python_provider=1
+    " python3 设置
+    " let g:loaded_python3_provider = 1
     if g:islinux
-        let g:python_host_prog = '/usr/bin/python'
-        let g:python3_host_prog = '/usr/bin/python3'
+        let g:python_host_prog = '/usr/bin/python2'
+        let g:python3_host_prog = '/usr/bin/python'
     elseif g:iswindows
         let g:python3_host_prog = 'python.exe'
     endif
-    " python设置
-    " let g:loader_python_provider=0
-    " let g:python_host_skip_check=1
-    " python3 设置
-    " let g:loaded_python3_provider = 1
-    " let g:python3_host_skip_check = 0
     " 禁用ruby支持
     " let g:loaded_ruby_provider = 0
 

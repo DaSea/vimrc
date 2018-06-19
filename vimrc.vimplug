@@ -78,14 +78,14 @@ let g:indentLine_faster = 1
 
 " colorscheme 插件 {{{
 " ---------------------------------------------------
-Plug 'icymind/NeoSolarized'
-let g:neosolarized_contrast = "low"
+" Plug 'icymind/NeoSolarized'
+" let g:neosolarized_contrast = "low"
 " let g:neosolarized_visibility = "high"
-let g:neosolarized_vertSplitBgTrans = 0
-let g:neosolarized_bold = 1
-let g:neosolarized_underline = 1
-let g:neosolarized_termtrans = 1
-let g:neosolarized_italic = 0
+" let g:neosolarized_vertSplitBgTrans = 0
+" let g:neosolarized_bold = 1
+" let g:neosolarized_underline = 1
+" let g:neosolarized_termtrans = 1
+" let g:neosolarized_italic = 0
 
 " Plug 'nightsense/vimspectr'
 " let g:vimspectrCursorLineNr = 'on'
@@ -98,13 +98,20 @@ let g:neosolarized_italic = 0
 " let g:one_allow_italics = 1
 " let g:one_allow_underline=1
 
-" Plug 'joshdick/onedark.vim'
-" let g:onedark_terminal_italics=1
+Plug 'joshdick/onedark.vim'
+let g:onedark_terminal_italics=1
+if (has("autocmd") && !has("gui_running"))
+  augroup colorset
+    autocmd!
+    let s:white = { "gui": "#ABB2BF", "cterm": "145", "cterm16" : "7" }
+    autocmd ColorScheme * call onedark#set_highlight("Normal", { "fg": s:white }) " `bg` will not be styled since there is no `bg` setting
+  augroup END
+endif
 
-Plug 'morhetz/gruvbox'
-let g:gruvbox_contrast_dark='sorft'
-let g:gruvbox_contrast_light='soft'
-let g:gruvbox_vert_split='purple'
+" Plug 'morhetz/gruvbox'
+" let g:gruvbox_contrast_dark='sorft'
+" let g:gruvbox_contrast_light='soft'
+" let g:gruvbox_vert_split='purple'
 
 " Plug 'kristijanhusak/vim-hybrid-material'
 " let g:enable_bold_font=1
@@ -208,7 +215,7 @@ if g:isNvim
     if isdirectory("/media/work")
         let g:exprjlist_vsc_root_dir = {
                     \ "/media/work/Self/05_gitsrc": "git"}
-        let g:exprjlist_vimplug_root_dir = "/home/seasea/.vim/plugged"
+        let g:exprjlist_vimplug_root_dir = "/home/dasea/.vim/plugged"
     else
         " wsl
         let g:exprjlist_vsc_root_dir = {
@@ -219,7 +226,7 @@ else
     if isdirectory("/media/work")
         let g:exprjlist_vsc_root_dir = {
                     \ "/media/work/Self/05_gitsrc": "git"}
-        let g:exprjlist_vimplug_root_dir = "/home/seasea/.vim/plugged"
+        let g:exprjlist_vimplug_root_dir = "/home/dasea/.vim/plugged"
     else
         let g:exprjlist_vsc_root_dir = {
                     \ "e:/Self/05_gitsrc": "git"
@@ -343,32 +350,34 @@ function! CtrlsfCurWord(word) abort
 endfunction
 "}}}
 
-Plug 'terryma/vim-multiple-cursors' "多项选择{{{
-"---------------------------------------------------------------------
-let g:multi_cursor_use_default_mapping = 0
-let g:multi_cursor_start_word_key = '<F6>'
-let g:multi_cursor_next_key = '<C-j>'
-let g:multi_cursor_prev_key = '<C-k>'
-let g:multi_cursor_skip_key = '<C-x>'
-let g:multi_cursor_quit_key = '<ESC>'
-" Called once right before you start selecting multiple cursors
-function! Multiple_cursors_before()
-    if exists(':NeoCompleteLock')==2
-        exe 'NeoCompleteLock'
-    elseif exists('g:deoplete#disable_auto_complete')
-        let g:deoplete#disable_auto_complete = 1
-    endif
-endfunction
+if 0
+    Plug 'terryma/vim-multiple-cursors' "多项选择{{{
+    "---------------------------------------------------------------------
+    let g:multi_cursor_use_default_mapping = 0
+    let g:multi_cursor_start_word_key = '<F6>'
+    let g:multi_cursor_next_key = '<C-j>'
+    let g:multi_cursor_prev_key = '<C-k>'
+    let g:multi_cursor_skip_key = '<C-x>'
+    let g:multi_cursor_quit_key = '<ESC>'
+    " Called once right before you start selecting multiple cursors
+    function! Multiple_cursors_before()
+        if exists(':NeoCompleteLock')==2
+            exe 'NeoCompleteLock'
+        elseif exists('g:deoplete#disable_auto_complete')
+            let g:deoplete#disable_auto_complete = 1
+        endif
+    endfunction
 
-" Called once only when the multiple selection is canceled (default <Esc>)
-function! Multiple_cursors_after()
-    if exists(':NeoCompleteUnlock')==2
-        exe 'NeoCompleteUnlock'
-    elseif exists('g:deoplete#disable_auto_complete')
-        let g:deoplete#disable_auto_complete = 0
-    endif
-endfunction
-"}}}
+    " Called once only when the multiple selection is canceled (default <Esc>)
+    function! Multiple_cursors_after()
+        if exists(':NeoCompleteUnlock')==2
+            exe 'NeoCompleteUnlock'
+        elseif exists('g:deoplete#disable_auto_complete')
+            let g:deoplete#disable_auto_complete = 0
+        endif
+    endfunction
+    "}}}
+endif
 
 Plug 'dkprice/vim-easygrep', {'on': ['Grep', 'GrepOptions', 'GrepAdd', 'GrepRoot', 'GrepProgram']}" {{{
 let g:EasyGrepPerlStyle=1
@@ -427,8 +436,8 @@ nnoremap <Leader>df :DoxFile<CR>
 " {'on': ['<Plug>MoveLineUp', '<Plug>MoveLineDown', '<Plug>MoveBlockUp', '<Plug>MoveBlockDown']}
 " alt + j : 行或块下移; alt+k: 行或块上移;
 
-Plug 'DaSea/SimpleJumpToLine.vim'
-nnoremap <Leader>jj :SLineJump<CR>
+" Plug 'DaSea/SimpleJumpToLine.vim'
+" nnoremap <Leader>jj :SLineJump<CR>
 
 Plug 't9md/vim-choosewin', {'on': 'ChooseWin'} " 快速在窗口在跳转 {{{
 " let g:choosewin_statusline_replace=0
