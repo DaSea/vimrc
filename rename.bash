@@ -1,0 +1,9 @@
+mv vimrc .vimrc
+mv vimrc.language .vimrc.language
+mv vimrc.complete .vimrc.complete
+mv vimrc.ctrlp .vimrc.ctrlp
+mv vimrc.explug .vimrc.explug
+mv vimrc.discard .vimrc.discard
+mv vimrc.statusline .vimrc.statusline
+mv vimrc.unitvim .vimrc.unitvim
+mv vimrc.vimplug .vimrc.vimplug
