@@ -1,3 +1,7 @@
+if g:setting.use_exvim !=? 'yes'
+    finish
+endif
+
 " ex系列插件, 工程管理 {{{
 Plug 'DaSea/ex-config'
 " Fork 'exvim/ex-config', change '.exvim.project_name' to '.exvim'

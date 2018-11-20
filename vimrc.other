@@ -1,0 +1,51 @@
+" 打开文件资源管理器, 并选择当前文件 {{{
+function! QuickBrowFileInExpolorer() abort 
+    let reviewfile = expand("%:p")
+    if g:iswindows
+        exec "silent !start explorer.exe /e,/select," . reviewfile
+    elseif executable("nautilus")
+        call system('nautilus --select ' . reviewfile)
+    elseif executable("dde-file-manager")
+        call system('dde-file-manager -d --show-item ' . reviewfile)
+    endif
+endfunction
+nnoremap <Leader>of :call QuickBrowFileInExpolorer()<CR>
+"}}}
+
+" buffer窗口的大小的改变{{{
+" 宽度与高度相等
+nnoremap W= <C-W>=
+" 宽度的变化
+nnoremap WA :call WinWidthChange(10, 0)<CR>
+nnoremap WS :call WinWidthChange(10, 1)<CR>
+" 高度的变化
+nnoremap HA :call WinHeightChange(10, 0)<CR>
+nnoremap HS :call WinHeightChange(10, 1)<CR>
+
+" 宽度改变->(increment: 要增加或减少的宽度, add_sub: 0, 增加, 1, 减少){{{
+function! WinWidthChange(increment, add_sub) abort
+    let cur_width = winwidth(0)
+    if 0 == a:add_sub
+        let cur_width = cur_width + a:increment
+    else
+        let cur_width = cur_width - a:increment
+    endif
+    " 如果小于最小宽度, 大于最大宽度, 就不会有什么变化了
+    silent exe "normal " . cur_width ."\<C-W>|"
+endfunction " }}}
+
+" 高度改变->(increment: 要增加或减少的高度; add_sub: 0, 增加, 1, 减少) {{{
+function! WinHeightChange(increment, add_sub) abort
+    let cur_height = winheight(0)
+    if 0 == a:add_sub
+        let cur_height = cur_height + a:increment
+    else
+        let cur_height = cur_height - a:increment
+    endif
+
+    " 如果小于最小高度, 或大于最大高度, 就不会有反应了
+    silent exe "normal " . cur_height ."\<C-W>_"
+endfunction " }}}
+" }}}
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:

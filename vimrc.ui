@@ -1,0 +1,136 @@
+Plug 'mhinz/vim-startify',{'on': 'Startify'} " 开始界面,可以显示MRU, Session等{{{
+"开始欢迎界面
+nnoremap <F4> :Startify<CR>
+" set session path
+let g:startify_session_dir = '/home/seasea/.vim/session'
+let g:startify_list_order = [
+            \ ['   MRU:'],
+            \ 'files',
+            \ ['   MRU(Dir):'],
+            \ 'dir',
+            \ ['   Sessions:'],
+            \ 'sessions',
+            \ ['   Bookmarks:'],
+            \ 'bookmarks',
+            \ ]
+let g:startify_custom_header = [
+            \ '   -----------------------------------------------------------',
+            \ "   |     Vim是个慈善软件,如需了解,请阅读':help uganda'       |",
+            \ '   |                                                         |',
+            \ '   |                 o  ^--^                                 |',
+            \ '   |                  o (oo)\=======                         |',
+            \ '   |                    (__)\       )\/\                     |',
+            \ '   |                        ||----w |                        |',
+            \ '   |                        ||     ||                        |',
+            \ '   |                                                         |',
+            \ '   |                                                         |',
+            \ '   -----------------------------------------------------------',
+            \ ]
+let g:startify_custom_footer = ['', "   可以做到,相信自己! ", '']
+"}}}
+
+Plug 'Yggdroot/indentLine' "对齐线{{{
+" ---------------------------------------------------
+let g:indentLine_color_gui = '#FF4040'
+let g:indentLine_char = '┊'
+let g:indentLine_faster = 1
+"}}}
+
+Plug 'ntpeters/vim-better-whitespace' "显示行尾多余空格并快速删除{{{
+" 显示行尾空格(better)
+" ----------------------------------------------------
+let g:better_whitespace_filetypes_blacklist = ['denite', 'unite', 'vimfiler', 'ctrlp', 'org',
+            \ 'markdown', 'java']
+noremap CS :StripWhitespace<CR>
+"}}}
+
+" colorscheme 插件 {{{
+" ---------------------------------------------------
+" Plug 'icymind/NeoSolarized'
+" let g:neosolarized_contrast = "low"
+" let g:neosolarized_visibility = "high"
+" let g:neosolarized_vertSplitBgTrans = 0
+" let g:neosolarized_bold = 1
+" let g:neosolarized_underline = 1
+" let g:neosolarized_termtrans = 1
+" let g:neosolarized_italic = 0
+
+" Plug 'nightsense/vimspectr'
+" let g:vimspectrCursorLineNr = 'on'
+" let g:vimspectrMuteLineNr = 'on'
+" let g:vimspectrLineNr = 'on'
+" let g:vimspectrItalicComment = 'on'
+" let g:vimspectrMuteStatusLine = 'on'
+
+" Plug 'rakr/vim-one'
+" let g:one_allow_italics = 1
+" let g:one_allow_underline=1
+
+Plug 'joshdick/onedark.vim'
+let g:onedark_terminal_italics=1
+if (has("autocmd") && !has("gui_running"))
+  augroup colorset
+    autocmd!
+    let s:white = { "gui": "#ABB2BF", "cterm": "145", "cterm16" : "7" }
+    autocmd ColorScheme * call onedark#set_highlight("Normal", { "fg": s:white }) " `bg` will not be styled since there is no `bg` setting
+  augroup END
+endif
+
+" Plug 'morhetz/gruvbox'
+" let g:gruvbox_contrast_dark='sorft'
+" let g:gruvbox_contrast_light='soft'
+" let g:gruvbox_vert_split='purple'
+
+" Plug 'kristijanhusak/vim-hybrid-material'
+" let g:enable_bold_font=1
+" let g:enable_italic_font=1
+
+
+" 个人收集的一些主题
+" Plug 'DaSea/vim-personcolors'
+"}}}
+
+" Plug 'Konfekt/FastFold' {{{
+" let g:cpp_folding=1
+" let g:php_folding=1
+" let g:lua_folding=1
+" let g:vimsyn_folding='af'
+" let g:c_folding=1
+" }}}
+
+if 'yes' ==? g:setting.use_devicons
+    Plug 'ryanoasis/vim-devicons' " 显示优美的，如果，电脑不行可以不用{{{
+    let g:webdevicons_enable = 1
+    let g:webdevicons_enable_nerdtree = 1
+    " adding the custom source to unite
+    let g:webdevicons_enable_unite = 1
+    let g:webdevicons_enable_denite = 1
+    let g:webdevicons_enable_vimfiler = 1
+    " adding to vim-airline's tabline
+    let g:webdevicons_enable_airline_tabline = 1
+    " adding to vim-airline's statusline
+    let g:webdevicons_enable_airline_statusline = 1
+    let g:WebDevIconsUnicodeDecorateFileNodes = 1
+    let g:WebDevIconsUnicodeDecorateFolderNodes=1
+    let g:DevIconsEnableFoldersOpenClose = 1
+    let g:WebDevIconsOS = 'unix'
+    " }}}
+endif
+
+" 状态栏
+if g:setting.status_line !=? 'no'
+    call LoadConfig("vimrc.ui.statusline")
+endif
+
+" 彩虹括号
+Plug 'luochen1990/rainbow'
+let g:rainbow_active = 1
+
+Plug 't9md/vim-choosewin', {'on': 'ChooseWin'} " 快速在窗口在跳转 {{{
+" let g:choosewin_statusline_replace=0
+" let g:choosewin_overlay_enable=1
+let g:choosewin_label='JKLMNOPQRTUVWYZABCDEFGHI'
+nmap - :ChooseWin<CR>
+" }}}
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:

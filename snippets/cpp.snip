@@ -176,6 +176,18 @@ abbr        for(it: != end;++it) {}
         ${0:TARGET}
     }
 
+snippet     foreach
+abbr        foreach(:) {}
+    foreach (${1:auto} ${2:var} : ${3:container}) {
+        ${0:TARGET}
+    }
+
+snippet     qforeach
+abbr        foreach(,) {}
+    foreach (${1:auto} ${2:var} , ${3:container}) {
+        ${0:TARGET}
+    }
+
 # lambda expression ( C++11 feature )
 snippet     lambda
 abbr        [](){}

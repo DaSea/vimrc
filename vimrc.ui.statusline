@@ -32,6 +32,7 @@ if 'airline' ==? g:setting.status_line
         let g:airline#extensions#tabline#tab_nr_type = 2
         let g:airline#extensions#tabline#buffers_label = 'B'
         let g:airline#extensions#tabline#tabs_label = 'T'
+        let g:airline#extensions#tabline#current_first=1
         let g:airline#extensions#tabline#buffer_idx_mode = 1
         let g:airline#extensions#tabline#excludes = ['nerdtree', 'unite', 'vimfiler', 'exproject']
         let g:airline#extensions#tabline#show_close_button = 0
@@ -63,7 +64,20 @@ if 'airline' ==? g:setting.status_line
     " let g:airline_section_c = '%-0.50{getcwd()}'
     " let g:airline_section_c = g:project_name . ': %t%m'
     " let g:airline_section_z = '%l%{g:airline_symbols.linenr}%L'
-    let g:airline_section_z = '%l%{g:airline_symbols.linenr}%L'
+    let g:airline_section_z = '%l:%L%{g:airline_symbols.linenr}%c'
+
+    " 当显示icons时，重新定义section_y，由于此时不显示bomb信息了 {{{
+    " function! GetFileBomb() abort " 文件编码是否有bomb信息 {{{
+        " let bomb = &l:bomb ? '[BOM]' : '[NB]'
+        " return bomb
+    " endfunction " }}}
+    " function! MAirlineInit() abort " {{{
+        " call airline#parts#define_function('fbomb', 'GetFileBomb')
+        " call airline#parts#define_minwidth('fbomb', 6)
+        " let g:airline_section_error = airline#section#create_right(['fbomb'])
+    " endfunction " }}}
+    " call add(g:init_func_list, function('MAirlineInit'))
+
     let g:airline_mode_map = {
                 \ '__' : '-',
                 \ 'n'  : 'N',
@@ -321,3 +335,5 @@ else
     " }}}
     "}}}
 endif
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:

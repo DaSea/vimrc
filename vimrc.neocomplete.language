@@ -1,0 +1,12 @@
+if 0 " index(g:language_group, 'python') >= 0 {{{
+    " 对于ycm 来说, 不需要此插件
+    Plug 'davidhalter/jedi-vim',{'for': 'python'}
+    let g:jedi#auto_vim_configuration=0
+    let g:jedi#popup_select_first=0
+endif
+
+if (index(g:language_group, 'vim') >= 0)
+    Plug 'Shougo/neco-vim'
+endif
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:

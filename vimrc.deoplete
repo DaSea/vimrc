@@ -1,0 +1,89 @@
+Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'} | call LoadConfig('vimrc.deoneo.language') " {{{
+let g:deoplete#enable_at_startup = 1
+" keymap
+inoremap <silent><expr> <TAB>
+            \ pumvisible() ? "\<C-n>" :
+            \ <SID>check_back_space() ? "\<TAB>" :
+            \ deoplete#mappings#manual_complete()
+inoremap <expr><C-h> deoplete#smart_close_popup()."\<C-h>"
+inoremap <expr><BS> deoplete#smart_close_popup()."\<C-h>"
+inoremap <expr><C-g> deoplete#undo_completion()
+inoremap <expr><C-l> deoplete#refresh()
+function! s:check_back_space() abort "{{{
+    let col = col('.') - 1
+    let lastChar = getline('.')[col-1]
+    let invalid = 0
+    if lastChar =~ '\s'
+        let invalid = 1
+        " elseif (-1 == index(g:deoplete#delimiters, lastChar))
+        " let invalid = 1
+    endif
+    return !col || invalid
+endfunction"}}}
+
+let g:has_deoplete_clangx = 0
+if index(g:language_group, 'cpp') >= 0 " {{{
+    Plug 'Shougo/deoplete-clangx'
+    " Change clang binary path
+    " call deoplete#custom#var('clangx', 'clang_binary', '/usr/bin/clang')
+    " Change clang options
+    " call deoplete#custom#var('clangx', 'default_c_options', '')
+    " call deoplete#custom#var('clangx', 'default_cpp_options', '')
+endif " }}}
+
+" Initial {{{
+function! DeopleteInit() abort
+    " Use head matcher instead of fuzzy matcher
+    call deoplete#custom#source('_', 'matchers', ['matcher_head'])
+    " call deoplete#custom#option('omni_patterns', {
+    " \ 'java': '[^. *\t]\.\w*',
+    " \ 'c': '[^.[:digit:] *\t]\%(\.\|->\)\w*',
+    " \ 'cpp': '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*',
+    " \ 'go': '[^. *\t]\.\w*',
+    " \ 'php': '\h\w*\|[^. \t]->\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?',
+    " \ 'lua': '\w+|[^. *\t][.:]\w*'
+    " \})
+    call deoplete#custom#option({
+                \ 'auto_complete_delay': 200,
+                \ 'smart_case': v:true,
+                \ 'camel_case': v:true
+                \ })
+    call deoplete#custom#option("delimiters",['/', '.', '::', ':', '#', '->'])
+    " call deoplete#custom#option("complete_method", "complete")
+    call deoplete#custom#option('sources', {
+                \ '_': ['buffer'],
+                \ 'cpp': ['buffer', 'neosnippet', 'file/include', 'clangx'],
+                \ 'c': ['buffer', 'neosnippet', 'file/include', 'clangx'],
+                \ 'python': ['buffer', 'neosnippet', 'file/include', 'jedi'],
+                \ 'vim': ['buffer', 'neosnippet', 'file/include', 'vim'],
+                \ 'go': ['buffer', 'neosnippet', 'file/include', 'go'],
+                \ 'java': ['buffer', 'neosnippet', 'file/include']
+                \})
+    call deoplete#custom#var('clangx', 'clang_binary', '/usr/bin/clang')
+    " call deoplete#custom#var('omni', 'input_patterns', {
+    " \ 'ruby': ['[^. *\t]\.\w*', '[a-zA-Z_]\w*::'],
+    " \ 'java': '[^. *\t]\.\w*',
+    " \ 'php': '\w+|[^. \t]->\w*|\w+::\w*',
+    " \ 'c': '[^.[:digit:] *\t]\%(\.\|->\)\w*',
+    " \ 'cpp': '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
+    " \})
+    call deoplete#custom#option('ignore_sources', {'_': ['tags']})
+    " debug
+    " call deoplete#custom#option('profile', v:true)
+    " call deoplete#enable_logging('DEBUG', 'deoplete.log')
+    " call deoplete#custom#source('jdei', 'debug_enabled', 1)
+    " call deoplete#custom#source('clang', 'debug_enabled', 1)
+endfunction " }}}
+call add(g:init_func_list, function('DeopleteInit'))
+"}}}
+
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function()
+    return (pumvisible() ? deoplete#close_popup() : "\<CR>")
+    " return deoplete#close_popup() . "\<CR>"
+endfunction
+
+" call LoadConfig('vimrc.deoneo.language')
+call LoadConfig('vimrc.deoplete.language')
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:

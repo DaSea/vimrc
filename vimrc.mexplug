@@ -1,0 +1,83 @@
+Plug 'DaSea/ex-utility'
+" ---------------------------------------------------
+nnoremap <unique> <silent> <Leader>ad :EXbd<CR>
+nnoremap <unique> <silent> <Leader>an :EXbn<CR>
+nnoremap <unique> <silent> <Leader>ap :EXbp<CR>
+nnoremap <unique> <silent> <C-Tab> :EXbalt<CR>
+nnoremap <unique> <silent> <Leader><Tab> :EXsw<CR>
+nmap <unique> <silent> <Leader><Esc> :EXgp<CR><ESC>
+" 定义运行qml文件的脚本
+" nnoremap <Leader>mr :call system("qmlscene". expand("%"))<CR>
+
+" Plug 'exvim/ex-showmarks'
+" ex-showmarks: invoke by m... or <Leader>mm, <Leader>ma
+" ---------------------------------------------------
+" TODO: bootleq/ShowMarks on github is well organized in code, but have lots
+" bugs, consider merge his code and fixes the bugs
+" let g:showmarks_enable = 1
+" let g:showmarks_include = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+" let g:showmarks_ignore_type = 'hqm' " Ignore help, quickfix, non-modifiable buffers
+" Hilight lower & upper marks
+" let g:showmarks_hlline_lower = 1
+" let g:showmarks_hlline_upper = 0
+
+Plug 'exvim/ex-matchit'
+" ex-matchit: invoke by %
+" ---------------------------------------------------
+
+Plug 'DaSea/ex-easyhl'
+" ---------------------------------------------------
+" 自动高亮当前光标下单词
+" let g:ex_easyhl_auto_cursorhl = 1
+
+Plug 'DaSea/ex-prjlist' " {{{
+" 已经用新的插件vim-denite-prjmgr 替代(依赖于denite.nvim)
+" ---------------------------------------------------
+if g:isNvim
+    if isdirectory("/media/work")
+        let g:exprjlist_vsc_root_dir = {
+                    \ "/media/work/Self/05_gitsrc": "git"}
+        let g:exprjlist_vimplug_root_dir = "/home/dasea/.vim/plugged"
+    else
+        " wsl
+        let g:exprjlist_vsc_root_dir = {
+                    \ "/mnt/e/Self/05_gitsrc": "git"}
+        let g:exprjlist_vimplug_root_dir = "/home/Feng/.vim/plugged"
+    endif
+else
+    if isdirectory("/media/work")
+        let g:exprjlist_vsc_root_dir = {
+                    \ "/media/work/Self/05_gitsrc": "git"}
+        let g:exprjlist_vimplug_root_dir = "/home/dasea/.vim/plugged"
+    else
+        let g:exprjlist_vsc_root_dir = {
+                    \ "e:/Self/05_gitsrc": "git"
+                    \ }
+        let g:exprjlist_vimplug_root_dir = "D:/Develop/exVim/vimfiles/plugged"
+    endif
+endif
+function! ExprjlistSelect(type) abort " 选择denite或本身的 {{{
+    if a:type==1
+        if exists(":Denite")
+            exe "Denite -auto-resize -mode=insert exprjlist:user"
+        else
+            exe "EXPrjCommonDirList"
+        endif
+    elseif a:type==2
+        if exists(":Denite")
+            exe "Denite -auto-resize -mode=insert exprjlist:vsc"
+        else
+            exe "EXPrjVerDirList"
+        endif
+    elseif a:type==3
+        if exists(":Denite")
+            exe "Denite -auto-resize -mode=insert exprjlist:vimplug"
+        else
+            exe "EXPrjPlugDirLIst"
+        endif
+    endif
+endfunction " }}}
+nnoremap <silent> <Leader>el :call ExprjlistSelect(1)<CR>
+nnoremap <silent> <Leader>gl :call ExprjlistSelect(2)<CR>
+nnoremap <silent> <Leader>ml :call ExprjlistSelect(3)<CR>
+" }}}

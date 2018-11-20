@@ -1,0 +1,84 @@
+" Document(查阅文档){{{
+" zeal 文档工具查看
+let g:zv_zeal_executable = has('win32') ?
+            \ 'D:/Develop/zeal/zeal.exe' :
+            \ '/usr/bin/zeal'
+if 0 " executable(g:zv_zeal_executable)  zeal {{{
+    Plug 'KabbAmine/zeavim.vim' , {'on': [
+            \   'Zeavim', 'Docset',
+            \   '<Plug>Zeavim',
+            \   '<Plug>ZVVisSelection',
+            \   '<Plug>ZVKeyDocset',
+            \   '<Plug>ZVMotion'
+            \ ]}
+    if !exists('g:zv_file_types')
+        let g:zv_file_types = {
+                    \ 'cpp': 'cpp'
+                    \ }
+    endif
+    " nmap gzz <Plug>Zeavim
+    " vmap gzz <Plug>ZVVisSelection
+    " nmap gZ <Plug>ZVKeyDocset<CR>
+    " nmap gz <Plug>ZVMotion
+    " nmap <Leader>z <Plug>ZVKeyDocset
+endif
+" }}}
+
+Plug 'asins/vimcdoc' "vim documentation{{{
+" < VIM中文帮助文档:>
+" 设定doc文档目录
+let helptags=$VIM."/vimfiles/doc"
+set helplang=cn
+"}}}
+
+" 查看当前单词的帮助
+nnoremap <F1> :call FindWord()<CR>
+function! FindWord() abort "{{{
+    let filet = eval('&filetype')
+    if (filet ==# 'vim') || (filet ==# 'help')
+        let curWord = expand("<cword>")
+        execute "h " . curWord
+    else
+        execute 'Zeavim'
+    endif
+endfunction "}}}
+"}}}
+
+" TEST  plugin {{{
+Plug 'Dasea/docsets.vim'
+if g:islinux
+    let g:docsets_path_root = "/media/entertainment/Doc/docsets"
+else
+    let g:docsets_path_root = "F:/Doc/docsets"
+endif
+"}}}
+
+Plug 'iamcco/dict.vim' " 有道翻译{{{
+" 普通模式下，<Leader>d 即可翻译光标下的文本，并在命令行回显
+nnoremap <silent> <Leader>yd :call dict#Search(expand("<cword>"), "simple")<CR>
+" 可视化模式下，<Leader>d 即可翻译选中的文本，并在命令行回显
+vnoremap <silent> <Leader>yd  :<C-U>call dict#VSearch("simple")<CR>
+" 普通模式下，<Leader>w 即可翻译光标下的文本，并且在Dict新窗口显示
+nnoremap <silent> <Leader>yw  :call dict#Search(expand("<cword>"), "complex")<CR>
+" 可视化模式下，<Leader>w 即可翻译选中的文本，并且在Dict新窗口显示
+vnoremap <silent> <Leader>yw :<C-U>call dict#VSearch("complex")<CR>
+" 普通模式下，<Leader><Leader>r 即可翻译光标下的单词，并替换为翻译的结果
+nnoremap <silent> <Leader>yr  viw:<C-U>call dict#VSearch("replace")<CR>
+" 可视化模式下，<Leader><Leader>r 即可翻译光标下的单词，并替换为翻译的结果
+vnoremap <silent> <Leader>yr :<C-U>call dict#VSearch("replace")<CR>
+" 添加一个由用户手动输入单词的快捷键
+nnoremap <silent> <Leader>yi :call YouDaoSearchWord()<CR>
+function! YouDaoSearchWord() abort "{{{
+    call inputsave()
+    let translateword = input("Input Word:")
+    call inputrestore()
+    if strlen(translateword)==0
+        return
+    endif
+
+    " echohl Error | call dict#Search(translateword, "simple") | echohl None
+    call dict#Search(translateword, "simple")
+endfunction "}}}
+" }}}
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:

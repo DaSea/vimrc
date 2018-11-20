@@ -1,0 +1,42 @@
+" 版本控制(git,svn)及修改状态显示{{{
+" 使用git
+if g:setting.version_status ==? 'git'
+    Plug 'tpope/vim-fugitive' "{{{
+    "}}}
+endif
+
+" =================================================================
+" 显示与版本控制中的文件的差异
+if g:setting.version_status ==? 'git'
+    Plug 'airblade/vim-gitgutter' "{{{
+    nmap ]h <Plug>GitGutterNextHunk
+    nmap [h <Plug>GitGutterPrevHunk
+    let g:gitgutter_realtime = 0
+    let g:gitgutter_eager = 0
+    if g:setting.status_line ==? 'airline'
+        call add(g:airline_extensions, 'hunks')
+    endif
+    "}}}
+endif
+
+if g:setting.version_status ==? 'git_svn'
+    Plug 'mhinz/vim-signify' "{{{
+    " let g:signify_disable_by_default = 1
+    let g:signify_cursorhold_insert     = 0
+    let g:signify_cursorhold_normal     = 1
+    let g:signify_update_on_bufenter    = 0
+    let g:signify_update_on_focusgained = 1
+    let g:signify_vcs_list = [ 'git', 'svn' ]
+    let g:signify_skip_filetype = {
+                \ 'denite': 1, 'vimfiler': 1,
+                \ 'unite': 1, 'exproject': 1
+                \ }
+
+    if g:setting.status_line ==? 'airline'
+        call add(g:airline_extensions, 'hunks')
+    endif
+    "}}}
+endif
+"}}}
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:

@@ -1,0 +1,90 @@
+" vim 补全{{{
+if index(g:language_group, 'vim') >= 0
+    Plug 'Shougo/neco-vim'
+endif
+"}}}
+
+if 0 " index(g:language_group, 'cpp') >= 0  {{{
+    Plug 'zchee/deoplete-clang', {'do': ':UpdateRemotePlugins'} " {{{
+    let g:deoplete#sources#clang#std={'c': 'c11', 'cpp': 'c++1z', 'objc': 'c11', 'objcpp': 'c++1z'}
+    if g:iswindows
+        let g:deoplete#sources#clang#libclang_path='D:/Develop/LLVM/bin/libclang.dll'
+        let g:deoplete#sources#clang#clang_header = 'D:/Develop/LLVM/lib/clang'
+        let g:deoplete#sources#clang#flags = [
+                    \ "-O3", "-cc1", "-x", "c++", "-std=c++11",
+                    \ '-isystem',
+                    \ 'D:/Develop/Microsoft Visual Studio 12.0/VC/include',
+                    \ '-isystem',
+                    \ 'D:/Develop/Qt5.7.1/5.7/msvc2013/include/QtWidgets',
+                    \ '-isystem',
+                    \ 'D:/Develop/Qt5.7.1/5.7/msvc2013/include/QtGui',
+                    \ '-isystem',
+                    \ 'D:/Develop/Qt5.7.1/5.7/msvc2013/include/QtCore',
+                    \ '-isystem',
+                    \ 'D:/Develop/Qt5.7.1/5.7/msvc2013/include/QtNetwork',
+                    \ '-I',
+                    \ '.'
+                    \ ]
+    else
+        if isdirectory('/usr/lib/llvm-4.0')
+            let g:deoplete#sources#clang#libclang_path='/usr/lib/llvm-4.0/lib/libclang.so.1'
+            let g:deoplete#sources#clang#clang_header = '/usr/lib/llvm-4.0/lib/clang'
+        else
+            let g:deoplete#sources#clang#libclang_path='/usr/lib/libclang.so'
+            let g:deoplete#sources#clang#clang_header = '/usr/lib/clang'
+        endif
+        let g:deoplete#sources#clang#flags = [
+                    \ "-O3", "-cc1", "-x", "c++", "-std=c++11",
+                    \'-isystem',
+                    \ '/usr/include',
+                    \ '-isystem',
+                    \ '/usr/include/c++/8.1.0',
+                    \ '-isystem',
+                    \ '/usr/include/qt/QtWidgets',
+                    \ '-isystem',
+                    \ '/usr/include/qt/QtGui',
+                    \ '-isystem',
+                    \ '/usr/include/qt/QtCore',
+                    \ '-isystem',
+                    \ '/usr/include/qt/QtNetwork',
+                    \ '-I',
+                    \ '.'
+                    \ ]
+    endif
+    " 补全列表的顺序(priority, alphabetical) 默认使用deoplete.nvim的算法
+    " let g:deoplete#sources#clang#sort_algo = 'priority'
+    " let g:deoplete#sources#clang#clang_complete_database=$HOME.'/src/github.com/neovim/neovim/build'
+    " echo | clang -v -E -x c -
+
+    " TODO: 对于ndk需要
+    "-I/home/Feng/java/jdk1.8.0/include",
+    "-I/mnt/D/Develop/Java/android-ndk-r10/platforms/android-12/arch-arm/usr/include"
+    " }}}
+endif " }}}
+
+if index(g:language_group, 'python') >= 0 " {{{
+    Plug 'zchee/deoplete-jedi', {'do': ':UpdateRemotePlugins'}
+    if g:islinux
+        let g:deoplete#sources#jedi#python_path='/usr/bin/python3'
+    endif
+    let g:deoplete#sources#jedi#statement_length = 0
+    let g:deoplete#sources#jedi#enable_cache = 1
+    let g:deoplete#sources#jedi#short_types = 1
+    let g:deoplete#sources#jedi#show_docstring = 0
+    let g:deoplete#sources#jedi#debug_enabled = 0
+endif " }}}
+
+if index(g:language_group, 'go') >= 0 " go{{{
+    Plug 'zchee/deoplete-go', {'do': ':UpdateRemotePlugins'}
+    if g:islinux
+        let g:deoplete#sources#go#gocode_binary = $GOBIN.'/gocode'
+        let g:deoplete#sources#go#json_directory='/home/seasea/.vim/plugged/deoplete-go/data/json/1.8.3/linux_amd64'
+    endif
+    let g:deoplete#sources#go#align_class=1
+    let g:deoplete#sources#go#package_dot=1
+    let g:deoplete#sources#go#sort_class=['package', 'func', 'type', 'var', 'const']
+    let g:deoplete#sources#go#use_cache=1
+endif
+"}}}
+"
+" vim:ts=4:sw=4:sts=4 et fdm=marker:

@@ -110,6 +110,10 @@ else
     " nnoremap <silent> <leader>fl :<C-u>LeaderfBuffer<CR>
     nnoremap <silent> <leader>ft :<C-u>LeaderfLine<CR>
     nnoremap <silent> <leader>fm :<C-u>LeaderfFunction<CR>
+
+    " exetension {{{
+    " Plug 'Yggdroot/LeaderF-marks'
+    " }}}
 endif
 
 Plug 'scrooloose/nerdtree' " file explorer{{{

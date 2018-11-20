@@ -33,11 +33,15 @@ if has("nvim")
   let g:isNvim = 1
 endif
 
-" On Windows, also use '.vim' instead of 'vimfiles'; this makes synchronization
-" across (heterogeneous) systems easier.
-if !exists('g:exvim_custom_path')
-    if g:iswindows
-        set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
+" On linux, use .vim
+let g:vim_plugin_path = '~/.vim'
+if g:iswindows
+    " On Windows, use vimfiles
+    set runtimepath=$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after
+    if exists('g:exvim_custom_path')
+        let g:vim_plugin_path = g:exvim_custom_path . '/vimfiles'
+    else
+        let g:vim_plugin_path = $VIM . "/vimfiles"
     endif
 endif
 " }}}
@@ -109,12 +113,11 @@ let g:setting.left_sub_separator = g:separator_list[separator_index][1]
 let g:setting.right_separator = g:separator_list[separator_index][2]
 let g:setting.right_sub_separator = g:separator_list[separator_index][3]
 " tabline显示的分隔符
-let tab_separator_index = 1
+let tab_separator_index = 6
 let g:setting.tab_left_separator = g:separator_list[tab_separator_index][0]
 let g:setting.tab_left_sub_separator = g:separator_list[tab_separator_index][1]
 let g:setting.tab_right_separator = g:separator_list[tab_separator_index][2]
 let g:setting.tab_right_sub_separator = g:separator_list[tab_separator_index][3]
-let g:plugins_file = '.vimrc.vimplug'
 " 全局设置seoul256-light, NeoSolarized
 let g:setting.color_scheme = 'onedark'
 " let g:setting.color_scheme = 'NeoSolarized'
@@ -125,19 +128,16 @@ let g:setting.use_devicons = 'yes'
 " 状态栏(airline, lightline or no), 如果为no, 自定义状态栏
 let g:setting.status_line = 'airline'
 " let g:setting.status_line = 'lightline'
-" let g:setting.status_color = 'gruvbox'
-let g:setting.status_color = 'alduin'
+let g:setting.status_color = 'onedark'
+" let g:setting.status_color = 'alduin'
 let g:setting.show_tabline = 'yes'
 " 是否使用exVim系列插件
-let g:setting.use_exvim = 'yes'
+let g:setting.use_exvim = 'no'
+" 是否使用lsp特性
+let g:setting.use_lsp = 'no'
 " 使用ctrlp还是使用unit.vim(denite.nvim)
 " 由于denite出色的特性, 测试用denite替换unite相关插件, 或者用LeaderF
-if g:isNvim
-    " let g:setting.ctrlp_or_unite = 'unitvim'
-    let g:setting.ctrlp_or_unite = 'leaderf'
-else
-    let g:setting.ctrlp_or_unite = 'leaderf'
-endif
+let g:setting.ctrlp_or_unite = 'leaderf'
 " 是否需要开启代码的静态语法检查(neomake插件)
 let g:setting.make_lint_need = 'no'
 " 是否需要开启括号补全
@@ -149,14 +149,13 @@ let g:setting.author_name = 'DaSea'
 " windows与linux使用不同的目录
 if g:iswindows
     let g:setting.vimwiki_path = 'E:/Self/01_mywiki/dasea.github.io/'
-    let g:setting.private_snippets = $VIM.'/snippets'
 else
     let g:setting.vimwiki_path = '~/dasea.github.io/'
-    let g:setting.private_snippets = '~/snippets'
 endif
+let g:setting.private_snippets = g:vim_plugin_path . '/snippets'
 " 设置需要支持的语言(目前有python, cpp, markdown, plantuml, vim, php, org, lua )
-" let g:language_group = ['cpp', 'python', 'markdown', 'vim', 'todo', 'plantuml', 'go']
-let g:language_group = ['cpp', 'markdown', 'vim', 'org', 'plantuml']
+" let g:language_group = ['cpp', 'python', 'markdown', 'org', 'vim', 'todo', 'plantuml', 'go']
+let g:language_group = ['cpp', 'markdown', 'python', 'vim', 'plantuml']
 " }}}
 
 " ==============================================================================
@@ -179,29 +178,32 @@ else
 endif
 
 if has("python") || has("python3")
-    let g:plug_threads = 15
+    let g:plug_threads = 10
 else
     let g:plug_threads = 1
 endif
 
 " Vim-plug setting {{{
-if exists('g:exvim_custom_path')
-    let g:vim_plugin_path = g:exvim_custom_path.'/.vimrc.vimplug'
-    call plug#begin(g:exvim_custom_path.'/vimfiles/plugged/')
-else
-    let g:vim_plugin_path = '~/.vimrc.vimplug'
-    call plug#begin('~/.vim/plugged')
-endif
+" 插件初始化函数list
+let g:init_func_list = []
 
+let s:vim_plugged_path = g:vim_plugin_path . '/plugged'
+call plug#begin(s:vim_plugged_path)
 " 读取插件配置信息
-if filereadable(expand(g:vim_plugin_path))
-    exec 'source ' . fnameescape(g:vim_plugin_path)
+let s:vim_plugged_main_path = g:vim_plugin_path . '/vimrc.vimplug'
+if filereadable(expand(s:vim_plugged_main_path))
+    exec 'source ' . fnameescape(s:vim_plugged_main_path)
 endif
-
 call plug#end()
-"}}}
+
 " 插件加载完成后调用一些初始化函数
+function! PluginLoadFinished() abort "{{{
+    for Fn in g:init_func_list
+        call Fn()
+    endfor
+endfunction "}}}
 call PluginLoadFinished()
+"}}}
 
 syntax on " required
 "}}}
@@ -339,7 +341,7 @@ else
 endif
 
 " 但是改变光标样式的时候会抖动
-if has('autocmd') && g:isNvim==0
+if g:isNvim==0 && g:islinux && g:isGUI==0
     " 主要解决genome终端下模式不同光标不同的情况
     " 如果你想要光标闪烁，则将下方的2改为1,6改为5,4改为3
     au VimEnter,InsertLeave * silent execute '!echo -ne "\e[2 q"' | redraw!
@@ -452,7 +454,8 @@ nnoremap <silent> <Leader>nc :call ToggleLineNumber()<CR>
 " 这里只用于窗口透明与置顶
 " 常规模式下 Ctrl + Up（上方向键） 增加不透明度，Ctrl + Down（下方向键） 减少不透明度
 " <Leader>t 窗口置顶与否切换
-if (g:iswindows && g:isGUI) " {{{
+" if (g:iswindows && g:isGUI) " {{{
+if (0 && g:isGUI) " {{{
     let g:Current_Alpha = 230
     let g:Top_Most = 0
     call libcallnr("vimtweak.dll","SetAlpha", g:Current_Alpha)
@@ -512,6 +515,7 @@ function! ToggleBackground() abort
     exec 'set background=' . curr_back
 endfunction " }}}
 nnoremap <Leader>bc :call ToggleBackground()<CR>
+" }}}
 " }}}
 
 " ==============================================================================
@@ -574,6 +578,7 @@ set textwidth=100
 set cc=+1       " 对齐线，当一行的长度大于80时显示一条竖线
 " set cuc         " 高亮当前列
 set cursorline  " 高亮当前行
+" hi ColorColumn ctermbg=lightgrey guibg=lightgrey
 
 " ==============================================================================
 " 显示不可打印字符
@@ -673,7 +678,7 @@ if has('autocmd')
         " au FileType c,cpp,java,javascript set comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,f://
         " au FileType cs set comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,f:///,f://
         " au FileType vim set comments=sO:\"\ -,mO:\"\ \ ,eO:\"\",f:\"
-        au FileType vim set foldmethod=marker
+        au FileType vim set foldmethod=indent
         au FileType lua setlocal tabstop=2
         au FileType qml,python set foldmethod=indent
         au FileType c,cpp set foldmethod=indent
@@ -735,16 +740,18 @@ if g:isNvim
     let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
     let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
 
-    " python设置
-    let g:loaded_python_provider=1
-    " python3 设置
-    " let g:loaded_python3_provider = 1
     if g:islinux
         let g:python_host_prog = '/usr/bin/python2'
         let g:python3_host_prog = '/usr/bin/python'
     elseif g:iswindows
         let g:python3_host_prog = 'python.exe'
     endif
+    " python设置
+    " let g:loader_python_provider=0
+    " let g:python_host_skip_check=1
+    " python3 设置
+    " let g:loaded_python3_provider = 1
+    " let g:python3_host_skip_check = 0
     " 禁用ruby支持
     " let g:loaded_ruby_provider = 0
 
@@ -753,6 +760,14 @@ if g:isNvim
         set inccommand=nosplit
     endif
     " }}}
+
+    if g:iswindows
+        function! WinNvimInit() abort "  {{{
+            execute 'GuiFont FuraCode Nerd Font Mono:h12'
+            call GuiWindowMaximized(1)
+        endfunction " }}}
+        nnoremap <Leader>ni :call WinNvimInit()<CR>
+    endif
 
     "终端设置{{{
     nnoremap <Leader>tt :<C-u>terminal<CR>
@@ -810,13 +825,19 @@ function! MapToFile()
     silent exe "redir end"
 endfunction
 
+" 重命名换取区? 待测试
+com -nargs=1 -bang -complete=file Ren f <args>|w<bang>
+
 " 重新映射leader键，default 为\
 " let mapleader = ","
 " 修改 :
 nnoremap ; :
 
+" let mleader=','
+" execute 'nnoremap ' . mleader.'mm :echo "hello"<CR>'
+
 " 修改esc 键为jk
-inoremap jk <ESC>
+" inoremap jk <ESC>
 
 " 行首和行尾
 " nnoremap <Home> ^
@@ -947,12 +968,12 @@ autocmd FileType qf noremap <buffer> q :close<CR>
 "===================================================
 " 编辑vim配置文件，并重新读取配置文件
 if g:iswindows
-    nnoremap <Leader>ev :e $VIM\.vimrc<cr>
-    exec 'nnoremap <Leader>evp :e $VIM\'.g:plugins_file.'<cr>'
+    nnoremap <Leader>ev :e $VIM/.vimrc<cr>
+    exec 'nnoremap <Leader>evp :e $VIM/vimfiles/vimrc.vimplug''<cr>'
     nnoremap <Leader>sv :source $MYVIMRC<cr>
 else
     exec 'nnoremap <Leader>ev :e ~/.vimrc<cr>'
-    exec 'nnoremap <Leader>evp :e ~/'.g:plugins_file.'<cr>'
+    exec 'nnoremap <Leader>evp :e ~/.vim/vimrc.vimplug<cr>'
     nnoremap <Leader>sv :source $MYVIMRC<cr>
 endif
 
@@ -964,7 +985,7 @@ vnoremap <Leader>wa <ESC>:w<CR>
 noremap  <Leader>ws :wa<CR>
 inoremap <Leader>ws <ESC>:wa<CR>
 vnoremap <Leader>ws <ESC>:wa<CR>
-if g:islinux
+if g:islinux && g:isNvim==0
     nnoremap <Leader>rs :w !sudo tee>/dev/null %<CR>
 endif
 " 重命名文件
@@ -993,6 +1014,8 @@ if g:islinux
     else
         set clipboard+=unnamed
     endif
+else
+    set clipboard+=unnamed
 endif
 " if has('unnamedplus')
 " set clipboard+=unnamedplus
@@ -1046,7 +1069,6 @@ noremap <Down> gj
 " the word will be swapped with the next word.  The words may
 " even be separated by punctuation (such as "abc = def").
 nnoremap <silent> <Leader>ltr "_yiw:s/\(\%#\w\+\)\(\W\+\)\(\w\+\)/\3\2\1/<cr><c-o>
-
 "}}}
 
 " vim:ts=4:sw=4:sts=4 et fdm=marker:

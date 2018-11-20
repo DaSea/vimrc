@@ -1,0 +1,80 @@
+Plug 'Valloric/YouCompleteMe' " {{{
+if g:iswindows
+    let g:ycm_python_binary_path = 'python3'
+else
+    let g:ycm_python_binary_path = 'python'
+endif
+let g:ycm_add_preview_to_completeopt = 0
+let g:ycm_confirm_extra_conf = 0
+let g:ycm_show_diagnostics_ui = 0
+let g:ycm_use_ultisnips_completer=1
+let g:ycm_goto_buffer_command='vertical-spit'
+let g:ycm_log_level='error'
+let g:ycm_echo_current_diagnostic = 1
+let g:ycm_echo_current_error = 1
+let g:ycm_min_num_identifier_candidate_chars = 2
+let g:ycm_min_num_of_chars_for_completion = 3
+let g:ycm_collect_identifiers_from_comments_and_strings = 1
+let g:ycm_complete_in_strings=1
+let g:ycm_filetype_blacklist = {
+            \ 'tagbar' : 1,
+            \ 'qf' : 1,
+            \ 'unite' : 1,
+            \ 'denite': 1,
+            \ 'infolog' : 1,
+            \ 'mail' : 1
+            \}
+let g:ycm_filetype_whitelist = {
+            \ "c":1, "cpp":1, "python":1, "sh":1,
+            \ "zsh":1, "markdown":1, "lua":1,
+            \ "vim":1, "java":1
+            \ }
+let g:ycm_semantic_triggers = {
+            \ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
+            \ 'cs,lua,javascript': ['re!\w{2}'],
+            \ }
+if g:iswindows
+    let g:ycm_global_ycm_extra_conf = $VIM.'/.ycm_extra_conf.py'
+else
+    let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
+endif
+
+" 按键定义
+nnoremap sj :YcmCompleter GoTo<CR>
+nnoremap sk :YcmCompleter GoToImprecise<CR>
+" map <Leader>yY :YcmDiags<cr>
+" map <Leader>yy :YcmForceCompileAndDiagnostics<cr>
+" map <Leader>ys :YcmShowDetailedDiagnostic<cr>
+" map <Leader>yt :YcmCompleter GetType<cr>
+
+" 状态栏错误集成
+" if g:setting.status_line ==? 'airline'
+" call add(g:airline_extensions, 'ycm')
+" endif
+" }}}
+
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function() abort
+    return (pumvisible() ? "\<C-y>" : "\<CR>")
+endfunction
+
+Plug 'SirVer/ultisnips' " snippets {{{
+let g:UltiSnipsUsePythonVersion = 3
+let g:UltiSnipsSnippetsDir=g:setting.private_snippets.'/ultisnips'
+let g:UltiSnipsSnippetDirectories = [g:setting.private_snippets.'/ultisnips/']
+let g:UltiSnipsEnableSnipMate=0
+let g:UltiSnipsEditSplit="vertical"
+let g:UltiSnipsExpandTrigger="<C-k>"
+let g:UltiSnipsJumpForwardTrigger="<C-k>"
+let g:UltiSnipsJumpBackwardTrigger="<C-j>"
+" 编辑snippet
+nnoremap <leader>ns :UltiSnipsEdit<CR>
+" }}}
+
+if index(g:language_group, 'vim') >= 0
+    Plug 'Shougo/neco-vim'
+    let g:ycm_semantic_triggers = get( g:,'ycm_semantic_triggers', {} )
+    let g:ycm_semantic_triggers.vim = ['$', '&', 're![\w&$<-][\w:#<>-]*']
+endif
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:

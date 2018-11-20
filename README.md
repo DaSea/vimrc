@@ -1,4 +1,4 @@
-**主要保存使用的vim/neovim配置，zsh, bash, tmux等配置**
+**主要保存使用的vim/neovim配置**
 
 ## vim
 此配置主要配合[dotfiles](https://github.com/DaSea/dotfiles)使用
@@ -6,15 +6,28 @@
 ### 也可单独使用，不过需要更改文件名
 ```bash
 #linux
-$mv vimrc .vimrc
+$cd
+$git clone --depth 1 https://github.com/DaSea/vimrc.git .vim
+$ln -s vimrc ~/.vimrc
 
 # windows
-$ren vimrc .vimrc
+# for vim, 与bin目录同级
+$git clone --depth 1 https://github.com/DaSea/vimrc.git vimfiles
+# 然后在“c:\Users\<UserName>"路径下面添加.vimrc文件，为其添加如下内容：
+let g:exvim_custom_path=$VIM
+source $VIM/vimfiles/vimrc
+
+# for neovim
+$cd Neovim/share/nvim
+$git clone --depth 1 https://github.com/DaSea/vimrc.git vimfiles
+# 然后在"c:/Users/<UserName>/AppData/Local/nvim"下面，添加init.vim, 为其添加如下内容:
+let g:exvim_custom_path=$VIM
+source $VIM/vimfiles/vimrc
 ```
 
 ### 各个文件的作用
 * vimrc 主要的入口
-* vimrc.vimplug 记录通用的插件，主要有exvim系列插件，其他等~
+* vimrc.vimplug: vim-plug插件管理器使用的配置文件入口
 * vimrc.language 与语言相关的放在这个文件
   - 如果需要扩展语言相关，在此添加
 * vimrc.complete 补全的，通用的
@@ -22,7 +35,7 @@ $ren vimrc .vimrc
   - 对于nvim, 使用deoplete.nvim
 * vimrc.ctrlp 放ctrlp与NERDTree配置
 * vimrc.unitvim 放unit.vim, denite.nvim与vimfiler相关配置，
-* vimrc.statusline 配置lightline.vim 和vim-airline
+* vimrc.ui.statusline 配置lightline.vim 和vim-airline
 * vimrc.discard 放暂时废弃不用的插件及配置，防止以后后悔了加进来
 
 ### 常用快捷键
@@ -75,12 +88,4 @@ ctrl + p   : 快速查找文件
 <Leader>yw  : 翻译当前光标或被选中的单词，并在单独的窗口显示
 <Leader>yr  : 翻译当前光标或被选中的内容，并替换
 ```
-
-## shell
-
-### zsh
-**需要安装on-my-zsh**
-
-### bash
-**配合bash-it使用**
 

@@ -1,0 +1,222 @@
+ " 主要为了在状态栏显示当前行所在函数{{{
+function! HiEchoCurrentTag() abort " 命令行高亮输出当前所在tag {{{
+    echohl Error | echo tagbar#currenttag("%s", "Unknown Function") | echohl None
+endfunction " }}}
+Plug 'majutsushi/tagbar' " {'on': 'TagbarToggle'}
+nnoremap <Leader>tm :call HiEchoCurrentTag()<CR>
+nnoremap <Leader>tb :TagbarToggle<CR>
+if g:setting.status_line ==? 'airline'
+    " let g:airline#extensions#tagbar#enabled = 1
+    call add(g:airline_extensions, 'tagbar')
+endif
+" }}}
+
+"文件内容搜索和替换, undotree{{{
+Plug 'dyng/ctrlsf.vim',{'on': 'CtrlSF'} "搜索工程下文件{{{
+"---------------------------------------------------------------------
+" 设置CtrlSF使用的搜索工具,默认使用ag,如果没有ag,则考虑使用ack
+let g:ctrlsf_ackprg = 'rg'
+if !executable(g:ctrlsf_ackprg)
+    let g:ctrlsf_ackprg = 'ag'
+endif
+" 窗口大小
+let g:ctrlsf_winsize='50%'
+" 是否在ctrlsf搜索结果打开其他窗口时,关闭搜索结果窗口
+let g:ctrlsf_auto_close = 0
+" 大小写敏感
+let g:ctrlsf_case_sensitive = 'yes'
+" 默认搜索路径, 设置为project则从本文件的工程目录搜索
+" let g:ctrlsf_default_root = 'project+wf'
+" 工程目录的顶级文件夹
+" let g:ctrlsf_vcs_folder = ['.exvim', '.git', '.hg', '.svn', '.bzr', '_darcs']
+" make result windows compact
+let g:ctrlsf_indent = 2
+" width or height
+" 显示的上下文函数
+let g:ctrlsf_context = '-B 0 -A 0'
+" 高亮匹配行: o->打开的目标文件;p->预览文件
+let g:ctrlsf_selected_line_hl = 'op'
+nnoremap <F5> :CtrlSFToggle<CR>
+nnoremap <Leader>sw :call CtrlsfCurWord(expand("<cword>"))<CR>
+function! CtrlsfCurWord(word) abort
+    " 需要修改为根据exvim工程文件类型进行搜索
+    let s:type = &filetype
+    if ("c" == s:type) && (g:ctrlsf_ackprg !=? 'rg')
+        let s:type = "cc"
+    endif
+    let s:filetype = '-filetype '.s:type
+    " -w whole word;
+    execute "CtrlSF ".s:filetype.' -R \b'. a:word .'\b'
+endfunction
+"}}}
+
+if 0
+    Plug 'terryma/vim-multiple-cursors' "多项选择{{{
+    "---------------------------------------------------------------------
+    let g:multi_cursor_use_default_mapping = 0
+    let g:multi_cursor_start_word_key = '<F6>'
+    let g:multi_cursor_next_key = '<C-j>'
+    let g:multi_cursor_prev_key = '<C-k>'
+    let g:multi_cursor_skip_key = '<C-x>'
+    let g:multi_cursor_quit_key = '<ESC>'
+    " Called once right before you start selecting multiple cursors
+    function! Multiple_cursors_before()
+        if exists(':NeoCompleteLock')==2
+            exe 'NeoCompleteLock'
+        elseif exists('g:deoplete#disable_auto_complete')
+            let g:deoplete#disable_auto_complete = 1
+        endif
+    endfunction
+
+    " Called once only when the multiple selection is canceled (default <Esc>)
+    function! Multiple_cursors_after()
+        if exists(':NeoCompleteUnlock')==2
+            exe 'NeoCompleteUnlock'
+        elseif exists('g:deoplete#disable_auto_complete')
+            let g:deoplete#disable_auto_complete = 0
+        endif
+    endfunction
+    "}}}
+endif
+
+"括号补全, endif等补全{{{
+if 'yes' ==? g:setting.auto_pairs_need
+    Plug 'jiangmiao/auto-pairs'
+    " let g:AutoPairsFlyMode = 0
+    " let g:AutoPairsShortcutBackInsert = '<Leader>pb'
+    " 上面俩项为flyMode下使用
+    let g:AutoPairsShortcutToggle = '<Leader>pp'
+    let g:AutoPairsShortcutFastWrap = '<Leader>pe'
+    let g:AutoPairsShortcutJump = '<Leader>pn'
+    if 'yes' ==? g:setting.auto_paramcomplete
+        let g:AutoPairs = {'[':']', '{':'}',"'":"'",'"':'"', '`':'`'}
+        inoremap <buffer><silent> ) <C-R>=AutoPairsInsert(')')<CR>
+    endif
+endif
+Plug 'tpope/vim-endwise', {'for': ['python', 'vim', 'lua', 'sh', 'zsh']}
+"}}}
+
+Plug 'dkprice/vim-easygrep', {'on': ['Grep', 'GrepOptions', 'GrepAdd', 'GrepRoot', 'GrepProgram']}" {{{
+let g:EasyGrepPerlStyle=1
+" }}}
+
+" undo 历史树,直观显示,快速选择恢复{{{
+if has("persistent_undo")
+    Plug 'mbbill/undotree', {'on': 'UndotreeToggle'}
+    set undodir=~/.cache/undodir
+    set undofile
+endif "}}}
+"}}}
+
+"  快速注释, 及生成函数及文件注释{{{
+Plug 'scrooloose/nerdcommenter' " 快速注释{{{
+" Invoke by <Leader>c<space>, <Leader>cl, <Leader>cu, <F11> or <C-F11>
+" ---------------------------------------------------
+" 我主要用于C/C++代码注释(其它的也行)
+" 以下为插件默认快捷键，其中的说明是以C/C++为例的，其它语言类似
+" <Leader>ci 以每行一个 /* */ 注释选中行(选中区域所在行)，再输入则取消注释
+" <Leader>cm 以一个 /* */ 注释选中行(选中区域所在行)，再输入则称重复注释
+" <Leader>cc 以每行一个 /* */ 注释选中行或区域，再输入则称重复注释
+" <Leader>cu 取消选中区域(行)的注释，选中区域(行)内至少有一个 /* */
+" <Leader>ca 在/*...*/与//这两种注释方式中切换（其它语言可能不一样了）
+" <Leader>cA 行尾注释
+" 注释的时候加个空格
+let g:NERDSpaceDelims = 1
+let g:NERDRemoveExtraSpaces = 1
+let g:NERDCustomDelimiters = {
+            \ 'vimentry': { 'left': '--' },
+            \ }
+" 自定义的注释格式切换样式
+" let g:NERDAltDelims_c= {'left': '//', 'leftAlt': '/*', 'rightAlt': '*/' }
+"}}}
+
+"生成文件注释和函数注释{{{
+Plug 'DaSea/DoxygenToolkit.vim', {'on': ['DoxFunc', 'DoxFile']}
+" ---------------------------------------------------
+" let g:DoxygenToolkit_commentType = "C++"
+let g:DoxygenToolkit_briefTag_pre="@brief  "
+let g:DoxygenToolkit_paramTag_pre="@param  "
+let g:DoxygenToolkit_returnTag="@return "
+" let g:DoxygenToolkit_blockHeader="--------------------------------------------------------------------------"
+" let g:DoxygenToolkit_blockFooter="--------------------------------------------------------------------------"
+let g:DoxygenToolkit_authorName=g:setting.author_name
+let g:DoxygenToolkit_licenseTag="None"
+let g:DoxygenToolkit_compactDoc="no"
+" map
+nnoremap <Leader>di :DoxFunc<CR>
+nnoremap <Leader>df :DoxFile<CR>
+"}}}
+"}}}
+
+" 快速移动(行的移动， 行间移动， 窗口间移动)  {{{
+" Plug 'matze/vim-move'
+" {'on': ['<Plug>MoveLineUp', '<Plug>MoveLineDown', '<Plug>MoveBlockUp', '<Plug>MoveBlockDown']}
+" alt + j : 行或块下移; alt+k: 行或块上移;
+
+" Plug 'DaSea/SimpleJumpToLine.vim'
+" nnoremap <Leader>jj :SLineJump<CR>
+
+Plug 'Lokaltog/vim-easymotion' " {{{
+let g:EasyMotion_smartcase = 1
+let g:EasyMotion_startofline=0
+" map <Leader>e <Plug>(easymotion-prefix)
+map <Leader><Leader>/ <Plug>(easymotion-sn)
+omap <Leader><Leader>/ <Plug>(easymotion-tn)
+map <Leader><Leader>j <Plug>(easymotion-j)
+map <Leader><Leader>k <Plug>(easymotion-k)
+map <Leader><Leader>l <Plug>(easymotion-lineforward)
+map <Leader><Leader>h <Plug>(easymotion-linebackward)
+map <Leader><Leader>w <Plug>(easymotion-jumptoanywhere)
+map <Leader><Leader>s <Plug>(easymotion-lineanywhere)
+map <Leader><Leader>. <Plug>(easymotion-repeat)
+"}}}
+"}}}
+
+Plug 'moll/vim-bbye', {'on': 'Bdelete'} "主要界面关闭buffer引起的窗口乱的问题{{{
+noremap <Leader>mq :Bdelete<CR>
+inoremap <Leader>mq <ESC>:Bdelete<CR>
+vnoremap <Leader>mq <ESC>:Bdelete<CR>
+"}}}
+
+Plug 'DaSea/uncrustify.vim', {'on': 'Uncrustify'} " 代码格式化:{{{
+nnoremap <Leader>ff :Uncrustify<CR>
+vnoremap <Leader>ff :'<,'>Uncrustify<CR>
+"}}}
+
+
+Plug 'mbbill/fencview' " (编码检查)auto check Encoding{{{
+let g:fencview_autodetect = 1
+"}}}
+
+" 异步编译和lint插件 {{{
+if 'yes' ==? g:setting.make_lint_need
+    Plug 'neomake/neomake', {'on': ['NeomakeFile', 'Neomake', 'NeomakeSh', 'NeomakeInfo',
+                \ 'NeomakeListJobs', 'NeomakeCancelJob', 'NeomakeCalcelJobs']}
+    nnoremap <unique> <Leader>nm :NeomakeFile<CR>
+    let g:neomake_verbose = 1
+    let g:neomake_open_list = 2
+    " c and cpp 由ycm插件检查
+    let g:neomake_exclude_ft=['c', 'cpp']
+    let g:neomake_c_lint_maker = {
+                \ 'exe': 'clang-tidy',
+                \ 'args': ['%:p', '--option', 'x'],
+                \ 'errorformat': '%f:%l:%c: %m',
+                \ }
+    let g:neomake_cpp_lint_maker = {
+                \ 'exe': 'clang-tidy',
+                \ 'args': ['%:p', '--option', 'x'],
+                \ 'errorformat': '%f:%l:%c: %m',
+                \ }
+    let g:neomake_python_lint_maker = {
+                \ 'exe': 'pep8',
+                \ 'args': ['%:t'],
+                \ 'errorformat': '%f:%l:%c: %m',
+                \ }
+    " statusline
+    " if g:setting.status_line ==? 'airline'
+        " call add(g:airline_extensions, 'neomake')
+    " endif
+endif
+"}}}
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:
