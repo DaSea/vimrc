@@ -118,8 +118,10 @@ if 'yes' ==? g:setting.use_devicons
 endif
 
 " 状态栏
-if g:setting.status_line !=? 'no'
-    call LoadConfig("vimrc.ui.statusline")
+if 'airline' ==? g:setting.status_line
+    call LoadConfig("vimrc.ui.airline")
+elseif 'lightline' ==? g:setting.status_line
+    call LoadConfig("vimrc.ui.airline")
 endif
 
 " 彩虹括号

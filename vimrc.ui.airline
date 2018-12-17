@@ -1,0 +1,94 @@
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+" airline状态栏{{{
+let g:airline_powerline_fonts = 1
+let g:airline_theme = g:setting.status_color
+let g:airline_left_sep = g:setting.left_separator
+let g:airline_right_sep = g:setting.right_separator
+let g:airline_left_alt_sep = g:setting.left_sub_separator
+let g:airline_right_alt_sep = g:setting.right_sub_separator
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+let g:airline_symbols.branch = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.linenr = ''
+let g:airline_detect_modified=1
+let g:airline_detect_crypt=0
+let g:airline_detect_spell=0
+let g:airline_detect_iminsert=0
+let g:airline_inactive_collapse=0
+let g:airline_highlighting_cache=0
+let g:airline_extensions = ['quickfix']
+if g:setting.show_tabline ==? 'yes' " {{{
+    call add(g:airline_extensions, 'tabline')
+    let g:airline#extensions#tabline#enabled=1
+    let g:airline#extensions#tabline#show_splits = 1
+    let g:airline#extensions#tabline#switch_buffers_and_tabs = 0
+    let g:airline#extensions#tabline#show_buffers = 1
+    let g:airline#extensions#tabline#show_tabs = 0
+    let g:airline#extensions#tabline#tab_nr_type = 2
+    let g:airline#extensions#tabline#buffers_label = 'B'
+    let g:airline#extensions#tabline#tabs_label = 'T'
+    let g:airline#extensions#tabline#current_first=1
+    let g:airline#extensions#tabline#buffer_idx_mode = 1
+    let g:airline#extensions#tabline#excludes = ['nerdtree', 'unite', 'vimfiler', 'exproject']
+    let g:airline#extensions#tabline#show_close_button = 0
+    let g:airline#extensions#tabline#close_symbol = 'X'
+    nmap ,1 <Plug>AirlineSelectTab1
+    nmap ,2 <Plug>AirlineSelectTab2
+    nmap ,3 <Plug>AirlineSelectTab3
+    nmap ,4 <Plug>AirlineSelectTab4
+    nmap ,5 <Plug>AirlineSelectTab5
+    nmap ,6 <Plug>AirlineSelectTab6
+    nmap ,7 <Plug>AirlineSelectTab7
+    nmap ,8 <Plug>AirlineSelectTab8
+    nmap ,9 <Plug>AirlineSelectTab9
+    nmap <Leader>a <Plug>AirlineSelectPrevTab
+    nmap <Leader>d <Plug>AirlineSelectNextTab
+    let g:airline#extensions#tabline#left_sep = g:setting.tab_left_separator
+    let g:airline#extensions#tabline#left_alt_sep = g:setting.tab_left_sub_separator
+    let g:airline#extensions#tabline#right_sep = g:setting.tab_right_separator
+    let g:airline#extensions#tabline#right_alt_sep = g:setting.tab_right_sub_separator
+    let g:airline#extensions#tabline#buffer_nr_format = '%s: '
+    let g:airline#extensions#tabline#fnamemod = ':t:.'
+    let g:airline#extensions#tabline#fnametruncate = 0
+    let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+    let g:airline#extensions#tabline#buffer_min_count = 1
+    let airline#extensions#tabline#ignore_bufadd_pat =
+                \ '\c\vgundo|undotree|vimfiler|tagbar|nerd_tree|exproject'
+endif "}}}
+" 各个部分的设置简化
+" let g:airline_section_c = '%-0.50{getcwd()}'
+" let g:airline_section_c = g:project_name . ': %t%m'
+" let g:airline_section_z = '%l%{g:airline_symbols.linenr}%L'
+let g:airline_section_z = '%l:%L%{g:airline_symbols.linenr}%c'
+
+" 当显示icons时，重新定义section_y，由于此时不显示bomb信息了 {{{
+" function! GetFileBomb() abort " 文件编码是否有bomb信息 {{{
+    " let bomb = &l:bomb ? '[BOM]' : '[NB]'
+    " return bomb
+" endfunction " }}}
+" function! MAirlineInit() abort " {{{
+    " call airline#parts#define_function('fbomb', 'GetFileBomb')
+    " call airline#parts#define_minwidth('fbomb', 6)
+    " let g:airline_section_error = airline#section#create_right(['fbomb'])
+" endfunction " }}}
+" call add(g:init_func_list, function('MAirlineInit'))
+
+let g:airline_mode_map = {
+            \ '__' : '-',
+            \ 'n'  : 'N',
+            \ 'i'  : 'I',
+            \ 'R'  : 'R',
+            \ 'c'  : 'C',
+            \ 'v'  : 'v',
+            \ 'V'  : 'VL',
+            \ '' : 'VB',
+            \ 's'  : 's',
+            \ 'S'  : 'S',
+            \ '' : 'S',
+            \ }
+" }}}
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:

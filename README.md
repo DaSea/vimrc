@@ -33,10 +33,9 @@ source $VIM/vimfiles/vimrc
 * vimrc.complete 补全的，通用的
   - 对于vim, 如果支持python, 则使用ycm补全插件
   - 对于nvim, 使用deoplete.nvim
-* vimrc.ctrlp 放ctrlp与NERDTree配置
-* vimrc.unitvim 放unit.vim, denite.nvim与vimfiler相关配置，
-* vimrc.ui.statusline 配置lightline.vim 和vim-airline
-* vimrc.discard 放暂时废弃不用的插件及配置，防止以后后悔了加进来
+* vimrc.finder,vimrc.finder.ctrlp与vimrc.finder.leaderf 文件管理器与ctrlp，leaderf的配置
+* vimrc.ui, vimrc.ui.airline与vimrc.ui.lightline: 配置ui的一些内容
+* garbage 放暂时废弃不用的插件及配置，防止以后后悔了加进来
 
 ### 常用快捷键
 #### 窗口及buffer 操作
@@ -66,6 +65,7 @@ ctrl + p   : 快速查找文件
 
 <Leader>fm : outline
 
+<F2> : 打开文件管理器
 <Leader>of : 打开文件管理器，并选中文件
 ```
 
@@ -73,7 +73,6 @@ ctrl + p   : 快速查找文件
 `
 <Leader>mp  : 在浏览器中预览markdown,前提是浏览器安装了可以预览markdown的插件
 `
-
 
 #### plantuml
 ```

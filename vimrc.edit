@@ -6,7 +6,6 @@ Plug 'majutsushi/tagbar' " {'on': 'TagbarToggle'}
 nnoremap <Leader>tm :call HiEchoCurrentTag()<CR>
 nnoremap <Leader>tb :TagbarToggle<CR>
 if g:setting.status_line ==? 'airline'
-    " let g:airline#extensions#tagbar#enabled = 1
     call add(g:airline_extensions, 'tagbar')
 endif
 " }}}
@@ -50,34 +49,32 @@ function! CtrlsfCurWord(word) abort
 endfunction
 "}}}
 
-if 0
-    Plug 'terryma/vim-multiple-cursors' "多项选择{{{
-    "---------------------------------------------------------------------
-    let g:multi_cursor_use_default_mapping = 0
-    let g:multi_cursor_start_word_key = '<F6>'
-    let g:multi_cursor_next_key = '<C-j>'
-    let g:multi_cursor_prev_key = '<C-k>'
-    let g:multi_cursor_skip_key = '<C-x>'
-    let g:multi_cursor_quit_key = '<ESC>'
-    " Called once right before you start selecting multiple cursors
-    function! Multiple_cursors_before()
-        if exists(':NeoCompleteLock')==2
-            exe 'NeoCompleteLock'
-        elseif exists('g:deoplete#disable_auto_complete')
-            let g:deoplete#disable_auto_complete = 1
-        endif
-    endfunction
+Plug 'terryma/vim-multiple-cursors' "多项选择{{{
+"---------------------------------------------------------------------
+let g:multi_cursor_use_default_mapping = 0
+let g:multi_cursor_start_word_key = '<F6>'
+let g:multi_cursor_next_key = '<C-j>'
+let g:multi_cursor_prev_key = '<C-k>'
+let g:multi_cursor_skip_key = '<C-x>'
+let g:multi_cursor_quit_key = '<ESC>'
+" Called once right before you start selecting multiple cursors
+function! Multiple_cursors_before()
+    if exists(':NeoCompleteLock')==2
+        exe 'NeoCompleteLock'
+    elseif exists('g:deoplete#disable_auto_complete')
+        let g:deoplete#disable_auto_complete = 1
+    endif
+endfunction
 
-    " Called once only when the multiple selection is canceled (default <Esc>)
-    function! Multiple_cursors_after()
-        if exists(':NeoCompleteUnlock')==2
-            exe 'NeoCompleteUnlock'
-        elseif exists('g:deoplete#disable_auto_complete')
-            let g:deoplete#disable_auto_complete = 0
-        endif
-    endfunction
-    "}}}
-endif
+" Called once only when the multiple selection is canceled (default <Esc>)
+function! Multiple_cursors_after()
+    if exists(':NeoCompleteUnlock')==2
+        exe 'NeoCompleteUnlock'
+    elseif exists('g:deoplete#disable_auto_complete')
+        let g:deoplete#disable_auto_complete = 0
+    endif
+endfunction
+"}}}
 
 "括号补全, endif等补全{{{
 if 'yes' ==? g:setting.auto_pairs_need

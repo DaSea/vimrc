@@ -1,36 +1,21 @@
 " 设置弹出的补全菜单的个数
 set pumheight=15
 
-if 'yes' ==? g:setting.auto_paramcomplete
-    Plug 'tenfyzhong/CompleteParameter.vim' " 函数参数补全{{{
-    inoremap <silent><expr> ( cmp#pre_complete("(")
-    nnoremap <c-j> <Plug>(complete_parameter#goto_next_parameter)
-    smap <c-j> <Plug>(complete_parameter#goto_next_parameter)
-    imap <c-j> <Plug>(complete_parameter#goto_next_parameter)
-    nnoremap <c-h> <Plug>(complete_parameter#goto_previous_parameter)
-    smap <c-h> <Plug>(complete_parameter#goto_previous_parameter)
-    imap <c-h> <Plug>(complete_parameter#goto_previous_parameter)
-    " 重载函数的时候使用
-    nnoremap <m-d> <Plug>(complete_parameter#overload_down)
-    imap <m-d> <Plug>(complete_parameter#overload_down)
-    smap <m-d> <Plug>(complete_parameter#overload_down)
-    nnoremap <m-u> <Plug>(complete_parameter#overload_up)
-    imap <m-u> <Plug>(complete_parameter#overload_up)
-    smap <m-u> <Plug>(complete_parameter#overload_up)
-    " 在命令行显示函数原形
-    " set noshowmode
-    " set cmdheight=2
-    let g:complete_parameter_echo_signature=0
-endif
-" }}}
-
 if g:isNvim
-    if 'yes' ==? g:setting.use_lsp
-        call LoadConfig('vimrc.lsp')
+    if 'cocnvim' ==? g:setting.complete_plugin
+        call LoadConfig('vimrc.cocnvim')
+        finish
     else
         call LoadConfig('vimrc.deoplete')
         call LoadConfig('vimrc.deoplete.language')
+        finish
     endif
+
+
+    if 'yes' ==? g:setting.lsp
+        call LoadConfig('vimrc.lsp')
+    endif
+
 else
     " ycm is so big, so you should use neocomplete
     if has('lua')

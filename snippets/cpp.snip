@@ -176,6 +176,12 @@ abbr        for(it: != end;++it) {}
         ${0:TARGET}
     }
 
+snippet     for_ainter
+abbr        for(auto it: != end;++it) {}
+    for (auto ${1:#:it} = ${2:#:var}.begin(); $1 != $2.end(); ++$1) {
+        ${0:TARGET}
+    }
+
 snippet     foreach
 abbr        foreach(:) {}
     foreach (${1:auto} ${2:var} : ${3:container}) {

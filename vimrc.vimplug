@@ -10,7 +10,7 @@ function! g:LoadConfig(vimcfg) abort " load vimrc.<subfile> {{{
     endif
 endfunction " }}}
 
-" 界面显示相关{{{
+" 界面显示相关 (colortheme, statusline, starty){{{
 call LoadConfig("vimrc.ui")
 "}}}
 "
@@ -19,17 +19,13 @@ call LoadConfig("vimrc.version")
 "}}}
 
 " ex系列插件 {{{
-call LoadConfig("vimrc.explug")
+" call LoadConfig("vimrc.explug")
 " 自己修改的一些explug的插件
 call LoadConfig("vimrc.mexplug")
 " }}}
 
-" unit.vim 或者 ctrlp相关插件, 及文件管理器{{{
-if g:setting.ctrlp_or_unite ==? 'unitvim'
-    call LoadConfig("vimrc.unitvim")
-else
-    call LoadConfig("vimrc.ctrlp")
-endif
+" finder(leaderf, ctrlp)及文件管理器{{{
+call LoadConfig("vimrc.finder")
 "}}}
 
 " 主要是识别文件的编码，grep，多光标等{{{
@@ -52,6 +48,5 @@ call LoadConfig("vimrc.language")
 call LoadConfig('vimrc.os')
 call LoadConfig("vimrc.other")
 " }}}
-
 
 " vim:ts=4:sw=4:sts=4 et fdm=marker:

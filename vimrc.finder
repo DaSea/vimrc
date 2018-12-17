@@ -1,0 +1,64 @@
+" 因为unit.vim和ctrlp有许多相同的功能, 所以分开, 可以让大家自由选择
+" 这里主要记录ctrlp的主要内容
+
+if g:setting.ctrlp_or_leaderf ==? 'ctrlp'
+    call LoadConfig("vimrc.finder.ctrlp")
+else
+    call LoadConfig("vimrc.finder.leaderf")
+endif
+
+Plug 'scrooloose/nerdtree' " file explorer{{{
+let NERDTreeSortHiddenFirst=1
+let NERDTreeQuitOnOpen=0
+let NERDTreeShowHidden=1
+" let NERDTreeWinSize=35
+" let NERDTreeWinPos = 'left'
+let NERDTreeMinimalUI=0
+let NERDTreeDirArrows=0
+let NERDTreeAutoDeleteBuffer=1
+let NERDTreeHijackNetrw=1
+" let NERDTreeBookmarksFile=$HOME.'/.vim_cache/.NERDTreeBookmarks'
+" let g:NERDTreeRemoveDirCmd='rm -rf '
+" let g:NERDTreeMapActivateNode="o"
+" let g:NERDTreeMapChangeRoot="z?CD"
+" let g:NERDTreeMapChdir="z?cd"
+" let g:NERDTreeMapCloseChildren="z?X"
+" let g:NERDTreeMapCloseDir="x"
+" let g:NERDTreeMapDeleteBookmark=""
+" let g:NERDTreeMapMenu="m"
+" let g:NERDTreeMapHelp="?"
+" let g:NERDTreeMapJumpFirstChild="zh"
+" let g:NERDTreeMapJumpLastChild="zl"
+" let g:NERDTreeMapJumpNextSibling="zj"
+" let g:NERDTreeMapJumpParent="zu"
+" let g:NERDTreeMapJumpPrevSibling="zk"
+" let g:NERDTreeMapJumpRoot=""
+" let g:NERDTreeMapOpenExpl=""
+" let g:NERDTreeMapOpenInTab=""
+" let g:NERDTreeMapOpenInTabSilent=""
+" let g:NERDTreeMapOpenRecursively="O"
+" let g:NERDTreeMapOpenSplit=""
+" let g:NERDTreeMapOpenVSplit=""
+" let g:NERDTreeMapPreview=""
+" let g:NERDTreeMapPreviewSplit=""
+" let g:NERDTreeMapPreviewVSplit=""
+let g:NERDTreeMapQuit="q"
+let g:NERDTreeMapRefresh="r"
+let g:NERDTreeMapRefreshRoot="R"
+" let g:NERDTreeMapToggleBookmarks=""
+" let g:NERDTreeMapToggleFiles=""
+" let g:NERDTreeMapToggleFilters=""
+" let g:NERDTreeMapToggleHidden="ch"
+" let g:NERDTreeMapToggleZoom=""
+" let g:NERDTreeMapUpdir="z?u"
+" let g:NERDTreeMapUpdirKeepOpen=""
+" let g:NERDTreeMapCWD=""
+let g:NERDTreeDirArrowCollapsible = '▾'
+let g:NERDTreeDirArrowExpandable = '▸'
+let NERDTreeIgnore=['.exvim$[[dir]]','.svn$[[dir]]','.git$[[dir]]', '.o$[[file]]']
+nnoremap <F2> :NERDTreeToggle<CR>
+nnoremap <silent> <leader>fb :NERDTreeFind<cr>
+
+" }}}
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:

@@ -1,0 +1,52 @@
+" Leaderf {{{
+Plug 'Yggdroot/LeaderF'
+let g:Lf_DefaultMode='Fuzzy'
+let g:Lf_CacheDiretory=$HOME . '/.cache'
+let g:Lf_WindowHeight = 0.40
+let g:Lf_ShowRelativePath=0
+let g:Lf_NumberOfCache = 10
+let g:Lf_UseMemoryCache=1
+let g:Lf_DefaultExternalTool = "rg"
+let g:Lf_UseVersionControlTool = 1
+let g:Lf_RememberLastSearch = 0
+let g:Lf_TabpagePosition=3
+let g:Lf_CursorBlink=0
+let g:Lf_ShortcutF = '<C-p>'
+let g:Lf_ShortcutB = '<Leader>fl'
+let g:Lf_PreviewResult = {
+        \ 'File': 0,
+        \ 'Buffer': 0,
+        \ 'Mru': 0,
+        \ 'Tag': 0,
+        \ 'BufTag': 0,
+        \ 'Function': 0,
+        \ 'Line': 0,
+        \ 'Colorscheme': 0
+        \}
+let g:Lf_WildIgnore = {
+        \ 'dir': ['.svn','.git','.hg', '.exvim', 'obj', 'lib', 'bin'],
+        \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
+        \}
+let g:Lf_MruFileExclude = ['*.so']
+let g:Lf_MruMaxFiles = 400
+let g:Lf_StlSeparator = {
+            \ 'left': g:setting.left_separator,
+            \ 'right': g:setting.right_separator
+            \ }
+let g:Lf_RootMarkers = ['.git', '.svn', '.exvimlinux', '.exvimwin']
+nnoremap <silent> <leader>jf :<C-u>LeaderfMru<CR>
+" nnoremap <silent> <C-p> :<C-u>LeaderfFile<CR>
+nnoremap <silent> <leader>lf :<C-u>LeaderfFile<CR>
+" nnoremap <silent> <leader>fl :<C-u>LeaderfBuffer<CR>
+nnoremap <silent> <leader>ft :<C-u>LeaderfLine<CR>
+nnoremap <silent> <leader>fm :<C-u>LeaderfFunction<CR>
+" }}}
+
+" Plug 'Yggdroot/LeaderF-marks'
+
+Plug 'DaSea/LeaderF-DiffusateFile'
+let g:leaderf_diffusate_doc_root='/media/entertainment/Doc'
+let g:leaderf_diffusate_notes_root='/media/work/Self/01_mywiki/dasea.github.io/source'
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:
+

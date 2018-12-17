@@ -165,7 +165,7 @@ endif
 "}}}
 
 " 一个简单的添加笔记，浏览笔记的插件{{{
-Plug 'DaSea/SimpleMdNote.vim'
+Plug 'DaSea/SimpleMdNote.vim', 
 if g:iswindows
     let g:simplemdnote_draft_path = "E:/Self/01_mywiki/dasea.github.io/source/_drafts"
     let g:simplemdnote_posts_path = "E:/Self/01_mywiki/dasea.github.io/source/_posts"
@@ -181,7 +181,7 @@ nnoremap <silent> <leader>fn execute 'LeaderF ' . g:simplemdnote_posts_path . '<
 " }}}
 
 " fish {{{
-Plug 'dag/vim-fish'
+Plug 'dag/vim-fish', {'for': ['fish']}'
 " }}}
 
 " vim:ts=4:sw=4:sts=4 et fdm=marker:

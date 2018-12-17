@@ -94,7 +94,7 @@ endif
 " ==============================================================================
 " 全局配置变量(Dictionnary){{{
 let g:setting = {}
-" 分隔符：具体看 https://github.com/ryanoasis/powerline-extra-symbols
+" 分隔符：具体看 https://github.com/ryanoasis/powerline-extra-symbols {{{
 " 0. 三角符号; 1. 火焰符号; 2. 圆角符号; 3. 左斜; 4. 左斜; 5. 波纹; 6. 点
 " [0, 1, 2, 3] = [left, left sub, right, right sub]
 let g:separator_list = [
@@ -118,11 +118,12 @@ let g:setting.tab_left_separator = g:separator_list[tab_separator_index][0]
 let g:setting.tab_left_sub_separator = g:separator_list[tab_separator_index][1]
 let g:setting.tab_right_separator = g:separator_list[tab_separator_index][2]
 let g:setting.tab_right_sub_separator = g:separator_list[tab_separator_index][3]
+" }}}
+
+" ui设置 {{{
 " 全局设置seoul256-light, NeoSolarized
 let g:setting.color_scheme = 'onedark'
 " let g:setting.color_scheme = 'NeoSolarized'
-" 关于更改行的设置(git(vim-fugitive, vim-gitgutter), git_svn(vim-signify), no)
-let g:setting.version_status = 'no'
 " 是否使用vim-devicons
 let g:setting.use_devicons = 'yes'
 " 状态栏(airline, lightline or no), 如果为no, 自定义状态栏
@@ -131,19 +132,26 @@ let g:setting.status_line = 'airline'
 let g:setting.status_color = 'onedark'
 " let g:setting.status_color = 'alduin'
 let g:setting.show_tabline = 'yes'
-" 是否使用exVim系列插件
-let g:setting.use_exvim = 'no'
+" }}}
+
+" 关于更改行的设置(git(vim-fugitive, vim-gitgutter), git_svn(vim-signify), no)
+let g:setting.version_status = 'no'
+
+" 补全相关 {{{
 " 是否使用lsp特性
 let g:setting.use_lsp = 'no'
-" 使用ctrlp还是使用unit.vim(denite.nvim)
-" 由于denite出色的特性, 测试用denite替换unite相关插件, 或者用LeaderF
-let g:setting.ctrlp_or_unite = 'leaderf'
-" 是否需要开启代码的静态语法检查(neomake插件)
-let g:setting.make_lint_need = 'no'
+" coc.nvim(测试) 或 deoplete
+let g:setting.complete_plugin = 'cocnvim'
 " 是否需要开启括号补全
 let g:setting.auto_pairs_need = 'yes'
 " 参数补全(tenfyzhong/CompleteParameter.vim)
 let g:setting.auto_paramcomplete = 'no'
+" }}}
+
+" 使用ctrlp和LeaderF, nerdtree
+let g:setting.ctrlp_or_leaderf = 'leaderf'
+" 是否需要开启代码的静态语法检查(neomake插件)
+let g:setting.make_lint_need = 'no'
 " name
 let g:setting.author_name = 'DaSea'
 " windows与linux使用不同的目录
@@ -858,6 +866,7 @@ nnoremap <space> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
 " 替换当前当前光标下单词 {{{
 nnoremap <Leader>pw :call ReplaceCurrentWord()<CR>
+vnoremap <Leader>pw :call ReplaceCurrentWord()<CR>
 function! ReplaceCurrentWord() abort
     let curWord = expand("<cword>")
     call inputsave()
