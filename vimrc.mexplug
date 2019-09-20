@@ -34,15 +34,20 @@ Plug 'DaSea/ex-prjlist' " {{{
 " 已经用新的插件vim-denite-prjmgr 替代(依赖于denite.nvim)
 " ---------------------------------------------------
 if g:isNvim
-    if isdirectory("/media/work")
-        let g:exprjlist_vsc_root_dir = {
-                    \ "/media/work/Self/05_gitsrc": "git"}
-        let g:exprjlist_vimplug_root_dir = "/home/dasea/.vim/plugged"
+    if g:iswindows
+        let g:exprjlist_vsc_root_dir = {"e:/Self/05_gitsrc": "git"}
+        let g:exprjlist_vimplug_root_dir = "D:/Develop/Neovim/share/nvim/vimfiles/plugged"
     else
-        " wsl
-        let g:exprjlist_vsc_root_dir = {
-                    \ "/mnt/e/Self/05_gitsrc": "git"}
-        let g:exprjlist_vimplug_root_dir = "/home/Feng/.vim/plugged"
+        if isdirectory("/media/work")
+            let g:exprjlist_vsc_root_dir = {
+                        \ "/media/work/Self/05_gitsrc": "git"}
+            let g:exprjlist_vimplug_root_dir = "/home/dasea/.vim/plugged"
+        else
+            " wsl
+            let g:exprjlist_vsc_root_dir = {
+                        \ "/mnt/e/Self/05_gitsrc": "git"}
+            let g:exprjlist_vimplug_root_dir = "/home/Feng/.vim/plugged"
+        endif
     endif
 else
     if isdirectory("/media/work")

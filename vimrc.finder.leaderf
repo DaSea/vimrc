@@ -24,8 +24,8 @@ let g:Lf_PreviewResult = {
         \ 'Colorscheme': 0
         \}
 let g:Lf_WildIgnore = {
-        \ 'dir': ['.svn','.git','.hg', '.exvim', 'obj', 'lib', 'bin'],
-        \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
+        \ 'dir': ['.svn','.git','.hg', '.exvim', 'obj', 'lib', 'bin', 'build', 'build32', 'buildlinux', '.vscode', 'res', ],
+        \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]', '*.user[32]']
         \}
 let g:Lf_MruFileExclude = ['*.so']
 let g:Lf_MruMaxFiles = 400
@@ -33,20 +33,38 @@ let g:Lf_StlSeparator = {
             \ 'left': g:setting.left_separator,
             \ 'right': g:setting.right_separator
             \ }
-let g:Lf_RootMarkers = ['.git', '.svn', '.exvimlinux', '.exvimwin']
+let g:Lf_RootMarkers = ['.git', '.svn', '.exvimlinux', '.exvimwin', '.vscode']
 nnoremap <silent> <leader>jf :<C-u>LeaderfMru<CR>
 " nnoremap <silent> <C-p> :<C-u>LeaderfFile<CR>
 nnoremap <silent> <leader>lf :<C-u>LeaderfFile<CR>
 " nnoremap <silent> <leader>fl :<C-u>LeaderfBuffer<CR>
 nnoremap <silent> <leader>ft :<C-u>LeaderfLine<CR>
 nnoremap <silent> <leader>fm :<C-u>LeaderfFunction<CR>
-" }}}
+" 俩个特殊的命令，显示wiki内容
+" nnoremap <silent> <leader>fk :<C-u>LeaderfFile /media/work/Self/01_mywiki/dasea.github.io/source<CR>
+"}}}
 
 " Plug 'Yggdroot/LeaderF-marks'
 
 Plug 'DaSea/LeaderF-DiffusateFile'
-let g:leaderf_diffusate_doc_root='/media/entertainment/Doc'
-let g:leaderf_diffusate_notes_root='/media/work/Self/01_mywiki/dasea.github.io/source'
+if g:iswindows
+    let g:leaderf_diffusate_doc_root='G:/Doc'
+    let g:leaderf_diffusate_notes_root='E:/Self/01_mywiki/dasea.github.io/source'
+    let g:leaderf_diffusate_exec_map = {
+                \ 'pdf': 'D:/Program Files/SumatraPDF/SumatraPDF.exe',
+                \ 'doc': 'D:/Program Files/Kingsoft/WPS Office/wps.exe'
+                \}
+else
+    let g:leaderf_diffusate_doc_root='/media/entertainment/Doc'
+    let g:leaderf_diffusate_notes_root='/media/work/Self/01_mywiki/dasea.github.io/source'
+    let g:leaderf_diffusate_exec_map = {
+                \ 'pdf': 'qpdfview --unique',
+                \ 'doc': 'wps',
+                \ 'chm': 'kchmviewer'
+                \}
+endif
+nnoremap <silent> <leader>fd :<C-u>LeaderfDoc<CR>
+nnoremap <silent> <leader>fk :<C-u>LeaderfNote<CR>
 
 " vim:ts=4:sw=4:sts=4 et fdm=marker:
 

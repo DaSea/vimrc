@@ -88,6 +88,7 @@ else
     " set default encoding to utf-8
     set encoding=utf-8
     set termencoding=utf-8
+    set fileencodings=utf-8,cp936,gbk,gb2312,gb18030,utf-16le,cp1252,ucs-bom,iso-8859-15
 endif
 "}}}
 
@@ -107,13 +108,13 @@ let g:separator_list = [
             \ ["\ue0c4", "\ue0c6", "\ue0c5", "\ue0c7"]
             \ ]
 " 定义全局的分割符
-let separator_index = 2
+let separator_index = 0
 let g:setting.left_separator = g:separator_list[separator_index][0]
 let g:setting.left_sub_separator = g:separator_list[separator_index][1]
 let g:setting.right_separator = g:separator_list[separator_index][2]
 let g:setting.right_sub_separator = g:separator_list[separator_index][3]
 " tabline显示的分隔符
-let tab_separator_index = 6
+let tab_separator_index = 0
 let g:setting.tab_left_separator = g:separator_list[tab_separator_index][0]
 let g:setting.tab_left_sub_separator = g:separator_list[tab_separator_index][1]
 let g:setting.tab_right_separator = g:separator_list[tab_separator_index][2]
@@ -124,13 +125,15 @@ let g:setting.tab_right_sub_separator = g:separator_list[tab_separator_index][3]
 " 全局设置seoul256-light, NeoSolarized
 let g:setting.color_scheme = 'onedark'
 " let g:setting.color_scheme = 'NeoSolarized'
+" let g:setting.color_scheme = 'solarized8_flat'
+" let g:setting.color_scheme = 'gruvbox'
 " 是否使用vim-devicons
 let g:setting.use_devicons = 'yes'
 " 状态栏(airline, lightline or no), 如果为no, 自定义状态栏
 let g:setting.status_line = 'airline'
 " let g:setting.status_line = 'lightline'
 let g:setting.status_color = 'onedark'
-" let g:setting.status_color = 'alduin'
+" let g:setting.status_color = 'wombat'
 let g:setting.show_tabline = 'yes'
 " }}}
 
@@ -140,16 +143,33 @@ let g:setting.version_status = 'no'
 " 补全相关 {{{
 " 是否使用lsp特性
 let g:setting.use_lsp = 'no'
-" coc.nvim(测试) 或 deoplete
-let g:setting.complete_plugin = 'cocnvim'
+" ncm2(测试) 或 deoplete
+let g:setting.complete_plugin = 'ncm2'
 " 是否需要开启括号补全
 let g:setting.auto_pairs_need = 'yes'
 " 参数补全(tenfyzhong/CompleteParameter.vim)
 let g:setting.auto_paramcomplete = 'no'
 " }}}
+"
+" $base03:    #002b36;
+" $base02:    #073642;
+" $base01:    #586e75;
+" $base00:    #657b83;
+" $base0:     #839496;
+" $base1:     #93a1a1;
+" $base2:     #eee8d5;
+" $base3:     #fdf6e3;
+" $yellow:    #b58900;
+" $orange:    #cb4b16;
+" $red:       #dc322f;
+" $magenta:   #d33682;
+" $violet:    #6c71c4;
+" $blue:      #268bd2;
+" $cyan:      #2aa198;
+" $green:     #859900;
 
-" 使用ctrlp和LeaderF, nerdtree
-let g:setting.ctrlp_or_leaderf = 'leaderf'
+" 使用denite, ctrlp和LeaderF, nerdtree
+let g:setting.ctrlp_or_leaderf = 'denite'
 " 是否需要开启代码的静态语法检查(neomake插件)
 let g:setting.make_lint_need = 'no'
 " name
@@ -163,7 +183,7 @@ endif
 let g:setting.private_snippets = g:vim_plugin_path . '/snippets'
 " 设置需要支持的语言(目前有python, cpp, markdown, plantuml, vim, php, org, lua )
 " let g:language_group = ['cpp', 'python', 'markdown', 'org', 'vim', 'todo', 'plantuml', 'go']
-let g:language_group = ['cpp', 'markdown', 'python', 'vim', 'plantuml']
+let g:language_group = ['cpp', 'markdown', 'python', 'vim', 'plantuml', 'cmake']
 " }}}
 
 " ==============================================================================
@@ -322,7 +342,6 @@ endif
 set novb
 set matchtime=0 " 0 second to show the matching paren ( much faster )
 set scrolloff=0 " minimal number of screen lines to keep above and below the cursor
-set wrap " do not wrap text
 
 set wildmenu " turn on wild menu, try typing :h and press <Tab>
 set showcmd " display incomplete commands
@@ -506,7 +525,7 @@ if !g:isGUI
     endif
     set t_Co=256
 endif
-if strftime("%H") >= 15 || strftime("%H") <= 8
+if strftime("%H") >= 17 || strftime("%H") <= 8
     set background=dark
 else
     set background=dark
@@ -587,14 +606,19 @@ set cc=+1       " 对齐线，当一行的长度大于80时显示一条竖线
 " set cuc         " 高亮当前列
 set cursorline  " 高亮当前行
 " hi ColorColumn ctermbg=lightgrey guibg=lightgrey
+highlight Normal ctermbg=None
 
 " ==============================================================================
 " 显示不可打印字符
 "===============================================================================
-" set list
+set wrap " do not wrap text
+set list
+" set nolist
 " set listchars=tab:▸\ ,eol:¬,trail:⋅,extends:❯,precedes:❮
 " set listchars=tab:>-,trail:⋅,extends:>,precedes:<
 set showbreak=↪
+set sidescroll=5
+set listchars+=precedes:<,extends:>
 " For conceal markers.
 if has("conceal")
     set conceallevel=0
@@ -603,6 +627,10 @@ if has("conceal")
 endif
 
 " =============================================================================
+" 拼写检查设置
+" set spell spelllang=en_us
+
+" " =============================================================================
 " 行尾符设置
 set fileformats=unix,dos
 
@@ -647,7 +675,10 @@ set smartcase " set smartcase mode on, If there is upper case character in the s
 " set this to use id-utils for global search
 " set grepprg=ag\ --nogroup\ --nocolor
 " set grepformat=%f:%l:%m
-
+if executable('rg')
+    set grepprg=rg\ --vimgrep\ --no-heading\ -S
+    set grepformat=%f:%l:%c:%m,%f:%l:%m
+endif
 "}}}
 
 " ==============================================================================
@@ -686,7 +717,7 @@ if has('autocmd')
         " au FileType c,cpp,java,javascript set comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,f://
         " au FileType cs set comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,f:///,f://
         " au FileType vim set comments=sO:\"\ -,mO:\"\ \ ,eO:\"\",f:\"
-        au FileType vim set foldmethod=indent
+        au FileType vim set foldmethod=marker
         au FileType lua setlocal tabstop=2
         au FileType qml,python set foldmethod=indent
         au FileType c,cpp set foldmethod=indent
@@ -694,6 +725,8 @@ if has('autocmd')
         au FileType dosbatch setlocal fileencoding=cp936
         " au FileType org setlocal tabstop=2
         au FileType java setlocal nolist
+        " markdown
+        " au FileType markdown setlocal conceallevel=0
 
         " if edit python scripts, check if have \t.( python said: the programme can only
         " use \t or not, but can't use them together )
@@ -770,11 +803,57 @@ if g:isNvim
     " }}}
 
     if g:iswindows
+        let g:clipboard = {
+                    \   'name': 'myClipboard',
+                    \   'copy': {
+                    \      '+': 'win32yank.exe -i',
+                    \      '*': 'win32yank.exe -i',
+                    \    },
+                    \   'paste': {
+                    \      '+': 'win32yank.exe -o --lf',
+                    \      '*': 'win32yank.exe -o --lf',
+                    \   },
+                    \   'cache_enabled': 1,
+                    \ }
+
         function! WinNvimInit() abort "  {{{
-            execute 'GuiFont FuraCode Nerd Font Mono:h12'
-            call GuiWindowMaximized(1)
+            if g:isGtkNvim
+                " call rpcnotify(1, 'Gui', 'Font', 'Hack Nerd Font Mono 14')
+                call rpcnotify(1, 'Gui', 'Font', 'Inziu Iosevka SC 14')
+                call rpcnotify(1, 'Gui', 'Option', 'Tabline', 0)
+                call rpcnotify(1, 'Gui', 'FontFeatures', 'PURS, cv17')
+                " call rpcnotify(1, 'Gui', 'Option', 'Cmdline', 1)
+            else
+                " execute 'GuiFont FuraCode Nerd Font Mono:h13:b'
+                " execute 'GuiFont FuraMono Nerd Font Mono:h14'
+                " execute 'GuiFont! DejaVuSansMono NF:h14'
+                " execute 'GuiFont! Hack Nerd Font Mono:h13:b'
+                " execute 'GuiFont! FuraCode NF:h13:b'
+                " execute 'GuiFont! TerminessTTF NF:h14'
+                execute 'GuiFont! GoMono NF:h13:b'
+                " execute 'GuiFont! mononoki Nerd Font:h13'
+                " execute 'GuiFont! MesloLGM NF RegularForPowerline:h12'
+                " execute 'GuiFont! Hack Nerd Font Mono:h14:b'
+                " execute 'GuiFont! Hack Nerd Font:h13:b'
+                " execute 'GuiFont! SpaceMono Nerd Font Mono:h14:b'
+                call GuiWindowMaximized(1)
+                execute 'GuiTabline 0'
+                execute 'GuiPopupmenu 0'
+            endif
         endfunction " }}}
         nnoremap <Leader>ni :call WinNvimInit()<CR>
+
+        let g:neovimqt_fullscreen=0
+        function! WinNvimFullscreen() abort " 全屏控制 {{{
+            if g:neovimqt_fullscreen==0
+                let g:neovimqt_fullscreen = 1
+                execute "call GuiWindowFullScreen(1)"
+            else
+                let g:neovimqt_fullscreen = 0
+                execute "call GuiWindowFullScreen(0)"
+            endif
+        endfunction " }}}
+        nnoremap <Leader>nf :call WinNvimFullscreen()<CR>
     endif
 
     "终端设置{{{
@@ -833,7 +912,7 @@ function! MapToFile()
     silent exe "redir end"
 endfunction
 
-" 重命名换取区? 待测试
+" 重命名buffer? 待测试
 com -nargs=1 -bang -complete=file Ren f <args>|w<bang>
 
 " 重新映射leader键，default 为\
@@ -888,6 +967,24 @@ endfunction " }}}
 nmap CM :%s/\r$//g<CR>:noh<CR>
 " tab 转空格(tab to space)
 noremap <Leader>tts :%ret! 4<CR>
+
+"==================================================
+" 路径相关操作
+" 设置工作目录到当前文件所在目录(仅对当前window有效)
+" nnoremap <Leader>po :lcd %:p:h<CR>
+command CDCurrFilePathCurrWin lcd %:p:h
+" 设置工作目录到当前文件所在目录(对所有window有效)
+" nnoremap <Leader>pa  :cd %:p:h<CR>
+command CDCurrFilePathAllWin cd %:p:h
+
+"=================================================
+" The following provides smart Home and smart End and should work properly in normal mode,
+" visual mode, insert mode, select mode, and operator-pending mode:
+noremap <expr> <Home> (col('.') == matchend(getline('.'), '^\s*')+1 ? '0' : '^')
+noremap <expr> <End> (col('.') == match(getline('.'), '\s*$') ? '$' : 'g_')
+vnoremap <expr> <End> (col('.') == match(getline('.'), '\s*$') ? '$h' : 'g_')
+imap <Home> <C-o><Home>
+imap <End> <C-o><End>
 
 "===================================================
 " 将当前光标下单词转换成大写
@@ -977,8 +1074,8 @@ autocmd FileType qf noremap <buffer> q :close<CR>
 "===================================================
 " 编辑vim配置文件，并重新读取配置文件
 if g:iswindows
-    nnoremap <Leader>ev :e $VIM/.vimrc<cr>
-    exec 'nnoremap <Leader>evp :e $VIM/vimfiles/vimrc.vimplug''<cr>'
+    nnoremap <Leader>ev :e $VIM/vimfiles/vimrc<cr>
+    exec 'nnoremap <Leader>evp :e $VIM/vimfiles/vimrc.vimplug<cr>'
     nnoremap <Leader>sv :source $MYVIMRC<cr>
 else
     exec 'nnoremap <Leader>ev :e ~/.vimrc<cr>'
@@ -988,12 +1085,12 @@ endif
 
 "===================================================
 " 保存文件设置
-noremap  <Leader>wa :w<CR>
-inoremap <Leader>wa <ESC>:w<CR>
-vnoremap <Leader>wa <ESC>:w<CR>
-noremap  <Leader>ws :wa<CR>
-inoremap <Leader>ws <ESC>:wa<CR>
-vnoremap <Leader>ws <ESC>:wa<CR>
+noremap  <Leader>wf :w<CR>
+inoremap <Leader>wf <ESC>:w<CR>
+vnoremap <Leader>wf <ESC>:w<CR>
+noremap  <Leader>wa :wa<CR>
+inoremap <Leader>wa <ESC>:wa<CR>
+vnoremap <Leader>wa <ESC>:wa<CR>
 if g:islinux && g:isNvim==0
     nnoremap <Leader>rs :w !sudo tee>/dev/null %<CR>
 endif

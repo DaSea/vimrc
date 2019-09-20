@@ -34,9 +34,11 @@ Plug 'Yggdroot/indentLine' "对齐线{{{
 let g:indentLine_color_gui = '#FF4040'
 let g:indentLine_char = '┊'
 let g:indentLine_faster = 1
+let g:indentLine_showFirstIndentLevel = 1
+let g:indentLine_setColors = 0
 "}}}
 
-Plug 'ntpeters/vim-better-whitespace' "显示行尾多余空格并快速删除{{{
+Plug 'ntpeters/vim-better-whitespace',{'on': 'StripWhitespace'} "显示行尾多余空格并快速删除{{{
 " 显示行尾空格(better)
 " ----------------------------------------------------
 let g:better_whitespace_filetypes_blacklist = ['denite', 'unite', 'vimfiler', 'ctrlp', 'org',
@@ -46,14 +48,34 @@ noremap CS :StripWhitespace<CR>
 
 " colorscheme 插件 {{{
 " ---------------------------------------------------
-" Plug 'icymind/NeoSolarized'
-" let g:neosolarized_contrast = "low"
-" let g:neosolarized_visibility = "high"
-" let g:neosolarized_vertSplitBgTrans = 0
-" let g:neosolarized_bold = 1
-" let g:neosolarized_underline = 1
-" let g:neosolarized_termtrans = 1
-" let g:neosolarized_italic = 0
+Plug 'lifepillar/vim-solarized8'
+let g:solarized_visibility='normal'
+let g:solarized_diffmode='normal'
+let g:solarized_termtrans=1
+let g:solarized_statusline='flat'
+" let g:solarized_italics=1
+let g:solarized_term_italics=1
+let g:solarized_extra_hi_groups=1
+function! s:solarized8_overrides(background) abort
+    if a:background ==# 'light'
+        hi NormalFloat ctermfg=247 ctermbg=236 guifg=#93a1a1 guibg=#01232b guisp=NONE cterm=NONE gui=NONE
+        hi DeniteFilter ctermfg=247 ctermbg=236 guifg=#93a1a1 guibg=#262c00 guisp=NONE cterm=NONE gui=NONE
+        hi FloatPreview ctermfg=247 ctermbg=236 guifg=#93a1a1 guibg=#262c00 guisp=NONE cterm=NONE gui=NONE
+        hi FloatPreviewTransparent ctermfg=247 ctermbg=236 guifg=#262c00 guibg=#262c00 guisp=NONE cterm=NONE gui=NONE
+    else
+        hi NormalFloat ctermfg=242 ctermbg=254 guifg=#586e75 guibg=#fdf6e3 guisp=NONE cterm=NONE gui=NONE
+        hi DeniteFilter ctermfg=242 ctermbg=254 guifg=#586e75 guibg=#c2d735 guisp=NONE cterm=NONE gui=NONE
+        hi FloatPreview ctermfg=242 ctermbg=254 guifg=#586e75 guibg=#c2d735 guisp=NONE cterm=NONE gui=NONE
+        hi FloatPreviewTransparent ctermfg=242 ctermbg=254 guifg=#c2d735 guibg=#c2d735 guisp=NONE cterm=NONE gui=NONE
+    endif
+endfunction
+augroup solarized8-overrides
+    autocmd!
+    autocmd ColorScheme * call <SID>solarized8_overrides(&background)
+    " autocmd ColorScheme solarized8_flat call <SID>solarized8_overrides(&background)
+    " autocmd ColorScheme solarized8_high call <SID>solarized8_overrides(&background)
+    " autocmd ColorScheme solarized8_low call <SID>solarized8_overrides(&background)
+augroup END
 
 " Plug 'nightsense/vimspectr'
 " let g:vimspectrCursorLineNr = 'on'
@@ -68,23 +90,30 @@ noremap CS :StripWhitespace<CR>
 
 Plug 'joshdick/onedark.vim'
 let g:onedark_terminal_italics=1
-if (has("autocmd") && !has("gui_running"))
+if (has("autocmd") && !has("gui_running") && ('onedark' ==? g:setting.color_scheme))
   augroup colorset
     autocmd!
     let s:white = { "gui": "#ABB2BF", "cterm": "145", "cterm16" : "7" }
-    autocmd ColorScheme * call onedark#set_highlight("Normal", { "fg": s:white }) " `bg` will not be styled since there is no `bg` setting
+    autocmd ColorScheme * call onedark#set_highlight("Normal", { "fg": s:white })
+    " `bg` will not be styled since there is no `bg` setting
+    " 下面主要解决再konsole下， blur效果下显示不清晰的问题
+    let s:comment = { "gui": "#00af87", "cterm": "36", "cterm16": "8" }
+    let s:linenr = { "gui": "#87af00", "cterm": "106", "cterm16": "8" }
+    autocmd ColorScheme * call onedark#extend_highlight("Comment",  {"fg": s:comment})
+    autocmd ColorScheme * call onedark#extend_highlight("SpecialComment",  {"fg": s:comment})
+    autocmd ColorScheme * call onedark#extend_highlight("Folded",  {"fg": s:comment})
+    autocmd ColorScheme * call onedark#extend_highlight("LineNr",  {"fg": s:linenr})
   augroup END
 endif
 
 " Plug 'morhetz/gruvbox'
-" let g:gruvbox_contrast_dark='sorft'
-" let g:gruvbox_contrast_light='soft'
+" let g:gruvbox_contrast_dark='medium'
+" let g:gruvbox_contrast_light='medium'
 " let g:gruvbox_vert_split='purple'
 
 " Plug 'kristijanhusak/vim-hybrid-material'
 " let g:enable_bold_font=1
 " let g:enable_italic_font=1
-
 
 " 个人收集的一些主题
 " Plug 'DaSea/vim-personcolors'
@@ -97,6 +126,13 @@ endif
 " let g:vimsyn_folding='af'
 " let g:c_folding=1
 " }}}
+
+" 状态栏，必须放在vim-devicons上面，不然状态栏不会运用图标
+if 'airline' ==? g:setting.status_line
+    call LoadConfig("vimrc.ui.airline")
+elseif 'lightline' ==? g:setting.status_line
+    call LoadConfig("vimrc.ui.airline")
+endif
 
 if 'yes' ==? g:setting.use_devicons
     Plug 'ryanoasis/vim-devicons' " 显示优美的，如果，电脑不行可以不用{{{
@@ -117,13 +153,6 @@ if 'yes' ==? g:setting.use_devicons
     " }}}
 endif
 
-" 状态栏
-if 'airline' ==? g:setting.status_line
-    call LoadConfig("vimrc.ui.airline")
-elseif 'lightline' ==? g:setting.status_line
-    call LoadConfig("vimrc.ui.airline")
-endif
-
 " 彩虹括号
 Plug 'luochen1990/rainbow'
 let g:rainbow_active = 1
@@ -135,4 +164,4 @@ let g:choosewin_label='JKLMNOPQRTUVWYZABCDEFGHI'
 nmap - :ChooseWin<CR>
 " }}}
 
-" vim:ts=4:sw=4:sts=4 et fdm=marker:
+" vim: ts=4: sw=4: sts=4: set fdm=marker: set filetype=vim :

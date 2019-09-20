@@ -1,3 +1,73 @@
-Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
+" IMPORTANT: :help Ncm2PopupOpen for more information
+set completeopt=noinsert,menuone,noselect
+set shortmess+=c
+
+" assuming you're using vim-plug: https://github.com/junegunn/vim-plug
+Plug 'ncm2/ncm2'
+Plug 'roxma/nvim-yarp'
+
+" NOTE: you need to install completion sources to get completions. Check
+" our wiki page for a list of sources: https://github.com/ncm2/ncm2/wiki
+Plug 'ncm2/ncm2-bufword'
+Plug 'ncm2/ncm2-path'
+Plug 'fgrsnau/ncm2-otherbuf', {'branch': 'ncm2'}
+
+" enable ncm2 for all buffers
+autocmd BufEnter * call ncm2#enable_for_buffer()
+au TextChangedI * call ncm2#auto_trigger()
+
+" based on ultisnips
+Plug 'ncm2/ncm2-ultisnips' | Plug 'SirVer/ultisnips' " snippets {{{
+let g:UltiSnipsUsePythonVersion = 3
+let g:UltiSnipsSnippetsDir=g:setting.private_snippets.'/ultisnips'
+let g:UltiSnipsSnippetDirectories = [g:setting.private_snippets.'/ultisnips/']
+let g:UltiSnipsEnableSnipMate=0
+let g:UltiSnipsEditSplit="vertical"
+let g:UltiSnipsExpandTrigger="<C-k>"
+let g:UltiSnipsJumpForwardTrigger="<C-k>"
+let g:UltiSnipsJumpBackwardTrigger="<C-j>"
+let g:UltiSnipsRemoveSelectModeMappings=0
+inoremap <silent> <expr> <CR> ncm2_ultisnips#expand_or("\<CR>", 'n')
+" 编辑snippet
+nnoremap <leader>ns :UltiSnipsEdit<CR>
+" }}}
+
+Plug 'ncm2/ncm2-syntax' | Plug 'Shougo/neco-syntax'
+Plug 'ncm2/ncm2-vim' | Plug 'Shougo/neco-vim'
+
+Plug 'ncm2/ncm2-pyclang' " {{{
+if g:iswindows
+    let g:ncm2_pyclang#library_path = 'D:/Develop/LLVM/bin/libclang.dll'
+else
+    let g:ncm2_pyclang#library_path = '/use/lib/libclang.so'
+endif
+" a list of relative paths for compile_commands.json
+let g:ncm2_pyclang#database_path = [
+            \ 'compile_commands.json',
+            \ 'build/compile_commands.json'
+            \ ]
+" a list of relative paths looking for .clang_complete
+let g:ncm2_pyclang#args_file_path = ['.clang_complete']
+if g:iswindows
+    let g:ncm2_pyclang#sys_inc_args_fallback = {
+                \ "c":['-isystem', 'D:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/include/'],
+                \ 'cpp': ['-isystem', 'D:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/include/']
+                \ }
+else
+    let g:ncm2_pyclang#sys_inc_args_fallback = {
+                \ "c":['-isystem', '/usr/include/c++/9.1.0/'],
+                \ 'cpp': ['-isystem', '/usr/include/c++/9.1.0/']
+                \ }
+endif
+" }}}
+
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function()
+	return (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
+endfunction
+
+" Use <TAB> to select the popup menu:
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 " vim:ts=4:sw=4:sts=4 et fdm=marker:

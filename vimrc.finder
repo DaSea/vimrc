@@ -1,7 +1,8 @@
 " 因为unit.vim和ctrlp有许多相同的功能, 所以分开, 可以让大家自由选择
 " 这里主要记录ctrlp的主要内容
-
-if g:setting.ctrlp_or_leaderf ==? 'ctrlp'
+if g:setting.ctrlp_or_leaderf ==? 'denite'
+    call LoadConfig("vimrc.finder.denite")
+elseif g:setting.ctrlp_or_leaderf ==? 'ctrlp'
     call LoadConfig("vimrc.finder.ctrlp")
 else
     call LoadConfig("vimrc.finder.leaderf")

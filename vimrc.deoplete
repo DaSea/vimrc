@@ -48,7 +48,7 @@ function! DeopleteInit() abort
                 \ 'smart_case': v:true,
                 \ 'camel_case': v:true
                 \ })
-    " call deoplete#custom#option("delimiters",['/', '.', '::', ':', '#', '->'])
+    " call deoplete#custom#option("converter_auto_delimiter",['/', '.', '::', ':', '#', '->'])
     " call deoplete#custom#option("complete_method", "complete")
     " call deoplete#custom#option('sources', {
                 " \ '_': ['buffer'],
@@ -59,6 +59,9 @@ function! DeopleteInit() abort
                 " \ 'go': ['buffer', 'neosnippet', 'file/include', 'go'],
                 " \ 'java': ['buffer', 'neosnippet', 'file/include']
                 " \})
+    " 改变sources的顺序
+    call deoplete#custom#source('neosnippet', 'rank', 1000)
+    call deoplete#custom#source('buffer', 'rank', 900)
     " call deoplete#custom#var('clangx', 'clang_binary', '/usr/bin/clang')
     " call deoplete#custom#var('omni', 'input_patterns', {
     " \ 'ruby': ['[^. *\t]\.\w*', '[a-zA-Z_]\w*::'],

@@ -45,7 +45,7 @@ endfunction "}}}
 "}}}
 
 " docsets plugin {{{
-Plug 'Dasea/docsets.vim'
+" Plug 'Dasea/docsets.vim'
 if g:islinux
     let g:docsets_path_root = "/media/entertainment/Doc/docsets"
 else

@@ -3,6 +3,8 @@ function! QuickBrowFileInExpolorer() abort
     let reviewfile = expand("%:p")
     if g:iswindows
         exec "silent !start explorer.exe /e,/select," . reviewfile
+    elseif executable("dolphin")
+        call system('dolphin --select --split ' . reviewfile . ' &')
     elseif executable("nautilus")
         call system('nautilus --select ' . reviewfile)
     elseif executable("dde-file-manager")

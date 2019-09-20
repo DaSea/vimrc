@@ -84,9 +84,10 @@ abbr        delete[] var;
 snippet     template
 abbr        template <T>
     template<typename ${1:T}>
+    ${0}
 
 snippet     class
-abbr        class {}
+abbr        class template
     class ${1:#:name} {
     public:
         $1(${2});
@@ -252,9 +253,17 @@ snippet     coutend
 options     head
     std::cout << ${0:TARGET} << std::endl;
 
+snippet     ncoutend
+options     head
+    cout << ${0:TARGET} << endl;
+
 snippet     str
 abbr     std::string
     std::string ${1:str};${0}
+
+snippet     usename
+abbr     using namespace name;
+    using namespace ${1:std};${0}
 
 snippet     logd
 abbr     LOGD_S

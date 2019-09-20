@@ -1,10 +1,90 @@
 " 存放于语言相关的配置, 如果为语法高亮和相关的补全等
 " 生成tags {{{
-Plug 'jsfaint/gen_tags.vim', {'on': ['GenCtags', 'GenGTAGS']}
-" let g:gen_tags#ctags_opts = []
+let $GTAGSLABEL = 'native-pygments'
+if g:iswindows
+    " Windows 下面在 gtags/share/gtags/gtags.conf
+    " let $GTAGSCONF = 'gtags/gtags.conf'
+else
+    " let $GTAGSCONF = '$HOME/.dotfiles/vim/tags/gtags.conf'
+endif
+" 是否使用quickfix显示cscope查找的结果
+if v:version >= 800
+    set cscopequickfix=s+,c+,d+,i+,t+,e+,g+,f+,a+
+else
+    set cscopequickfix=s+,c+,d+,i+,t+,e+,g+,f+
+endif
+" use gtags-cscope替换cscope
+" set csprg=/usr/local/bin/cscope
+Plug 'jsfaint/gen_tags.vim'
+" Plug 'ronakg/quickr-cscope.vim'
+", {'for': ['c', 'cpp']}
+" {'on': ['GenCtags', 'GenGTAGS']}
+let g:gen_tags#ctags_opts = ['--fields=+niazS', '--extra=+q', '--c++-kinds=+px', '--c-kinds=+px']
+" 如果使用 universal ctags 需要增加下面一行
+let g:gen_tags#ctags_opts += ['--output-format=e-ctags']
+if g:iswindows
+    let g:gen_tags#blacklist = ['$HOME', 'build', 'lib', 'bin', 'resource']
+else
+    " let g:gen_tags#blacklist = ['build', 'lib', 'bin', 'resource']
+endif
 let g:gen_tags#ctags_use_cache_dir=1
 let g:gen_tags#ctags_auto_gen=0
 let g:gen_tags#gtags_auto_gen=0
+let g:gen_tags#ctags_auto_update=0
+let g:gen_tags#gtags_auto_update=0
+let g:gen_tags#gtags_default_map=0
+" 下面可自定义按键
+function! s:gen_tags_find(cmd, keyword) abort
+    " Mark this position
+    execute "normal! mY"
+    " Close any open quickfix windows
+    cclose
+    " Clear existing quickfix list
+    cal setqflist([])
+
+    let l:cur_buf=@%
+    let l:cmd = 'cs find ' . a:cmd . ' ' . a:keyword
+    silent! keepjumps execute l:cmd
+
+    if len(getqflist()) > 1
+        " If the buffer that cscope jumped to is not same as current file, close the buffer
+        if l:cur_buf != @%
+            " Go back to where the command was issued
+            execute "normal! `Y"
+            " delete previous buffer.
+            bdelete #
+        endif
+        copen
+    endif
+endfunction
+" 查找调用本函数的函数
+noremap <leader>gc :call <SID>gen_tags_find('c', "<C-R><C-W>")<CR>
+vnoremap <leader>gc :call <SID>gen_tags_find('c', "<C-R><C-W>")<CR>
+" 查找本函数调用的函数
+noremap <leader>gd :call <SID>gen_tags_find('d', "<C-R><C-W>")<CR>
+vnoremap <leader>gd :call <SID>gen_tags_find('d', "<C-R><C-W>")<CR>
+" 查找本egrep模式
+noremap <leader>ge :call <SID>gen_tags_find('e', "<C-R><C-A>")<CR>
+vnoremap <leader>ge :call <SID>gen_tags_find('e', "<C-R><C-A>")<CR>
+" 查找本文件
+noremap <leader>gf :call <SID>gen_tags_find('f', "<C-R><C-F>")<CR>
+vnoremap <leader>gf :call <SID>gen_tags_find('f', "<C-R><C-F>")<CR>
+" 查找本定义
+noremap <leader>gg :call <SID>gen_tags_find('g', "<C-R><C-W>")<CR>
+vnoremap <leader>gg :call <SID>gen_tags_find('g', "<C-R><C-W>")<CR>
+" 查找包含本文件的文件
+noremap <leader>gi :call <SID>gen_tags_find('i', "<C-R><C-F>")<CR>
+vnoremap <leader>gi :call <SID>gen_tags_find('i', "<C-R><C-F>")<CR>
+" 查找本C符号
+noremap <leader>gs :call <SID>gen_tags_find('s', "<C-R><C-W>")<CR>
+vnoremap <leader>gs :call <SID>gen_tags_find('s', "<C-R><C-W>")<CR>
+" 查找本字符串
+noremap <leader>gt :call <SID>gen_tags_find('t', "<C-R><C-A>")<CR>
+vnoremap <leader>gt :call <SID>gen_tags_find('t', "<C-R><C-A>")<CR>
+" }}}
+
+Plug 'sheerun/vim-polyglot' " 语法大集合 {{{
+let g:polyglot_disabled = ['css', 'tmux', 'zig', 'vcl']
 " }}}
 
 Plug 'DaSea/vim-syntax' " 杂7杂8的, 有qml, 有cpp文件中的doxygen, ndk高亮等{{{
@@ -23,6 +103,7 @@ if index(g:language_group, 'markdown') >= 0
     let g:vim_markdown_folding_style_pythonic=1
     let g:vim_markdown_emphasis_multiline=90
     let g:vim_markdown_conceal=0
+    let g:vim_markdown_conceal_code_blocks=0
     let g:vim_markdown_new_list_item_indent = 2
 
     " 增加在浏览器中打开当前编辑的文件, 预览markdown, 浏览器安装markdown的viewer插件
@@ -74,26 +155,20 @@ if index(g:language_group, 'cpp') >= 0
         let g:alternateSearchPath =
                     \ "D:\\Develop\\Java\\android-ndk-r11b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include"
     else
-        let g:alternateSearchPath = "/usr/include/c++/8.1.1"
+        let g:alternateSearchPath = "/usr/include/c++/9.1.0"
     endif
     nnoremap <silent> <leader>ah :A<CR>
     nnoremap <silent> <leader>av :AV<CR>
     nnoremap <silent> <leader>as :AS<CR>
     "}}}
 
-    Plug 'octol/vim-cpp-enhanced-highlight'
-    let c_no_curly_error=1
-    let g:cpp_class_scope_highlight = 1
-    let g:cpp_class_decl_hightlight = 1
-    " let g:cpp_experimental_simple_template_highlight = 1
-
-    if g:isNvim
+    if 0 "g:isNvim
         Plug 'arakashic/chromatica.nvim', {'for': ['cpp', 'c']} " 语法高亮 {{{
         let g:chromatica#enable_at_startup=1
         if g:iswindows
             let g:chromatica#libclang_path='D:/Develop/LLVM/bin/libclang.dll'
         else
-            let g:chromatica#libclang_path='/usr/lib/llvm-4.0/lib'
+            " let g:chromatica#libclang_path='/usr/lib/llvm-4.0/lib'
             let g:chromatica#libclang_path='/usr/lib/libclang.so'
         endif
         " }}}
@@ -165,7 +240,7 @@ endif
 "}}}
 
 " 一个简单的添加笔记，浏览笔记的插件{{{
-Plug 'DaSea/SimpleMdNote.vim', 
+Plug 'DaSea/SimpleMdNote.vim'
 if g:iswindows
     let g:simplemdnote_draft_path = "E:/Self/01_mywiki/dasea.github.io/source/_drafts"
     let g:simplemdnote_posts_path = "E:/Self/01_mywiki/dasea.github.io/source/_posts"
@@ -181,7 +256,15 @@ nnoremap <silent> <leader>fn execute 'LeaderF ' . g:simplemdnote_posts_path . '<
 " }}}
 
 " fish {{{
-Plug 'dag/vim-fish', {'for': ['fish']}'
+if g:islinux
+    Plug 'dag/vim-fish', {'for': ['fish']}
+endif
+" }}}
+
+" cmake {{{
+if index(g:language_group, 'cmake') >= 0
+    Plug 'nickhutchinson/vim-cmake-syntax'
+endif
 " }}}
 
 " vim:ts=4:sw=4:sts=4 et fdm=marker:
