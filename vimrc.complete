@@ -3,6 +3,9 @@ set pumheight=15
 
 if g:isNvim
     if 'ncm2' ==? g:setting.complete_plugin
+        call LoadConfig('vimrc.ncm2')
+        finish
+    elseif 'cocnvim' ==? g:setting.complete_plugin
         call LoadConfig('vimrc.cocnvim')
         finish
     else

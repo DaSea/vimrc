@@ -62,4 +62,56 @@ nnoremap <silent> <leader>fb :NERDTreeFind<cr>
 
 " }}}
 
+" NERDTress File highlighting
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight' "{{{
+let g:NERDTreeHighlightCursorline = 0
+let g:NERDTreeFileExtensionHighlightFullName = 1
+let g:NERDTreeExactMatchHighlightFullName = 1
+let g:NERDTreePatternMatchHighlightFullName = 1
+" you can add these colors to your .vimrc to help customizing
+let s:brown = "905532"
+let s:aqua =  "3AFFDB"
+let s:blue = "689FB6"
+let s:darkBlue = "44788E"
+let s:purple = "834F79"
+let s:lightPurple = "834F79"
+let s:red = "AE403F"
+let s:beige = "F5C06F"
+let s:yellow = "F09F17"
+let s:orange = "D4843E"
+let s:darkOrange = "F16529"
+let s:pink = "CB6F6F"
+let s:salmon = "EE6E73"
+let s:green = "8FAA54"
+let s:lightGreen = "31B53E"
+let s:white = "FFFFFF"
+let s:rspec_red = 'FE405F'
+let s:git_orange = 'F54D27'
+" sets the color of css files to blue
+let g:NERDTreeExtensionHighlightColor = {
+            \ 'qrc' : s:blue,
+            \ 'ui' : s:salmon,
+            \ 'txt' : s:purple,
+            \ 'h' : s:green,
+            \ 'bat': s:darkBlue,
+            \ 'pro': s:rspec_red,
+            \ 'pri': s:rspec_red,
+            \ 'exe': s:red,
+            \ 'profile': s:darkOrange,
+            \ 'colorscheme': s:beige
+            \ }
+" 如果你想禁用某文件类型的颜色, 将其置为空
+" let g:NERDTreeExtensionHighlightColor['css'] = ''
+" sets the color for .gitignore files
+" let g:NERDTreeExactMatchHighlightColor = {}
+" let g:NERDTreeExactMatchHighlightColor['.gitignore'] = s:git_orange
+" sets the color for files ending with _spec.rb
+" let g:NERDTreePatternMatchHighlightColor = {}
+" let g:NERDTreePatternMatchHighlightColor['.*_spec\.rb$'] = s:rspec_red
+" 禁止不常用的文件的颜色
+" let g:NERDTreeLimitedSyntax = 1
+" 下面俩项合用，第一个是禁止所有高亮，第二个是开启某项高亮
+let g:NERDTreeSyntaxDisableDefaultExtensions = 1
+let g:NERDTreeSyntaxEnabledExtensions = ['sh', 'cpp', 'hpp', 'xml', 'c', 'py', 'json', 'md']
+" }}}
 " vim:ts=4:sw=4:sts=4 et fdm=marker:

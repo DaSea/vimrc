@@ -1,5 +1,6 @@
+" 主要放置与界面有关的，比如状态栏，配色，开始界面等
 Plug 'mhinz/vim-startify',{'on': 'Startify'} " 开始界面,可以显示MRU, Session等{{{
-"开始欢迎界面
+" 开始欢迎界面
 nnoremap <F4> :Startify<CR>
 " set session path
 let g:startify_session_dir = '/home/seasea/.vim/session'
@@ -26,7 +27,7 @@ let g:startify_custom_header = [
             \ '   |                                                         |',
             \ '   -----------------------------------------------------------',
             \ ]
-let g:startify_custom_footer = ['', "   可以做到,相信自己! ", '']
+let g:startify_custom_footer = ['', "   我只想做个安静的咸鱼! ", '']
 "}}}
 
 Plug 'Yggdroot/indentLine' "对齐线{{{
@@ -46,74 +47,106 @@ let g:better_whitespace_filetypes_blacklist = ['denite', 'unite', 'vimfiler', 'c
 noremap CS :StripWhitespace<CR>
 "}}}
 
-" colorscheme 插件 {{{
-" ---------------------------------------------------
-Plug 'lifepillar/vim-solarized8'
-let g:solarized_visibility='normal'
-let g:solarized_diffmode='normal'
-let g:solarized_termtrans=1
-let g:solarized_statusline='flat'
-" let g:solarized_italics=1
-let g:solarized_term_italics=1
-let g:solarized_extra_hi_groups=1
-function! s:solarized8_overrides(background) abort
-    if a:background ==# 'light'
+" floating popup setting {{{
+function! s:solarized8_overrides(background) abort " {{{
+    if a:background ==# 'dark'
         hi NormalFloat ctermfg=247 ctermbg=236 guifg=#93a1a1 guibg=#01232b guisp=NONE cterm=NONE gui=NONE
         hi DeniteFilter ctermfg=247 ctermbg=236 guifg=#93a1a1 guibg=#262c00 guisp=NONE cterm=NONE gui=NONE
         hi FloatPreview ctermfg=247 ctermbg=236 guifg=#93a1a1 guibg=#262c00 guisp=NONE cterm=NONE gui=NONE
         hi FloatPreviewTransparent ctermfg=247 ctermbg=236 guifg=#262c00 guibg=#262c00 guisp=NONE cterm=NONE gui=NONE
+        " leaderf 高亮
+        highlight Lf_hl_popup_inputText guifg=#ddc7a1 guibg=#504945 gui=NONE ctermfg=223 ctermbg=239 cterm=NONE
+        highlight Lf_hl_popup_window guifg=#ddc7a1 guibg=#504945 gui=NONE ctermfg=223 ctermbg=239 cterm=NONE
+        highlight Lf_hl_popup_prompt guifg=#89b482 ctermfg=108
+        highlight Lf_hl_popup_spin guifg=#d8a657 ctermfg=214
+        highlight Lf_hl_popup_normalMode guifg=#282828 guibg=#a89984 gui=bold ctermfg=235 ctermbg=246 cterm=bold
+        highlight Lf_hl_popup_inputMode guifg=#282828 guibg=#a89984 gui=bold ctermfg=235 ctermbg=246 cterm=bold
+        highlight Lf_hl_popup_category guifg=#ddc7a1 guibg=#7c6f64 gui=NONE ctermfg=223 ctermbg=243 cterm=NONE
+        highlight Lf_hl_popup_nameOnlyMode guifg=#ddc7a1 guibg=#665c54 gui=NONE ctermfg=223 ctermbg=241 cterm=NONE
+        highlight Lf_hl_popup_fullPathMode guifg=#ddc7a1 guibg=#665c54 gui=NONE ctermfg=223 ctermbg=241 cterm=NONE
+        highlight Lf_hl_popup_fuzzyMode guifg=#ddc7a1 guibg=#665c54 gui=NONE ctermfg=223 ctermbg=241 cterm=NONE
+        highlight Lf_hl_popup_regexMode guifg=#ddc7a1 guibg=#665c54 gui=NONE ctermfg=223 ctermbg=241 cterm=NONE
+        highlight Lf_hl_popup_cwd guifg=#ddc7a1 guibg=#504945 gui=NONE ctermfg=223 ctermbg=239 cterm=NONE
+        " Lf_hl_popup_blank is the wincolor of statusline window
+        highlight! link Lf_hl_popup_blank Lf_hl_popup_window
+        highlight Lf_hl_popup_lineInfo guifg=#ddc7a1 guibg=#665c54 gui=NONE ctermfg=223 ctermbg=241 cterm=NONE
+        highlight Lf_hl_popup_total guifg=#282828 guibg=#a89984 gui=NONE ctermfg=235 ctermbg=246 cterm=NONE
     else
-        hi NormalFloat ctermfg=242 ctermbg=254 guifg=#586e75 guibg=#fdf6e3 guisp=NONE cterm=NONE gui=NONE
+        hi NormalFloat ctermfg=242 ctermbg=254 guifg=#586e75 guibg=#EBDBB2 guisp=NONE cterm=NONE gui=NONE
         hi DeniteFilter ctermfg=242 ctermbg=254 guifg=#586e75 guibg=#c2d735 guisp=NONE cterm=NONE gui=NONE
         hi FloatPreview ctermfg=242 ctermbg=254 guifg=#586e75 guibg=#c2d735 guisp=NONE cterm=NONE gui=NONE
         hi FloatPreviewTransparent ctermfg=242 ctermbg=254 guifg=#c2d735 guibg=#c2d735 guisp=NONE cterm=NONE gui=NONE
+        " leaderf 高亮
+        highlight Lf_hl_popup_inputText guifg=#4f3829 guibg=#ebdbb2 gui=NONE ctermfg=237 ctermbg=223 cterm=NONE
+        highlight Lf_hl_popup_window guifg=#4f3829 guibg=#ebdbb2 gui=NONE ctermfg=237 ctermbg=223 cterm=NONE
+        highlight Lf_hl_popup_prompt guifg=#4c7a5d ctermfg=165
+        highlight Lf_hl_popup_spin guifg=#b47109 ctermfg=136
+        highlight Lf_hl_popup_normalMode guifg=#ebdbb2 guibg=#7c6f64 gui=bold ctermfg=235 ctermbg=243 cterm=bold
+        highlight Lf_hl_popup_inputMode guifg=#ebdbb2 guibg=#7c6f64 gui=bold ctermfg=235 ctermbg=243 cterm=bold
+        highlight Lf_hl_popup_category guifg=#4f3829 guibg=#a89984 gui=NONE ctermfg=237 ctermbg=246 cterm=NONE
+        highlight Lf_hl_popup_nameOnlyMode guifg=#4f3829 guibg=#bdae93 gui=NONE ctermfg=237 ctermbg=248 cterm=NONE
+        highlight Lf_hl_popup_fullPathMode guifg=#4f3829 guibg=#bdae93 gui=NONE ctermfg=237 ctermbg=248 cterm=NONE
+        highlight Lf_hl_popup_fuzzyMode guifg=#4f3829 guibg=#bdae93 gui=NONE ctermfg=237 ctermbg=248 cterm=NONE
+        highlight Lf_hl_popup_regexMode guifg=#4f3829 guibg=#bdae93 gui=NONE ctermfg=237 ctermbg=248 cterm=NONE
+        highlight Lf_hl_popup_cwd guifg=#4f3829 guibg=#d5c4a1 gui=NONE ctermfg=237 ctermbg=250 cterm=NONE
+        " Lf_hl_popup_blank is the wincolor of statusline window
+        highlight! link Lf_hl_popup_blank Lf_hl_popup_window
+        highlight Lf_hl_popup_lineInfo guifg=#4f3829 guibg=#bdae93 gui=NONE ctermfg=237 ctermbg=248 cterm=NONE
+        highlight Lf_hl_popup_total guifg=#ebdbb2 guibg=#7c6f64 gui=NONE ctermfg=235 ctermbg=243 cterm=NONE
     endif
-endfunction
+endfunction " }}}
 augroup solarized8-overrides
     autocmd!
     autocmd ColorScheme * call <SID>solarized8_overrides(&background)
-    " autocmd ColorScheme solarized8_flat call <SID>solarized8_overrides(&background)
-    " autocmd ColorScheme solarized8_high call <SID>solarized8_overrides(&background)
-    " autocmd ColorScheme solarized8_low call <SID>solarized8_overrides(&background)
 augroup END
+" }}}
 
-" Plug 'nightsense/vimspectr'
-" let g:vimspectrCursorLineNr = 'on'
-" let g:vimspectrMuteLineNr = 'on'
-" let g:vimspectrLineNr = 'on'
-" let g:vimspectrItalicComment = 'on'
-" let g:vimspectrMuteStatusLine = 'on'
+" colorscheme 插件 {{{
+" ---------------------------------------------------
+Plug 'lifepillar/vim-solarized8'
+" let g:solarized_use16=1
+let g:solarized_visibility='normal'
+let g:solarized_diffmode='normal'
+let g:solarized_termtrans=1
+let g:solarized_statusline='flat'
+" let g:solarized_italics=0
+let g:solarized_term_italics=0
+let g:solarized_extra_hi_groups=1
 
-" Plug 'rakr/vim-one'
-" let g:one_allow_italics = 1
-" let g:one_allow_underline=1
-
-Plug 'joshdick/onedark.vim'
-let g:onedark_terminal_italics=1
-if (has("autocmd") && !has("gui_running") && ('onedark' ==? g:setting.color_scheme))
-  augroup colorset
-    autocmd!
-    let s:white = { "gui": "#ABB2BF", "cterm": "145", "cterm16" : "7" }
-    autocmd ColorScheme * call onedark#set_highlight("Normal", { "fg": s:white })
-    " `bg` will not be styled since there is no `bg` setting
-    " 下面主要解决再konsole下， blur效果下显示不清晰的问题
-    let s:comment = { "gui": "#00af87", "cterm": "36", "cterm16": "8" }
-    let s:linenr = { "gui": "#87af00", "cterm": "106", "cterm16": "8" }
-    autocmd ColorScheme * call onedark#extend_highlight("Comment",  {"fg": s:comment})
-    autocmd ColorScheme * call onedark#extend_highlight("SpecialComment",  {"fg": s:comment})
-    autocmd ColorScheme * call onedark#extend_highlight("Folded",  {"fg": s:comment})
-    autocmd ColorScheme * call onedark#extend_highlight("LineNr",  {"fg": s:linenr})
-  augroup END
-endif
+" Plug 'joshdick/onedark.vim'
+" let g:onedark_terminal_italics=1
+" if (has("autocmd") && !has("gui_running"))
+  " augroup colorset
+    " autocmd!
+    " let s:white = { "gui": "#ABB2BF", "cterm": "145", "cterm16" : "7" }
+    " autocmd ColorScheme * call onedark#set_highlight("Normal", { "fg": s:white })
+    " " `bg` will not be styled since there is no `bg` setting
+  " augroup END
+" endif
 
 " Plug 'morhetz/gruvbox'
-" let g:gruvbox_contrast_dark='medium'
-" let g:gruvbox_contrast_light='medium'
+" let g:gruvbox_contrast_dark='soft'
+" let g:gruvbox_contrast_light='soft'
 " let g:gruvbox_vert_split='purple'
+" let g:gruvbox_bold=1
+" let g:gruvbox_italic=0
+" let g:gruvbox_underline=1
+" let g:gruvbox_improved_strings=1
+" let g:gruvbox_improved_warnings=1
+" let g:gruvbox_guisp_fallback='fg'
 
-" Plug 'kristijanhusak/vim-hybrid-material'
-" let g:enable_bold_font=1
-" let g:enable_italic_font=1
+Plug 'sainnhe/gruvbox-material'
+let g:gruvbox_materia_background='medium'
+let g:gruvbox_material_disable_italic_comment = 0
+let g:gruvbox_material_enable_bold=1
+let g:gruvbox_material_transparent_background = 1
+let g:gruvbox_material_visual = 'reverse'
+let g:gruvbox_material_current_word = 'underline'
+
+Plug 'liuchengxu/space-vim-theme'
+let g:space_vim_italic = 0
+let g:space_vim_filetype_hi_groups = 1
+let g:space_vim_transp_bg = 0
 
 " 个人收集的一些主题
 " Plug 'DaSea/vim-personcolors'
@@ -128,10 +161,22 @@ endif
 " }}}
 
 " 状态栏，必须放在vim-devicons上面，不然状态栏不会运用图标
+ " 主要为了在状态栏显示当前行所在函数{{{
+function! HiEchoCurrentTag() abort " 命令行高亮输出当前所在tag {{{
+    echohl Error | echo tagbar#currenttag("%s", "Unknown Function") | echohl None
+endfunction " }}}
+Plug 'majutsushi/tagbar' " {'on': 'TagbarToggle'}
+nnoremap <Leader>tm :call HiEchoCurrentTag()<CR>
+nnoremap <Leader>tb :TagbarToggle<CR>
+if g:setting.status_line ==? 'airline'
+    call add(g:airline_extensions, 'tagbar')
+endif
+" }}}
+
 if 'airline' ==? g:setting.status_line
     call LoadConfig("vimrc.ui.airline")
 elseif 'lightline' ==? g:setting.status_line
-    call LoadConfig("vimrc.ui.airline")
+    call LoadConfig("vimrc.ui.lightline")
 endif
 
 if 'yes' ==? g:setting.use_devicons
@@ -140,7 +185,7 @@ if 'yes' ==? g:setting.use_devicons
     let g:webdevicons_enable_nerdtree = 1
     " adding the custom source to unite
     let g:webdevicons_enable_unite = 1
-    let g:webdevicons_enable_denite = 1
+    let g:webdevicons_enable_denite = 0
     let g:webdevicons_enable_vimfiler = 1
     " adding to vim-airline's tabline
     let g:webdevicons_enable_airline_tabline = 1
@@ -158,10 +203,140 @@ Plug 'luochen1990/rainbow'
 let g:rainbow_active = 1
 
 Plug 't9md/vim-choosewin', {'on': 'ChooseWin'} " 快速在窗口在跳转 {{{
-" let g:choosewin_statusline_replace=0
-" let g:choosewin_overlay_enable=1
+let g:choosewin_statusline_replace=1
+let g:choosewin_label_align='center'
+let g:choosewin_label_fill=0
 let g:choosewin_label='JKLMNOPQRTUVWYZABCDEFGHI'
+let s:ignore_filtype = ["leaderf",  "denite", "unite", "vimfiler",
+            \ "vimshell", "nerdtree"]
+let g:choosewin_hook = {}
+function! g:choosewin_hook.filter_window(winnums)
+    return filter(a:winnums, 'index(s:ignore_filtype,
+                \   getwinvar(v:val, "&filetype")) == -1')
+endfunction
 nmap - :ChooseWin<CR>
 " }}}
 
-" vim: ts=4: sw=4: sts=4: set fdm=marker: set filetype=vim :
+" quick ui {{{
+Plug 'skywind3000/vim-quickui'
+let g:quickui_border_style=2
+let g:quickui_color_scheme='gruvbox'
+" display tips in the cmdline
+let g:quickui_show_tip = 1
+
+augroup QuickUI
+  au!
+  au FileType qf noremap <silent><buffer> p :call quickui#tools#preview_quickfix()<cr>
+augroup END
+
+" press <space> twice to open menu
+function QuickMenu() " {{{
+    " let opts = {'index':g:quickui#context#cursor}
+    " call quickui#menu#open()
+endfunction " }}}
+command! -nargs=0 QMenu call quickui#menu#open()
+
+" display vim messages in the textbox
+function! QuickMessages() abort " {{{
+    let x = ''
+    redir => x
+    silent! messages
+    redir END
+    let x = substitute(x, '[\n\r]\+\%$', '', 'g')
+    let content = filter(split(x, "\n"), 'v:key != ""')
+    let opts = {"close":"button", "title":"Vim Messages"}
+    call quickui#textbox#open(content, opts)
+endfunc " }}}
+command! -nargs=0 QMessage call QuickMessages()
+
+function QuickHelp(mhelp)
+    call quickui#tools#display_help(a:mhelp)
+endfunc
+command! -nargs=1 -complete=help QHelp call QuickHelp(<q-args>)
+
+function QuickFindInCurFle()
+    :lv /<C-r>=expand("<cword>")<CR>/ %<CR>:lw<CR>
+endfunc
+
+function! QuickContentMenuCallBack(code)
+    echo "callback: " . a:code
+endfunc
+function QuickContentMenu() " {{{
+    " contentx menu
+    let content = [
+                \ ["&Help Keyword\t\\ch", 'echo 100' ],
+                \ ["&Signature\t\\cs", 'echo 101'],
+                \ ['-'],
+                \ ["Find in &File\t\\lv", 'call QuickFindInCurFle()' ],
+                \ ["Find in &Project\t\\cp", 'lv /<C-r>=expand("<cword>")<CR>/ %<CR>:lw' ],
+                \ ["Find in &Defintion\t\\cd", 'echo 400' ],
+                \ ["Search &References\t\\cr", 'echo 500'],
+                \ ['-'],
+                \ ["&Documentation\t\\cm", 'echo 600'],
+                \ ]
+    " set cursor to the last position
+    let opts = {'index':g:quickui#context#cursor}
+    " call back
+    let opts.callback = 'QuickContentMenuCallBack'
+    call quickui#context#open(content, opts)
+endfunc " }}}
+nnoremap K :call QuickContentMenu()<CR>
+
+function! QuickUiInit() abort " 设置quickui {{{
+    " menu
+    call quickui#menu#reset()
+
+    " install a 'File' menu, each item comprises its name and command to execute
+    call quickui#menu#install('&File', [
+                \ [ "&New File\tCtrl+n", 'new' ],
+                \ [ "&Open File\t(F3)", 'call feedkeys(":edit ")' ],
+                \ [ "&Close", 'close' ],
+                \ [ "--", '' ],
+                \ [ "&Save\tCtrl+s", 'w'],
+                \ [ "Save &As", 'call feedkey(":saveas ")' ],
+                \ [ "Save All", 'wa' ],
+                \ [ "--", '' ],
+                \ [ "E&xit\tAlt+x", 'q' ],
+                \ ])
+
+    " items contains tips, tips will display in the bottom of screen
+    call quickui#menu#install('&Plugin', [
+                \ ["&NERDTree\t<space>tn", 'NERDTreeToggle', 'toggle nerdtree'],
+                \ ['&Tagbar', '', 'toggle tagbar'],
+                \ ["&Choose Window/Tab\tAlt+e", "ChooseWin", "fast switch win/tab with vim-choosewin"],
+                \ ["-"],
+                \ ["&Browse in github", "Gbrowse", "using tpope's rhubarb to open browse and view the file"],
+                \ ["&Startify", "Startify", "using tpope's rhubarb to open browse and view the file"],
+                \ ["&Gist", "Gist", "open gist with mattn/gist-vim"],
+                \ ["&Edit Note", "Note", "edit note with vim-notes"],
+                \ ["&Display Calendar", "Calendar", "display a calender"],
+                \ ["-"],
+                \ ["Plugin &List", "PlugList", 'list available plugins'],
+                \ ["Plugin &Update", "PlugUpdate", 'update plugins'],
+                \ ])
+
+    " script inside %{...} will be evaluated and expanded in the string
+    call quickui#menu#install("&Tools", [
+                \ ["Switch &Buffer", 'call quickui#tools#kit_buffers("e")'],
+                \ ["-"],
+                \ ['Set &Spell %{&spell? "Off":"On"}', 'set spell!', 'Toggle spell check %{&spell? "off" : "on"}'],
+                \ ['Set &Cursor Line %{&cursorline? "Off":"On"}', 'set cursorline!', 'Toggle cursor line %{&cursorline? "off" : "on"}'],
+                \ ['Set &Paste %{&paste? "Off":"On"}', 'set paste!', 'Toggle paste mode %{&paste? "off" : "on"}'],
+                \ ])
+
+    call quickui#menu#install('H&elp', [
+                \ ["&Cheatsheet", 'help index', ''],
+                \ ['T&ips', 'help tips', ''],
+                \ ['--',''],
+                \ ["&Tutorial", 'help tutor', ''],
+                \ ['&Quick Reference', 'help quickref', ''],
+                \ ['&Summary', 'help summary', ''],
+                \ ['--',''],
+                \ ['&Vim Script', 'help eval', ''],
+                \ ['&Function List', 'help function-list', ''],
+                \ ], 10000)
+endfunc " }}}
+call add(g:init_func_list, function('QuickUiInit'))
+" }}}
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:

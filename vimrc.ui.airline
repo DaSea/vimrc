@@ -1,7 +1,9 @@
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 " airline状态栏{{{
-let g:airline_powerline_fonts = 1
+" hi airline_c  ctermbg=NONE guibg=NONE
+" hi airline_tabfill ctermbg=NONE guibg=NONE
+let g:airline_powerline_fonts = (g:setting.use_powerfont==?'yes')
 let g:airline_theme = g:setting.status_color
 let g:airline_left_sep = g:setting.left_separator
 let g:airline_right_sep = g:setting.right_separator
@@ -14,26 +16,37 @@ let g:airline_symbols.branch = ''
 let g:airline_symbols.readonly = ''
 let g:airline_symbols.linenr = ''
 let g:airline_detect_modified=1
+let g:airline_detect_paste=1
 let g:airline_detect_crypt=0
 let g:airline_detect_spell=0
 let g:airline_detect_iminsert=0
 let g:airline_inactive_collapse=0
-let g:airline_highlighting_cache=0
+let g:airline_inactive_alt_sep=0
+let g:airline_highlighting_cache=1
+let g:airline_exclude_preview = 1
+let g:airline_skip_empty_sections = 1
+" let g:ariline_focusloset_inactive=1
+" let g:airline_statusline_ontop=1
 let g:airline_extensions = ['quickfix']
+let g:airline#extensions#quickfix#quickfix_text = 'QuickFix'
+let g:airline#extensions#quickfix#location_text = 'Location'
 if g:setting.show_tabline ==? 'yes' " {{{
     call add(g:airline_extensions, 'tabline')
     let g:airline#extensions#tabline#enabled=1
     let g:airline#extensions#tabline#show_splits = 1
     let g:airline#extensions#tabline#switch_buffers_and_tabs = 0
     let g:airline#extensions#tabline#show_buffers = 1
-    let g:airline#extensions#tabline#show_tabs = 0
+    let g:airline#extensions#tabline#show_tabs = 1
+    let g:airline#extensions#tabline#show_tab_nr = 1
     let g:airline#extensions#tabline#tab_nr_type = 2
+    let g:airline#extensions#tabline#show_tab_type = 1
     let g:airline#extensions#tabline#buf_label_first = 1
     let g:airline#extensions#tabline#buffers_label = 'B'
     let g:airline#extensions#tabline#tabs_label = 'T'
     let g:airline#extensions#tabline#current_first=1
+    let g:airline#extensions#tabline#show_tab_count=1
     let g:airline#extensions#tabline#buffer_idx_mode = 1
-    let g:airline#extensions#tabline#excludes = ['nerdtree', 'LeaderF', 'unite', 'vimfiler',
+    let g:airline#extensions#tabline#excludes = ['nerdtree', 'leaderf', 'unite', 'vimfiler',
                 \ 'exproject', 'denite', 'denite-filter']
     let g:airline#extensions#tabline#show_close_button = 1
     let g:airline#extensions#tabline#close_symbol = 'X'
@@ -48,7 +61,7 @@ if g:setting.show_tabline ==? 'yes' " {{{
     let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
     let g:airline#extensions#tabline#buffer_min_count = 1
     let g:airline#extensions#tabline#ignore_bufadd_pat =
-                \ '\c\vgundo|undotree|vimfiler|tagbar|nerd_tree|exproject|LeaderF|denite|denite-filter'
+                \ '\c\vgundo|undotree|vimfiler|tagbar|nerd_tree|exproject|leaderf|denite|denite-filter'
     nmap ,1 <Plug>AirlineSelectTab1
     nmap ,2 <Plug>AirlineSelectTab2
     nmap ,3 <Plug>AirlineSelectTab3
@@ -62,12 +75,31 @@ if g:setting.show_tabline ==? 'yes' " {{{
     nmap <Leader>d <Plug>AirlineSelectNextTab
 endif "}}}
 
+let g:airline_filetype_overrides = {
+            \ 'defx':  ['defx', '%{b:defx.paths[0]}'],
+            \ 'gundo': [ 'Gundo', '' ],
+            \ 'help':  [ 'Help', '%f' ],
+            \ 'minibufexpl': [ 'MiniBufExplorer', '' ],
+            \ 'nerdtree': [ get(g:, 'NERDTreeStatusline', 'NERD'), '' ],
+            \ 'startify': [ 'startify', '' ],
+            \ 'vim-plug': [ 'Plugins', '' ],
+            \ }
 " 各个部分的设置简化
-" let g:airline_section_c = '%-0.50{getcwd()}'
-" let g:airline_section_c = g:project_name . ': %t%m'
-" let g:airline_section_z = '%l%{g:airline_symbols.linenr}%L'
-let g:airline_section_z = '%l:%L%{g:airline_symbols.linenr}%c'
-
+let g:airline_section_b = "%{fnamemodify(bufname('%'),':p:.:h')}"
+let g:airline_section_c = "%t"
+let g:airline_section_z = '%l%{g:airline_symbols.linenr}%L'
+" let g:airline_section_z = '%l:%L%{g:airline_symbols.linenr}%c'
+let g:airline#extensions#default#layout = [
+            \ [ 'a', 'x', 'y', 'c', 'z'],
+            \ [ 'error']
+            \ ]
+" \ [ 'b', 'z', 'error', 'warning' ]
+" 为inactive设置单独的显示
+function! MAirlineInactiveLeft(...)
+    let w:airline_section_a = "[INACTIVE]"
+    let w:airline_section_c = " %t"
+    " let w:airline_section_c = '%{MyPlugin#function()}'
+endfunction
 " 当显示icons时，重新定义section_y，由于此时不显示bomb信息了 {{{
 function! GetFileBomb() abort " 文件编码是否有bomb信息 {{{
     let bomb = &l:bomb ? '[B]' : ''
@@ -77,8 +109,10 @@ function! MAirlineInit() abort " {{{
     call airline#parts#define_function('fbomb', 'GetFileBomb')
     call airline#parts#define_minwidth('fbomb', 3)
     let g:airline_section_error = airline#section#create_right(['fbomb'])
+    " call airline#add_inactive_statusline_func('MAirlineInactiveLeft')
 endfunction " }}}
 call add(g:init_func_list, function('MAirlineInit'))
+
 " }}}
 
 let g:airline_mode_map = {
@@ -93,6 +127,13 @@ let g:airline_mode_map = {
             \ 's'  : 's',
             \ 'S'  : 'S',
             \ '' : 'S',
+            \ 'ic'   : 'I',
+            \ 'ix'   : 'I',
+            \ 'multi': 'M',
+            \ 'ni'   : 'NI',
+            \ 'no'   : 'NO',
+            \ 'Rv'   : 'RV',
+            \ 't'    : 'T',
             \ }
 " }}}
 

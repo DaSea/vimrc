@@ -10,10 +10,6 @@ function! g:LoadConfig(vimcfg) abort " load vimrc.<subfile> {{{
     endif
 endfunction " }}}
 
-" 界面显示相关 (colortheme, statusline, starty){{{
-call LoadConfig("vimrc.ui")
-"}}}
-"
 "git, svn等控制显示{{{
 call LoadConfig("vimrc.version")
 "}}}
@@ -26,6 +22,10 @@ call LoadConfig("vimrc.mexplug")
 
 " finder(leaderf, ctrlp)及文件管理器{{{
 call LoadConfig("vimrc.finder")
+"}}}
+
+" 界面显示相关 (colortheme, statusline, starty, devicons){{{
+call LoadConfig("vimrc.ui")
 "}}}
 
 " 主要是识别文件的编码，grep，多光标等{{{

@@ -9,17 +9,17 @@ nmap <unique> <silent> <Leader><Esc> :EXgp<CR><ESC>
 " 定义运行qml文件的脚本
 " nnoremap <Leader>mr :call system("qmlscene". expand("%"))<CR>
 
-" Plug 'exvim/ex-showmarks'
+Plug 'exvim/ex-showmarks'
 " ex-showmarks: invoke by m... or <Leader>mm, <Leader>ma
 " ---------------------------------------------------
 " TODO: bootleq/ShowMarks on github is well organized in code, but have lots
 " bugs, consider merge his code and fixes the bugs
-" let g:showmarks_enable = 1
-" let g:showmarks_include = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-" let g:showmarks_ignore_type = 'hqm' " Ignore help, quickfix, non-modifiable buffers
+let g:showmarks_enable = 1
+let g:showmarks_include = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+let g:showmarks_ignore_type = 'hqm' " Ignore help, quickfix, non-modifiable buffers
 " Hilight lower & upper marks
-" let g:showmarks_hlline_lower = 1
-" let g:showmarks_hlline_upper = 0
+let g:showmarks_hlline_lower = 1
+let g:showmarks_hlline_upper = 0
 
 Plug 'exvim/ex-matchit'
 " ex-matchit: invoke by %

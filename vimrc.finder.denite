@@ -10,10 +10,11 @@ endif " {{{
 Plug 'Shougo/neomru.vim'
 nnoremap <silent> <leader>jf :<C-u>Denite file_mru<CR>
 nnoremap <silent> <leader>lf :<C-u>Denite file/rec<CR>
+nnoremap <silent> <leader>lb :<C-u>DeniteBufferDir file/rec<CR>
 nnoremap <silent> <leader>fl :<C-u>Denite buffer<CR>
 nnoremap <silent> <leader>ft :<C-u>Denite line<CR>
 nnoremap <silent> <leader>fm :<C-u>Denite outline<CR>
-nnoremap <silent> <leader>am :<C-u>Denite menu<CR>
+" nnoremap <silent> <leader>am :<C-u>Denite menu<CR>
 nnoremap <silent> <leader>gw :<C-u>Denite grep:::`expand('cword')`
 " nnoremap <silent> <C-p> :<C-u>Denite -split=floating file/rec<CR>
 " menu设置, 加载menu文件{{{
@@ -57,8 +58,12 @@ function! s:denite_filter_my_settings() abort
     if exists('&winblend')
         " setlocal winblend=100
     endif
-    call ncm2#disable_for_buffer()
-    " call deoplete#custom#buffer_option('auto_complete', v:false)
+    if exists("*ncm2#disable_for_buffer")
+        call ncm2#disable_for_buffer()
+    endif
+    if exists("*deoplete#custom#buffer_option")
+        call deoplete#custom#buffer_option('auto_complete', v:false)
+    endif
     " nnoremap <silent><buffer><expr> <CR> denite#do_map('do_action')
     nnoremap <silent><buffer><expr> <ESC>   denite#do_map('quit')
     nnoremap <silent><buffer><expr> q   denite#do_map('quit')
@@ -117,7 +122,11 @@ function! DeniteInit() abort "{{{
                     \ '--glob', '!libs', '',
                     \ '--glob', '!res', '',
                     \ '--glob', '!build', '',
-                    \ '--glob', '!lib', ''
+                    \ '--glob', '!build32', '',
+                    \ '--glob', '!lib', '',
+                    \ '--glob', '!*.png', '',
+                    \ '--glob', '!*.jpg', '',
+                    \ '--glob', '!*.jpeg', ''
                     \ ])
         call denite#custom#var('grep', 'command', ['rg'])
         call denite#custom#var('grep', 'default_opts', ['--vimgrep', '--no-heading'])

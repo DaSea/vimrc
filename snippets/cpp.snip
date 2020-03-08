@@ -245,6 +245,14 @@ abbr        #include<iostream> int main...
         return 0;
     }
 
+snippet     mainus
+abbr        #include<iostream> int main...
+    int main(int argc, char const* argv[])
+    {
+        ${0}
+        return 0;
+    }
+
 snippet     cout
 options     head
     std::cout
@@ -268,3 +276,7 @@ abbr     using namespace name;
 snippet     logd
 abbr     LOGD_S
     LOGD_S("${1}"${2:,}${0});
+
+snippet     operator=
+options     head
+    ${1:type}& operator=(const $1 &other);

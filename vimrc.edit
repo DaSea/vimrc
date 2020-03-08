@@ -1,15 +1,3 @@
- " 主要为了在状态栏显示当前行所在函数{{{
-function! HiEchoCurrentTag() abort " 命令行高亮输出当前所在tag {{{
-    echohl Error | echo tagbar#currenttag("%s", "Unknown Function") | echohl None
-endfunction " }}}
-Plug 'majutsushi/tagbar' " {'on': 'TagbarToggle'}
-nnoremap <Leader>tm :call HiEchoCurrentTag()<CR>
-nnoremap <Leader>tb :TagbarToggle<CR>
-if g:setting.status_line ==? 'airline'
-    call add(g:airline_extensions, 'tagbar')
-endif
-" }}}
-
 "文件内容搜索和替换, undotree{{{
 Plug 'dyng/ctrlsf.vim',{'on': 'CtrlSF'} "搜索工程下文件{{{
 "---------------------------------------------------------------------
@@ -19,7 +7,7 @@ if !executable(g:ctrlsf_ackprg)
     let g:ctrlsf_ackprg = 'ag'
 endif
 " 窗口大小
-let g:ctrlsf_winsize='50%'
+let g:ctrlsf_winsize='40%'
 " 是否在ctrlsf搜索结果打开其他窗口时,关闭搜索结果窗口
 let g:ctrlsf_auto_close = 0
 " 大小写敏感
@@ -28,7 +16,8 @@ let g:ctrlsf_case_sensitive = 'yes'
 " let g:ctrlsf_default_root = 'project+wf'
 " 工程目录的顶级文件夹
 " let g:ctrlsf_vcs_folder = ['.exvim', '.git', '.hg', '.svn', '.bzr', '_darcs']
-let g:ctrlsf_ignore_dir = ['obj', 'build', 'lib', 'res' ,'bower_components', 'node_modules']
+let g:ctrlsf_ignore_dir = ['obj', 'build', 'lib', 'res' ,'bower_components', 'node_modules',
+            \ 'bin', 'build', 'build32', 'libs', 'win', 'resource']
 " make result windows compact
 let g:ctrlsf_indent = 2
 let g:ctrlsf_search_mode = 'async'
@@ -39,13 +28,14 @@ let g:ctrlsf_auto_focus = {
             \ "duration_less_than": 1000
             \ }
 " 显示的上下文函数
-let g:ctrlsf_context = '-B 0 -A 0'
+let g:ctrlsf_context = '-B 2 -A 0'
 " 高亮匹配行: o->打开的目标文件;p->预览文件
 let g:ctrlsf_selected_line_hl = 'op'
 nnoremap <F5> :CtrlSFToggle<CR>
 nnoremap <Leader>sw :call CtrlsfCurWord(expand("<cword>"))<CR>
+nnoremap <Leader>sf :call CtrlsfCurWordInCurPath(expand("<cword>"), expand("%:p:h"))<CR>
 function! CtrlsfCurWord(word) abort
-    " 需要修改为根据exvim工程文件类型进行搜索
+    " 工程目录下进行搜索
     let s:type = &filetype
     if ("c" == s:type) && (g:ctrlsf_ackprg !=? 'rg')
         let s:type = "cc"
@@ -53,6 +43,16 @@ function! CtrlsfCurWord(word) abort
     let s:filetype = '-filetype '.s:type
     " -w whole word;
     execute "CtrlSF ".s:filetype.' -R \b'. a:word .'\b'
+endfunction
+function! CtrlsfCurWordInCurPath(word, path) abort
+    " 需要修改为根据exvim工程文件类型进行搜索
+    let s:type = &filetype
+    if ("c" == s:type) && (g:ctrlsf_ackprg !=? 'rg')
+        let s:type = "cc"
+    endif
+    let s:filetype = '-filetype '.s:type
+    " -w whole word;
+    execute "CtrlSF ".s:filetype.' -R \b'. a:word .'\b '.a:path
 endfunction
 "}}}
 
@@ -84,25 +84,60 @@ endfunction
 "}}}
 
 "括号补全, endif等补全{{{
-if 'yes' ==? g:setting.auto_pairs_need
+if 'peartree' ==? g:setting.pairs_plug
+    Plug 'tmsvg/pear-tree'
+    " Default rules for matching:
+    let g:pear_tree_pairs = {
+                \ '(': {'closer': ')'},
+                \ '[': {'closer': ']'},
+                \ '{': {'closer': '}'},
+                \ "'": {'closer': "'"},
+                \ '"': {'closer': '"'},
+                \ '<': {'closer': '>'}
+                \ }
+    " See pear-tree/after/ftplugin/ for filetype-specific matching rules
+
+    " Pear Tree is enabled for all filetypes by default:
+    let g:pear_tree_ft_disabled = ['neartree', 'leaderf']
+    " Pair expansion is dot-repeatable by default: 可以使用.进行动作重复
+    let g:pear_tree_repeatable_expand = 1
+    " Smart pairs are disabled by default:
+    let g:pear_tree_smart_openers = 1
+    let g:pear_tree_smart_closers = 1
+    let g:pear_tree_smart_backspace = 1
+    " If enabled, smart pair functions timeout after 60ms:
+    let g:pear_tree_timeout = 60
+    " Automatically map <BS>, <CR>, and <Esc>
+    let g:pear_tree_map_special_keys = 1
+    " Default mappings:
+    " imap <BS> <Plug>(PearTreeBackspace)
+    " imap <CR> <Plug>(PearTreeExpand)
+    " imap <Esc> <Plug>(PearTreeFinishExpansion)
+    " Pear Tree also makes <Plug> mappings for each opening and closing string.
+    "     :help <Plug>(PearTreeOpener)
+    "     :help <Plug>(PearTreeCloser)
+
+    " Not mapped by default:
+    " <Plug>(PearTreeSpace)
+    " <Plug>(PearTreeJump)
+    " <Plug>(PearTreeExpandOne)
+    " <Plug>(PearTreeJNR)
+else
     Plug 'jiangmiao/auto-pairs'
-    " let g:AutoPairsFlyMode = 0
+    let g:AutoPairsFlyMode = 0
     " let g:AutoPairsShortcutBackInsert = '<Leader>pb'
     " 上面俩项为flyMode下使用
     let g:AutoPairsShortcutToggle = '<Leader>pp'
     let g:AutoPairsShortcutFastWrap = '<Leader>pe'
     let g:AutoPairsShortcutJump = '<Leader>pn'
+    let g:AutoPairsMapBS=0
     if 'yes' ==? g:setting.auto_paramcomplete
-        let g:AutoPairs = {'[':']', '{':'}',"'":"'",'"':'"', '`':'`'}
+        let g:AutoPairs = {'[':']', '<':'>', '{':'}',"'":"'",'"':'"', '`':'`'}
         inoremap <buffer><silent> ) <C-R>=AutoPairsInsert(')')<CR>
     endif
 endif
 Plug 'tpope/vim-endwise', {'for': ['python', 'vim', 'lua', 'sh', 'zsh']}
 "}}}
-
-Plug 'dkprice/vim-easygrep', {'on': ['Grep', 'GrepOptions', 'GrepAdd', 'GrepRoot', 'GrepProgram']}" {{{
-let g:EasyGrepPerlStyle=1
-" }}}
 
 " undo 历史树,直观显示,快速选择恢复{{{
 if has("persistent_undo")
@@ -146,7 +181,7 @@ let g:DoxygenToolkit_returnTag="@return "
 let g:DoxygenToolkit_authorName=g:setting.author_name
 let g:DoxygenToolkit_licenseTag="None"
 let g:DoxygenToolkit_compactDoc="no"
-" map
+" DoxFunc为函数生成注释；DoxFile为文件生成注释
 nnoremap <Leader>di :DoxFunc<CR>
 nnoremap <Leader>df :DoxFile<CR>
 "}}}

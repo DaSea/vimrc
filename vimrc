@@ -96,7 +96,7 @@ endif
 " 全局配置变量(Dictionnary){{{
 let g:setting = {}
 " 分隔符：具体看 https://github.com/ryanoasis/powerline-extra-symbols {{{
-" 0. 三角符号; 1. 火焰符号; 2. 圆角符号; 3. 左斜; 4. 左斜; 5. 波纹; 6. 点
+" 0. 三角符号; 1. 火焰符号; 2. 圆角符号; 3. 左斜; 4. 右斜; 5. 波纹; 6. 点
 " [0, 1, 2, 3] = [left, left sub, right, right sub]
 let g:separator_list = [
             \ ["\ue0b0", "\ue0b1", "\ue0b2", "\ue0b3"],
@@ -105,16 +105,17 @@ let g:separator_list = [
             \ ["\ue0b8", "\ue0b9", "\ue0ba", "\ue0bb"],
             \ ["\ue0bc", "\ue0bd", "\ue0be", "\ue0bf"],
             \ ["\ue0c8", "\ue0c9", "\ue0ca", "\ue0cb"],
-            \ ["\ue0c4", "\ue0c6", "\ue0c5", "\ue0c7"]
+            \ ["\ue0c4", "\ue0c6", "\ue0c5", "\ue0c7"],
+            \ ["", "", "", ""]
             \ ]
 " 定义全局的分割符
-let separator_index = 0
+let separator_index = 2
 let g:setting.left_separator = g:separator_list[separator_index][0]
 let g:setting.left_sub_separator = g:separator_list[separator_index][1]
 let g:setting.right_separator = g:separator_list[separator_index][2]
 let g:setting.right_sub_separator = g:separator_list[separator_index][3]
 " tabline显示的分隔符
-let tab_separator_index = 0
+let tab_separator_index = 6
 let g:setting.tab_left_separator = g:separator_list[tab_separator_index][0]
 let g:setting.tab_left_sub_separator = g:separator_list[tab_separator_index][1]
 let g:setting.tab_right_separator = g:separator_list[tab_separator_index][2]
@@ -123,17 +124,19 @@ let g:setting.tab_right_sub_separator = g:separator_list[tab_separator_index][3]
 
 " ui设置 {{{
 " 全局设置seoul256-light, NeoSolarized
-let g:setting.color_scheme = 'onedark'
+" let g:setting.color_scheme = 'gruvbox-material'
+" let g:setting.color_scheme = 'onedark'
 " let g:setting.color_scheme = 'NeoSolarized'
-" let g:setting.color_scheme = 'solarized8_flat'
-" let g:setting.color_scheme = 'gruvbox'
+let g:setting.color_scheme = 'solarized8_flat'
+" let g:setting.color_scheme = 'gruvbox-material'
 " 是否使用vim-devicons
 let g:setting.use_devicons = 'yes'
+let g:setting.use_powerfont = 'yes'
 " 状态栏(airline, lightline or no), 如果为no, 自定义状态栏
-let g:setting.status_line = 'airline'
-" let g:setting.status_line = 'lightline'
-let g:setting.status_color = 'onedark'
-" let g:setting.status_color = 'wombat'
+" let g:setting.status_line = 'airline'
+let g:setting.status_line = 'lightline'
+let g:setting.lightline_color = 'deus'
+let g:setting.status_color = 'qwq'
 let g:setting.show_tabline = 'yes'
 " }}}
 
@@ -143,10 +146,10 @@ let g:setting.version_status = 'no'
 " 补全相关 {{{
 " 是否使用lsp特性
 let g:setting.use_lsp = 'no'
-" ncm2(测试) 或 deoplete
+" ncm2(测试) 或 deoplete, coc.nvim
 let g:setting.complete_plugin = 'ncm2'
 " 是否需要开启括号补全
-let g:setting.auto_pairs_need = 'yes'
+let g:setting.pairs_plug = 'peartree'
 " 参数补全(tenfyzhong/CompleteParameter.vim)
 let g:setting.auto_paramcomplete = 'no'
 " }}}
@@ -168,8 +171,10 @@ let g:setting.auto_paramcomplete = 'no'
 " $cyan:      #2aa198;
 " $green:     #859900;
 
-" 使用denite, ctrlp和LeaderF, nerdtree
-let g:setting.ctrlp_or_leaderf = 'denite'
+" 文件树插件：defx.vim 或 nerdtree
+let g:setting.explorer = 'nerdtree'
+" 使用ctrlp和LeaderF, denite
+let g:setting.ctrlp_or_leaderf = 'leaderf'
 " 是否需要开启代码的静态语法检查(neomake插件)
 let g:setting.make_lint_need = 'no'
 " name
@@ -606,7 +611,7 @@ set cc=+1       " 对齐线，当一行的长度大于80时显示一条竖线
 " set cuc         " 高亮当前列
 set cursorline  " 高亮当前行
 " hi ColorColumn ctermbg=lightgrey guibg=lightgrey
-highlight Normal ctermbg=None
+" highlight Normal ctermbg=None
 
 " ==============================================================================
 " 显示不可打印字符
@@ -775,6 +780,31 @@ endif
 " ==============================================================================
 " neovim 特殊配置，vim与neovim终端配置 {{{
 if g:isNvim
+    function! AS_HandleSwapfile (filename, swapname)
+        " if swapfile is older than file itself, just get rid of it
+        if getftime(v:swapname) < getftime(a:filename)
+            call delete(v:swapname)
+            let v:swapchoice = 'e'
+        endif
+    endfunction
+    augroup AutoSwap
+        autocmd!
+        autocmd SwapExists *  call AS_HandleSwapfile(expand('<afile>:p'), v:swapname)
+    augroup END
+
+    autocmd CursorHold,BufWritePost,BufReadPost,BufLeave *
+                \ if isdirectory(expand("<amatch>:h")) | let &swapfile = &modified | endif
+
+    augroup checktime
+        au!
+        if !has("gui_running")
+            "silent! necessary otherwise throws errors when using command
+            "line window.
+            " autocmd BufEnter,CursorHold,CursorHoldI,CursorMoved,CursorMovedI,FocusGained,BufEnter,FocusLost,WinLeave * checktime
+            autocmd BufEnter,FocusGained,FocusLost,WinLeave * checktime
+        endif
+    augroup END
+
     let g:terminal_scrollback_buffer_size = 500
 
     " Use cursor shape feature
@@ -823,6 +853,51 @@ if g:isNvim
                 call rpcnotify(1, 'Gui', 'Option', 'Tabline', 0)
                 call rpcnotify(1, 'Gui', 'FontFeatures', 'PURS, cv17')
                 " call rpcnotify(1, 'Gui', 'Option', 'Cmdline', 1)
+            elseif exists('g:fvim_loaded')
+                " set guifont=GoMono\ NF:h16
+                set guifont=Cascadia\ Code:h16
+                " Cursor tweaks
+                execute 'FVimCursorSmoothMove v:true'
+                execute 'FVimCursorSmoothBlink v:true'
+
+                " Debug UI overlay
+                execute 'FVimDrawFPS v:false'
+
+                " Font tweaks
+                execute 'FVimFontAntialias v:true'
+                execute 'FVimFontAutohint v:true'
+                execute 'FVimFontSubpixel v:true'
+                execute 'FVimFontLcdRender v:true'
+                execute 'FVimFontHintLevel "full"'
+                " can be 'default', '14.0', '-1.0' etc.
+                execute 'FVimFontLineHeight +1.0'
+
+                " Try to snap the fonts to the pixels, reduces blur
+                " in some situations (e.g. 100% DPI).
+                execute 'FVimFontAutoSnap v:true'
+
+                " Font weight tuning, possible valuaes are 100..900
+                execute 'FVimFontNormalWeight 400'
+                execute 'FVimFontBoldWeight 700'
+
+                " Font debugging -- draw bounds around each glyph
+                " FVimFontDrawBounds v:true
+
+                " UI options (all default to v:false)
+                " FVimUIMultiGrid v:false     " per-window grid system -- work in progress
+                " external popup menu
+                execute 'FVimUIPopupMenu v:false'
+                execute 'FVimUITabLine v:false'
+                execute 'FVimUICmdLine v:false'
+                " external cmdline -- not implemented
+                execute 'FVimUIWildMenu v:false'
+                " external wildmenu -- not implemented
+                execute 'FVimUIMessages v:false'
+                " external messages -- not implemented
+                execute 'FVimUITermColors v:false'
+                " not implemented
+                execute 'FVimUIHlState v:false'
+                " not implemented
             else
                 " execute 'GuiFont FuraCode Nerd Font Mono:h13:b'
                 " execute 'GuiFont FuraMono Nerd Font Mono:h14'
@@ -830,7 +905,13 @@ if g:isNvim
                 " execute 'GuiFont! Hack Nerd Font Mono:h13:b'
                 " execute 'GuiFont! FuraCode NF:h13:b'
                 " execute 'GuiFont! TerminessTTF NF:h14'
-                execute 'GuiFont! GoMono NF:h13:b'
+                if g:setting.use_devicons ==? 'no'
+                    execute 'GuiFont! Cascadia Code:h13:b'
+                else
+                    " execute 'GuiFont! GoMono NF:h13:b'
+                    " execute 'GuiFont! CascadiaCode Nerd Font:h13'
+                    execute 'GuiFont! CascadiaCode Nerd Font:h14'
+                endif
                 " execute 'GuiFont! mononoki Nerd Font:h13'
                 " execute 'GuiFont! MesloLGM NF RegularForPowerline:h12'
                 " execute 'GuiFont! Hack Nerd Font Mono:h14:b'
@@ -847,10 +928,18 @@ if g:isNvim
         function! WinNvimFullscreen() abort " 全屏控制 {{{
             if g:neovimqt_fullscreen==0
                 let g:neovimqt_fullscreen = 1
-                execute "call GuiWindowFullScreen(1)"
+                if exists('g:fvim_loaded')
+                    execute 'FVimToggleFullScreen'
+                else
+                    execute "call GuiWindowFullScreen(1)"
+                endif
             else
                 let g:neovimqt_fullscreen = 0
-                execute "call GuiWindowFullScreen(0)"
+                if exists('g:fvim_loaded')
+                    execute 'FVimToggleFullScreen'
+                else
+                    execute "call GuiWindowFullScreen(0)"
+                endif
             endif
         endfunction " }}}
         nnoremap <Leader>nf :call WinNvimFullscreen()<CR>
@@ -948,6 +1037,7 @@ nnoremap <Leader>pw :call ReplaceCurrentWord()<CR>
 vnoremap <Leader>pw :call ReplaceCurrentWord()<CR>
 function! ReplaceCurrentWord() abort
     let curWord = expand("<cword>")
+    " 删除curWord的
     call inputsave()
     let replaceWord = input("Please input wanted word:", curWord)
     call inputrestore()
@@ -1043,7 +1133,7 @@ nnoremap <Leader>kw :<C-u>split<CR><C-W><Up>
 nnoremap <Leader>jw :<C-u>split<CR>
 nnoremap <Leader>hw :<C-u>vsplit<CR><C-W><Left>
 nnoremap <Leader>lw :<C-u>vsplit<CR>
-" 插入模式下的字符移动
+" 插入模式下的光标移动
 inoremap <M-j> <Down>
 inoremap <M-k> <Up>
 inoremap <M-n> <Left>
@@ -1055,6 +1145,8 @@ nnoremap <M-;>  A<C-R>=";"<CR><ESC>
 "===================================================
 " 修改光标的快速上移或下移
 " nnoremap J  10j
+nnoremap j gj
+nnoremap k gk
 
 "===================================================
 " 当前文件中搜索光标下单词
@@ -1096,7 +1188,9 @@ if g:islinux && g:isNvim==0
 endif
 " 重命名文件
 " 关闭当前窗口, 详细请看:help Close
-noremap <Leader>mc :close<CR>
+nnoremap <Leader>mc :close<CR>
+" 快速查看当前文件目录
+nnoremap <Leader>ep :echo expand("%:p:h")<CR>
 
 " Don't use Ex mode, use Q for formatting
 map Q gq

@@ -2,44 +2,91 @@
 Plug 'Yggdroot/LeaderF'
 let g:Lf_DefaultMode='Fuzzy'
 let g:Lf_CacheDiretory=$HOME . '/.cache'
-let g:Lf_WindowHeight = 0.40
+let g:Lf_WindowHeight = 0.30
 let g:Lf_ShowRelativePath=0
 let g:Lf_NumberOfCache = 10
 let g:Lf_UseMemoryCache=1
 let g:Lf_DefaultExternalTool = "rg"
+if executable('rg')
+    let g:Lf_ExternalCommand = 'rg --files -g !.git -g !.svn -g !.vscode -g !bin -g !build "%s"'
+endif
 let g:Lf_UseVersionControlTool = 1
 let g:Lf_RememberLastSearch = 0
 let g:Lf_TabpagePosition=3
 let g:Lf_CursorBlink=0
 let g:Lf_ShortcutF = '<C-p>'
 let g:Lf_ShortcutB = '<Leader>fl'
+let g:Lf_StlColorscheme = 'gruvbox_material'
+let g:Lf_WindowPosition='popup'
+let g:Lf_IgnoreCurrentBufferName=1
+let g:Lf_NoChdir = 1
+let g:Lf_PopupHeight = 0.75
+let g:Lf_PopupHeight = 0.5
+" gtags
+let g:Lf_GtagsLabel = "native-pygments"
+let g:Lf_GtagsSource = 2
+let g:Lf_GtagsSkipUnreadable=1
+" let g:Lf_Gtagsconf='D:/Develop/exVim/share/gtags/gtags.conf'
+let g:Lf_GtagsAutoGenerate=0
+" 在popup预览
+let g:Lf_PreviewInPopup=1
+let g:Lf_PreviewCode=1
+let g:Lf_PopupPreviewPosition='cursor'
+" ctags设置
+let g:Lf_CtagsFuncOpts = {
+            \ 'c': '--c-kinds=fp',
+            \ 'rust': '--rust-kinds=f',
+            \ }
 let g:Lf_PreviewResult = {
-        \ 'File': 0,
-        \ 'Buffer': 0,
-        \ 'Mru': 0,
-        \ 'Tag': 0,
-        \ 'BufTag': 0,
-        \ 'Function': 0,
-        \ 'Line': 0,
-        \ 'Colorscheme': 0
-        \}
+            \ 'File': 0,
+            \ 'Buffer': 0,
+            \ 'Mru': 0,
+            \ 'Tag': 0,
+            \ 'BufTag': 0,
+            \ 'Function': 0,
+            \ 'Line': 0,
+            \ 'Colorscheme': 0
+            \}
 let g:Lf_WildIgnore = {
-        \ 'dir': ['.svn','.git','.hg', '.exvim', 'obj', 'lib', 'bin', 'build', 'build32', 'buildlinux', '.vscode', 'res', ],
-        \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]', '*.user[32]']
-        \}
-let g:Lf_MruFileExclude = ['*.so']
+            \ 'dir': ['.svn','.git','.hg', '.exvim', 'obj', 'lib', 'bin', 'build', 'build32', 'buildlinux', '.vscode', 'res', ],
+            \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]', '*.user[32]']
+            \}
+let g:Lf_RgConfig = [
+            \ "--max-columns=150",
+            \ "--glob=!build32/*",
+            \ "--glob=!git/*",
+            \ "--glob=!.git/*",
+            \ "--glob=!.git/*",
+            \ "--glob=!.svn/*",
+            \ "--glob=!bin/*",
+            \ "--glob=!build/*",
+            \ "--glob=!buildlinux/*",
+            \ "--glob=!lib/*",
+            \ "--glob=!res/*"
+            \ ]
+let g:Lf_MruFileExclude = ['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak',
+            \ '*.tmp', '*.dll']
 let g:Lf_MruMaxFiles = 400
 let g:Lf_StlSeparator = {
             \ 'left': g:setting.left_separator,
             \ 'right': g:setting.right_separator
             \ }
-let g:Lf_RootMarkers = ['.git', '.svn', '.exvimlinux', '.exvimwin', '.vscode']
+let g:Lf_RootMarkers = ['.root', '.git', '.svn', '.vscode']
 nnoremap <silent> <leader>jf :<C-u>LeaderfMru<CR>
 " nnoremap <silent> <C-p> :<C-u>LeaderfFile<CR>
 nnoremap <silent> <leader>lf :<C-u>LeaderfFile<CR>
 " nnoremap <silent> <leader>fl :<C-u>LeaderfBuffer<CR>
 nnoremap <silent> <leader>ft :<C-u>LeaderfLine<CR>
 nnoremap <silent> <leader>fm :<C-u>LeaderfFunction<CR>
+function! s:leaderf_my_setting() abort
+    setlocal nonumber
+    setlocal nowrap
+    setlocal cc=""
+endfunction
+augroup leaderf_group
+    autocmd!
+    autocmd FileType leaderf call s:leaderf_my_setting()
+augroup END
 " 俩个特殊的命令，显示wiki内容
 " nnoremap <silent> <leader>fk :<C-u>LeaderfFile /media/work/Self/01_mywiki/dasea.github.io/source<CR>
 "}}}

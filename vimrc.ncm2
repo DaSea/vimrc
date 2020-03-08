@@ -1,0 +1,195 @@
+" IMPORTANT: :help Ncm2PopupOpen for more information
+set completeopt=noinsert,menuone,noselect
+set shortmess+=c
+
+" assuming you're using vim-plug: https://github.com/junegunn/vim-plug
+Plug 'ncm2/ncm2'
+Plug 'roxma/nvim-yarp'
+
+" NOTE: you need to install completion sources to get completions. Check
+" our wiki page for a list of sources: https://github.com/ncm2/ncm2/wiki
+Plug 'ncm2/ncm2-bufword'
+Plug 'ncm2/ncm2-path'
+Plug 'fgrsnau/ncm2-otherbuf'
+
+" enable ncm2 for all buffers
+autocmd BufEnter * call ncm2#enable_for_buffer()
+au TextChangedI * call ncm2#auto_trigger()
+
+" based on ultisnips
+Plug 'ncm2/ncm2-ultisnips' | Plug 'SirVer/ultisnips' " snippets {{{
+let g:UltiSnipsUsePythonVersion = 3
+let g:UltiSnipsSnippetsDir=g:setting.private_snippets.'/ultisnips'
+let g:UltiSnipsSnippetDirectories = [g:setting.private_snippets.'/ultisnips/']
+let g:UltiSnipsEnableSnipMate=0
+let g:UltiSnipsEditSplit="vertical"
+let g:UltiSnipsExpandTrigger="<C-k>"
+let g:UltiSnipsJumpForwardTrigger="<C-k>"
+let g:UltiSnipsJumpBackwardTrigger="<C-j>"
+" let g:UltiSnipsRemoveSelectModeMappings=0
+" inoremap <silent> <expr> <CR> ncm2_ultisnips#expand_or("\<CR>", 'n')
+" 编辑snippet
+nnoremap <leader>ns :UltiSnipsEdit<CR>
+" }}}
+
+Plug 'ncm2/ncm2-syntax' | Plug 'Shougo/neco-syntax'
+
+if index(g:language_group, 'vim') >= 0
+    Plug 'ncm2/ncm2-vim' | Plug 'Shougo/neco-vim'
+endif
+
+Plug 'ncm2/ncm2-neoinclude' | Plug 'Shougo/neoinclude.vim'
+" {{{
+" disable ctags
+" let g:neoinclude#ctags_command = ''
+" 字典,设置路径
+if !exists('g:neoinclude#paths')
+    let g:neoinclude#paths = {}
+endif
+if !exists('g:neoinclude#_paths')
+    let g:neoinclude#_paths = {}
+endif
+if g:iswindows
+    " 'cpp': 'D:/Develop/Java/android-ndk-r10/platforms/android-19/arch-arm/usr/include'
+    let g:neoinclude#paths = {
+                \ 'cpp': 'D:/Develop/Qt5.7.1/5.7/msvc2013_64/include'
+                \ }
+else
+    " call SetCppPath()
+    let g:neoinclude#paths = {
+                \ 'cpp': '/usr/include/c++/9.2.0/',
+                \ 'python' : '/usr/lib/python3.8/'
+                \ }
+endif
+if !exists('g:neoinclude#exts')
+    let g:neoinclude#exts = {}
+endif
+let g:neoinclude#exts.cpp = ['', 'h', 'hpp', 'hxx', 'cpp', 'c']
+let g:neoinclude#exts.python = ['py', 'py3']
+"}}}
+
+" 生成tags {{{
+" 是否使用quickfix显示cscope查找的结果
+if v:version >= 800
+    set cscopequickfix=s+,c+,d+,i+,t+,e+,g+,f+,a+
+else
+    set cscopequickfix=s+,c+,d+,i+,t+,e+,g+,f+
+endif
+
+if 0 " {{{
+    let g:loaded_gentags#gtags=0
+    let g:loaded_gentags#ctags=0
+    " use gtags-cscope替换cscope
+    " set csprg=/usr/local/bin/cscope
+    Plug 'jsfaint/gen_tags.vim'
+    " Plug 'ronakg/quickr-cscope.vim'
+    ", {'for': ['c', 'cpp']}
+    " {'on': ['GenCtags', 'GenGTAGS']}
+    let g:gen_tags#ctags_use_cache_dir=1
+    let g:gen_tags#ctags_auto_gen=0
+    let g:gen_tags#gtags_auto_gen=0
+    let g:gen_tags#ctags_auto_update=0
+    let g:gen_tags#gtags_auto_update=0
+    let g:gen_tags#gtags_default_map=0
+    let g:gen_tags#statusline = 1
+    let g:gen_tags#ctags_opts = ['--fields=+niazS', '--extra=+q',
+                \ '--c++-kinds=+px', '--c-kinds=+px',
+                \ '--output-format=e-ctags']
+    let g:gen_tags#gtags_opts = ['--compact']
+    if g:iswindows
+        let g:gen_tags#blacklist = ['$HOME', 'build', 'lib', 'bin', 'resource',
+                    \ 'include']
+    else
+        " let g:gen_tags#blacklist = ['build', 'lib', 'bin', 'resource']
+    endif
+    " autocmd User GenTags#GtagsLoaded nnoremap gd <c-]>
+    " 下面可自定义按键
+    function! s:gen_tags_find(cmd, keyword) abort
+        " Mark this position
+        execute "normal! mY"
+        " Close any open quickfix windows
+        cclose
+        " Clear existing quickfix list
+        cal setqflist([])
+
+        let l:cur_buf=@%
+        let l:cmd = 'cs find ' . a:cmd . ' ' . a:keyword
+        silent! keepjumps execute l:cmd
+
+        if len(getqflist()) > 1
+            " If the buffer that cscope jumped to is not same as current file, close the buffer
+            if l:cur_buf != @%
+                " Go back to where the command was issued
+                execute "normal! `Y"
+                " delete previous buffer.
+                bdelete #
+            endif
+            copen
+        endif
+    endfunction
+    " 查找调用本函数的函数
+    noremap <leader>gc :call <SID>gen_tags_find('c', "<C-R><C-W>")<CR>
+    vnoremap <leader>gc :call <SID>gen_tags_find('c', "<C-R><C-W>")<CR>
+    " 查找本函数调用的函数
+    noremap <leader>gd :call <SID>gen_tags_find('d', "<C-R><C-W>")<CR>
+    vnoremap <leader>gd :call <SID>gen_tags_find('d', "<C-R><C-W>")<CR>
+    " 查找本egrep模式
+    noremap <leader>ge :call <SID>gen_tags_find('e', "<C-R><C-A>")<CR>
+    vnoremap <leader>ge :call <SID>gen_tags_find('e', "<C-R><C-A>")<CR>
+    " 查找本文件
+    noremap <leader>gf :call <SID>gen_tags_find('f', "<C-R><C-F>")<CR>
+    vnoremap <leader>gf :call <SID>gen_tags_find('f', "<C-R><C-F>")<CR>
+    " 查找本定义
+    noremap <leader>gg :call <SID>gen_tags_find('g', "<C-R><C-W>")<CR>
+    vnoremap <leader>gg :call <SID>gen_tags_find('g', "<C-R><C-W>")<CR>
+    " 查找包含本文件的文件
+    noremap <leader>gi :call <SID>gen_tags_find('i', "<C-R><C-F>")<CR>
+    vnoremap <leader>gi :call <SID>gen_tags_find('i', "<C-R><C-F>")<CR>
+    " 查找本C符号
+    noremap <leader>gs :call <SID>gen_tags_find('s', "<C-R><C-W>")<CR>
+    vnoremap <leader>gs :call <SID>gen_tags_find('s', "<C-R><C-W>")<CR>
+    " 查找本字符串
+    noremap <leader>gt :call <SID>gen_tags_find('t', "<C-R><C-A>")<CR>
+    vnoremap <leader>gt :call <SID>gen_tags_find('t', "<C-R><C-A>")<CR>
+    " }}}
+
+    Plug 'ncm2/ncm2-gtags'
+endif " }}}
+
+Plug 'ncm2/ncm2-pyclang' " {{{
+if g:iswindows
+    let g:ncm2_pyclang#library_path = 'D:/Develop/LLVM/bin/libclang.dll'
+else
+    let g:ncm2_pyclang#library_path = '/use/lib/libclang.so'
+endif
+" a list of relative paths for compile_commands.json
+let g:ncm2_pyclang#database_path = [
+            \ 'compile_commands.json',
+            \ 'build/compile_commands.json'
+            \ ]
+" a list of relative paths looking for .clang_complete
+let g:ncm2_pyclang#args_file_path = ['.clang_complete']
+if g:iswindows
+    let g:ncm2_pyclang#sys_inc_args_fallback = {
+                \ "c":['-isystem', 'D:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/include/'],
+                \ 'cpp': ['-isystem', 'D:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/include/']
+                \ }
+else
+    let g:ncm2_pyclang#sys_inc_args_fallback = {
+                \ "c":['-isystem', '/usr/include/c++/9.2.0/'],
+                \ 'cpp': ['-isystem', '/usr/include/c++/9.2.0/',  '-isystem', '/usr/include/qt/']
+                \ }
+endif
+" }}}
+
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function()
+    return (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
+endfunction
+
+" Use <TAB> to select the popup menu:
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+" vim:ts=4:sw=4:sts=4 et fdm=marker:
+

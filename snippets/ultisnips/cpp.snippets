@@ -42,6 +42,10 @@ if (FILE *fp = fopen(${1:"filename"}, "r"))
 }
 endsnippet
 
+snippet typed "typedef old new"
+typedef ${1:oldname} ${2:newname};$0
+endsnippet
+
 snippet map "std::map (map)"
 std::map<${1:key}, ${2:value}> map$0;
 endsnippet
@@ -72,20 +76,20 @@ public:
 endsnippet
 
 ###########################################################################
-#                            Me add Snippets                            #
+#							 Me add Snippets							#
 ###########################################################################
 
 snippet pub_func_group
-/*****************************************************************************************
+/*************************************************************************************
  * public function group
- *****************************************************************************************/
+ ************************************************************************************/
 ${0}
 endsnippet
 
 snippet pri_func_group
-/*****************************************************************************************
+/*************************************************************************************
  * private function group
- *****************************************************************************************/
+ ************************************************************************************/
 ${0}
 endsnippet
 
@@ -175,6 +179,12 @@ snippet lambda "[](){}"
 [${1}](${2})${3}{ ${4:TARGET} }${0:;}
 endsnippet
 
+snippet lambdam "auto func = [](){}"
+auto ${1:funcname} = [${2}](${3})${4} {
+	${0:TARGET}
+};
+endsnippet
+
 snippet cast_static "static_cast<>()"
 static_cast<${1}>(${2})${0}
 endsnippet
@@ -202,19 +212,27 @@ int main(int argc, char const* argv[])
 endsnippet
 
 snippet coutend "std::cout<<hello<<endl"
-    std::cout << ${0:TARGET} << std::endl;
+std::cout << ${0:TARGET} << std::endl;
+endsnippet
+
+snippet outend "MOUT<<hello<<MEND"
+${1:cout} << ${0:TARGET} << ${2:end};
 endsnippet
 
 ##############################################################################
 # comment
-snippet br_base "@brief"
+snippet brbase "@brief"
 /**
- * @brief ${0:discreption}
+ * ${0:discreption}
  */
 endsnippet
 
-snippet br_mem "struct_mem"
-/** ${0:join you!} */
+snippet brmem "struct_mem"
+/**< ${0:join you!} */
+endsnippet
+
+snippet brline "struct_mem"
+///< ${0:join you!}
 endsnippet
 
 # vim:ft=snippets:
